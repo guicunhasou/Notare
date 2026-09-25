@@ -159,7 +159,7 @@
             <div class="toolbar card">
               <label class="search-field"><span class="sr-only">Buscar estudante</span><svg><use href="#i-search"></use></svg><input id="student-search" type="search" placeholder="Buscar por nome ou turma" /></label>
               <div class="filter-group" role="group" aria-label="Filtrar prioridade">
-                <button class="filter active" data-filter="todos">Todos</button><button class="filter" data-filter="alta">Alta</button><button class="filter" data-filter="media">Acompanhar</button><button class="filter" data-filter="evolucao">Em evolução</button>
+                <button class="filter active" data-filter="todos">Todos</button><button class="filter" data-filter="alta">Alta</button><button class="filter" data-filter="media">Acompanhar</button><button class="filter" data-filter="evolucao">Em evolução</button><button class="filter" data-filter="estavel">Sem alertas</button>
               </div>
             </div>
             <div class="table-card card">
@@ -197,6 +197,7 @@
 
           <section class="view" data-view="estudantes" aria-labelledby="estudantes-title">
             <div class="page-heading compact-heading"><div><h1 id="estudantes-title">Estudantes</h1><p>Consulte o cadastro e abra o histórico de cada estudante.</p></div></div>
+            <div class="class-toolbar card"><label><span>Turma</span><select id="class-filter"></select></label><p id="class-summary">12 estudantes</p></div>
             <div class="student-directory" id="student-directory"></div>
           </section>
 

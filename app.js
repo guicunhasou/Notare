@@ -1,4 +1,4 @@
-const STORAGE_KEY = "notare-database-v6";
+const STORAGE_KEY = "notare-database-v7";
 const PROFILE_KEY = "notare-profile-v4";
 const SIDEBAR_KEY = "notare-sidebar-collapsed";
 
@@ -24,6 +24,7 @@ const state = {
   currentRoute: "painel",
   previousRoute: "painel",
   filter: "todos",
+  classFilter: "6º A",
   recordFilter: "todos",
   query: ""
 };
@@ -61,6 +62,11 @@ function assetSlug(value) {
 }
 
 function personPhoto(person) {
+  if (person.photoSheet && Number.isInteger(person.photoIndex)) {
+    const column = person.photoIndex % 6;
+    const row = Math.floor(person.photoIndex / 6);
+    return `<span class="avatar-photo avatar-sheet" style="--photo-sheet:url('${escapeHtml(person.photoSheet)}');--photo-x:${column * 20}%;--photo-y:${row * (100 / 3)}%" aria-hidden="true"></span>`;
+  }
   return `<img class="avatar-photo" src="assets/profiles/${escapeHtml(person.photo || assetSlug(person.name))}.png" alt="" loading="lazy" />`;
 }
 
@@ -182,7 +188,7 @@ function visibleStudents() {
     const className = profile.scope.replace("class:", "");
     return db.students.filter((student) => student.className === className);
   }
-  if (profile.scope === "followup") return db.students.filter((student) => student.priority !== "evolucao" || student.actionsCompleted > 0);
+  if (profile.scope === "followup") return db.students.filter((student) => student.priority !== "estavel");
   return db.students;
 }
 
@@ -210,7 +216,10 @@ function getOwner(id) {
 }
 
 function statusClass(priority) {
-  return priority === "alta" ? "status-high" : priority === "media" ? "status-medium" : "status-evolution";
+  if (priority === "alta") return "status-high";
+  if (priority === "media") return "status-medium";
+  if (priority === "evolucao") return "status-evolution";
+  return "status-stable";
 }
 
 function formatDate(value) {
@@ -334,7 +343,7 @@ function renderDashboard(now = new Date()) {
     : `${firstDayCount} para ${agendaStartLabel}`;
   document.querySelector(".agenda-card .today-pill").textContent = startsToday ? "Hoje" : `A partir de ${agendaStartLabel}`;
 
-  const order = { alta: 0, media: 1, evolucao: 2 };
+  const order = { alta: 0, media: 1, evolucao: 2, estavel: 3 };
   const ordered = [...students].sort((a, b) => order[a.priority] - order[b.priority]);
   document.querySelector("#dashboard-students").innerHTML = ordered.slice(0, 5).map(studentButton).join("");
 
@@ -364,6 +373,12 @@ function renderDashboard(now = new Date()) {
 
 function renderStudents() {
   const scopedStudents = visibleStudents();
+  const classNames = [...new Set(scopedStudents.map((student) => student.className))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  const classSelect = document.querySelector("#class-filter");
+  if (state.classFilter !== "todas" && !classNames.includes(state.classFilter)) state.classFilter = classNames[0] || "todas";
+  classSelect.innerHTML = `<option value="todas">Todas as turmas</option>${classNames.map((className) => `<option value="${escapeHtml(className)}">${escapeHtml(className)}</option>`).join("")}`;
+  classSelect.value = state.classFilter;
+
   const visible = scopedStudents.filter((student) => {
     const matchesFilter = state.filter === "todos" || student.priority === state.filter;
     const haystack = `${student.name} ${student.className} ${student.code}`.toLocaleLowerCase("pt-BR");
@@ -379,7 +394,11 @@ function renderStudents() {
       <td><button class="row-open" data-student="${escapeHtml(student.id)}" aria-label="Abrir perfil de ${escapeHtml(student.name)}"><svg><use href="#i-arrow"></use></svg></button></td>
     </tr>`).join("");
   document.querySelector("#student-empty").hidden = visible.length > 0;
-  document.querySelector("#student-directory").innerHTML = scopedStudents.map((student) => `
+  const directoryStudents = state.classFilter === "todas" ? scopedStudents : scopedStudents.filter((student) => student.className === state.classFilter);
+  const followupCount = directoryStudents.filter((student) => student.priority !== "estavel").length;
+  const stableCount = directoryStudents.length - followupCount;
+  document.querySelector("#class-summary").textContent = `${directoryStudents.length} ${directoryStudents.length === 1 ? "estudante" : "estudantes"} · ${followupCount} em acompanhamento · ${stableCount} sem alertas`;
+  document.querySelector("#student-directory").innerHTML = directoryStudents.map((student) => `
     <button class="directory-card" data-student="${escapeHtml(student.id)}">
       <span class="mini-avatar">${personPhoto(student)}</span>
       <div><strong>${escapeHtml(student.name)}</strong><span>${escapeHtml(student.className)} · ${escapeHtml(student.code)}</span><span class="status-badge ${statusClass(student.priority)}">${escapeHtml(student.status)}</span></div>
@@ -622,6 +641,7 @@ function switchProfile(profileId) {
   state.profileId = profileId;
   state.query = "";
   state.filter = "todos";
+  state.classFilter = getProfile(profileId).scope.startsWith("class:") ? getProfile(profileId).scope.replace("class:", "") : "6º A";
   state.recordFilter = "todos";
   localStorage.setItem(PROFILE_KEY, profileId);
   document.querySelector("#student-search").value = "";
@@ -666,6 +686,11 @@ document.querySelectorAll("[data-filter]").forEach((button) => button.addEventLi
   document.querySelectorAll("[data-filter]").forEach((item) => item.classList.toggle("active", item === button));
   renderStudents();
 }));
+
+document.querySelector("#class-filter").addEventListener("change", (event) => {
+  state.classFilter = event.currentTarget.value;
+  renderStudents();
+});
 
 document.querySelectorAll("[data-record-filter]").forEach((button) => button.addEventListener("click", () => {
   state.recordFilter = button.dataset.recordFilter;

@@ -1,5 +1,73 @@
+const NOTARE_CLASS_ROSTERS = {
+  "6º A": ["Marina Costa", "Enrico Azevedo", "Isabela Freitas", "Benício Alves", "Aline Nascimento", "Diego Santana", "Clara Menezes", "Felipe Barbosa", "Ester Rodrigues", "Henrique Xavier", "Giovana Pires", "Otávio Moreira"],
+  "6º B": ["Júlia Andrade", "Caio Mendes", "Amanda Soares", "Matheus Ribeiro", "Cecília Gomes", "Danilo Moura", "Elisa Campos", "Gustavo Neves", "Iara Oliveira", "Kaique Rocha", "Letícia Martins", "Ravi dos Santos"],
+  "7º A": ["Luana Gomes", "João Oliveira", "Yasmin Pereira", "Breno Cavalcante", "Carolina Luz", "Eduardo Sales", "Fernanda Queiroz", "Heitor Batista", "Jade Ramos", "Leandro Tavares", "Mirela Souza", "Nicolas Freitas"],
+  "7º B": ["Sofia Martins", "Pedro Almeida", "Ana Clara Vieira", "Davi Carvalho", "Camilly Fernandes", "Daniel Nunes", "Emilly Lopes", "Gabriel Santos", "Ingrid Araújo", "Jonas Monteiro", "Larissa Prado", "Murilo Campos"],
+  "8º A": ["Ana Souza", "Gabriel Rocha", "Alice Monteiro", "Carlos Eduardo Melo", "Bianca Farias", "Erick Silva", "Débora Reis", "Hugo Barros", "Flávia Cunha", "Kevin Moura", "Joana de Lima", "Leonardo Batista"],
+  "8º B": ["Heloísa Cardoso", "Miguel Araújo", "Dandara Alves", "Arthur Teixeira", "Gabriela Xavier", "Ian Ferreira", "Júlia Pires", "Leonardo Campos", "Maya Santos", "Rafael Torres", "Milena Oliveira", "Samuel Duarte"],
+  "9º A": ["Beatriz Santos", "Lucas Lima", "Emanuelle Souza", "Thiago Barros", "Adriana Freitas", "Douglas Martins", "Camila Rocha", "Francisco Nunes", "Isis Cavalcante", "José Henrique Ramos", "Lorena Vieira", "Bernardo Dias"],
+  "9º B": ["Lara Fernandes", "Vinícius Lopes", "Manuela Dias", "André Luiz Gomes", "Bruna Almeida", "Cauã Rodrigues", "Eduarda Monteiro", "Fábio Mendes", "Helena Pereira", "Ícaro Oliveira", "Nicole Teixeira", "Samuel Costa"]
+};
+
+const NOTARE_FEATURED_IDS = {
+  "Ana Souza": "ana", "Lucas Lima": "lucas", "Beatriz Santos": "beatriz", "João Oliveira": "joao",
+  "Marina Costa": "marina", "Gabriel Rocha": "gabriel", "Isabela Freitas": "isabela", "Pedro Almeida": "pedro",
+  "Sofia Martins": "sofia", "Thiago Barros": "thiago", "Lara Fernandes": "lara", "Enrico Azevedo": "enrico",
+  "Caio Mendes": "caio", "Júlia Andrade": "julia", "Matheus Ribeiro": "matheus", "Luana Gomes": "luana",
+  "Davi Carvalho": "davi", "Yasmin Pereira": "yasmin", "Alice Monteiro": "alice", "Miguel Araújo": "miguel",
+  "Heloísa Cardoso": "heloisa", "Vinícius Lopes": "vinicius", "Manuela Dias": "manuela", "Arthur Teixeira": "arthur"
+};
+
+function notareSlug(value) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+function notareInitials(name) {
+  const parts = name.trim().split(/\s+/);
+  return `${parts[0][0]}${parts.at(-1)[0]}`.toUpperCase();
+}
+
+function createRegularStudents() {
+  const signalOptions = [
+    "Frequência regular · participação constante",
+    "Presença estável · atividades em dia",
+    "Rotina escolar regular · sem alertas atuais",
+    "Boa participação · frequência acompanhada",
+    "Presença consistente · sem pendências"
+  ];
+  const channels = ["Telefone cadastrado", "Aplicativo de mensagens", "E-mail cadastrado"];
+  let code = 201;
+  return Object.entries(NOTARE_CLASS_ROSTERS).flatMap(([className, names]) => names.flatMap((name, index) => {
+    if (NOTARE_FEATURED_IDS[name]) return [];
+    const attendance = 92 + ((code + index) % 8);
+    const id = notareSlug(name);
+    const student = {
+      id,
+      name,
+      initials: notareInitials(name),
+      className,
+      code: `EST-${String(code).padStart(3, "0")}`,
+      priority: "estavel",
+      status: "Sem alertas",
+      signals: signalOptions[index % signalOptions.length],
+      updated: `Há ${(index % 5) + 1} dias`,
+      attendance,
+      consecutiveAbsences: 0,
+      actionsCompleted: 0,
+      metrics: [[`${attendance}%`, "frequência no mês", "dentro do padrão"], ["0", "faltas consecutivas", "sem alertas"], ["0", "ações pendentes", "rotina regular"]],
+      reason: "Não há sinais que peçam acompanhamento neste momento. O cadastro permanece disponível para consulta da turma.",
+      contact: "sem contato recente necessário",
+      guardian: `Responsável familiar ${notareInitials(name)[0]}.`,
+      preferredChannel: channels[index % channels.length],
+      timeline: [["Período atual", "Rotina escolar acompanhada sem alertas."]]
+    };
+    code += 1;
+    return [student];
+  }));
+}
+
 window.NOTARE_SEED = {
-  schemaVersion: 6,
+  schemaVersion: 7,
   school: {
     id: "school-demo-001",
     name: "Escola Horizonte Vivo",
@@ -56,15 +124,14 @@ window.NOTARE_SEED = {
     }
   ],
   classes: [
-    { id: "6a", label: "6º A", shift: "Manhã", students: 31 },
-    { id: "6b", label: "6º B", shift: "Manhã", students: 30 },
-    { id: "6c", label: "6º C", shift: "Tarde", students: 29 },
-    { id: "7a", label: "7º A", shift: "Manhã", students: 30 },
-    { id: "7b", label: "7º B", shift: "Tarde", students: 31 },
-    { id: "8a", label: "8º A", shift: "Manhã", students: 30 },
-    { id: "8b", label: "8º B", shift: "Manhã", students: 32 },
-    { id: "9a", label: "9º A", shift: "Tarde", students: 32 },
-    { id: "9c", label: "9º C", shift: "Tarde", students: 28 }
+    { id: "6a", label: "6º A", shift: "Manhã", students: 12 },
+    { id: "6b", label: "6º B", shift: "Tarde", students: 12 },
+    { id: "7a", label: "7º A", shift: "Manhã", students: 12 },
+    { id: "7b", label: "7º B", shift: "Tarde", students: 12 },
+    { id: "8a", label: "8º A", shift: "Manhã", students: 12 },
+    { id: "8b", label: "8º B", shift: "Tarde", students: 12 },
+    { id: "9a", label: "9º A", shift: "Manhã", students: 12 },
+    { id: "9b", label: "9º B", shift: "Tarde", students: 12 }
   ],
   analytics: {
     labels: ["05/08", "12/08", "19/08", "26/08", "02/09", "09/09", "16/09", "23/09"],
@@ -72,13 +139,12 @@ window.NOTARE_SEED = {
     byClass: {
       "6º A": [93, 92, 94, 91, 90, 91, 92, 92],
       "6º B": [90, 89, 91, 88, 87, 86, 88, 89],
-      "6º C": [92, 91, 92, 90, 89, 90, 91, 91],
       "7º A": [89, 88, 90, 87, 86, 87, 88, 89],
       "7º B": [88, 87, 89, 86, 85, 86, 87, 88],
       "8º A": [91, 90, 91, 89, 87, 88, 89, 90],
       "8º B": [90, 89, 91, 88, 87, 89, 90, 91],
       "9º A": [86, 85, 87, 84, 83, 84, 85, 86],
-      "9º C": [94, 93, 95, 92, 91, 92, 93, 94]
+      "9º B": [94, 93, 95, 92, 91, 92, 93, 94]
     }
   },
   students: [
@@ -273,7 +339,8 @@ window.NOTARE_SEED = {
       reason: "A presença está estável, mas as chegadas tardias são recorrentes. A orientação já foi realizada e terá revisão.",
       contact: "há 5 dias · respondido", guardian: "Responsável familiar A.", preferredChannel: "Telefone cadastrado",
       timeline: [["23/09", "Orientação individual realizada."], ["20/09", "Quinta chegada tardia registrada."]]
-    }
+    },
+    ...createRegularStudents()
   ],
   records: [
     { id: "rec-001", kind: "Ausência", studentId: "ana", description: "Nova ausência registrada no primeiro horário.", date: "25/09/2026", ownerId: "docencia", followup: true },
@@ -334,3 +401,17 @@ window.NOTARE_SEED = {
     { dayOffset: 5, time: "14:30", title: "Reunião pedagógica", studentId: "vinicius", ownerId: "coordenacao" }
   ]
 };
+
+const notareStudentsById = new Map(window.NOTARE_SEED.students.map((student) => [student.id, student]));
+Object.entries(NOTARE_CLASS_ROSTERS).forEach(([className, names]) => {
+  const grade = className[0];
+  const classOffset = className.endsWith("B") ? 12 : 0;
+  names.forEach((name, index) => {
+    const id = NOTARE_FEATURED_IDS[name] || notareSlug(name);
+    const student = notareStudentsById.get(id);
+    if (!student) return;
+    student.className = className;
+    student.photoSheet = `assets/rosters/estudantes-${grade}-ano.png`;
+    student.photoIndex = classOffset + index;
+  });
+});
