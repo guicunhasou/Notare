@@ -87,14 +87,16 @@
           <section class="view" data-view="painel" aria-labelledby="painel-title">
             <div class="page-heading">
               <div><p class="eyebrow">Visão geral</p><h1 id="painel-title">Bom dia, Camila</h1><p id="dashboard-subtitle">Veja quem precisa de atenção e organize as próximas ações.</p></div>
-              <section class="mini-calendar" aria-labelledby="mini-calendar-date">
-                <div class="mini-calendar-heading">
-                  <span class="mini-calendar-icon" aria-hidden="true"><svg><use href="#i-calendar"></use></svg></span>
-                  <div><strong id="mini-calendar-date">25 de setembro de 2026</strong><span id="mini-calendar-range">Esta semana e as próximas duas</span></div>
+              <section class="mini-calendar" id="mini-calendar" aria-label="Calendário das próximas três semanas">
+                <div class="mini-calendar-icon" aria-hidden="true">
+                  <i></i><i></i>
+                  <strong id="mini-calendar-day">25</strong>
+                  <span id="mini-calendar-month">SET</span>
                 </div>
-                <div class="calendar-weekdays" aria-hidden="true"><span>seg</span><span>ter</span><span>qua</span><span>qui</span><span>sex</span><span>sáb</span><span>dom</span></div>
-                <div class="calendar-days" id="calendar-days"></div>
-                <div class="calendar-legend" aria-hidden="true"><span><i class="today-marker"></i>Hoje</span><span><i class="event-marker"></i>Eventos</span></div>
+                <div class="mini-calendar-grid">
+                  <div class="calendar-weekdays" aria-hidden="true"><span>seg</span><span>ter</span><span>qua</span><span>qui</span><span>sex</span><span>sáb</span><span>dom</span></div>
+                  <div class="calendar-days" id="calendar-days"></div>
+                </div>
               </section>
             </div>
 

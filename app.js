@@ -121,12 +121,13 @@ function renderMiniCalendar(now) {
   if (!calendar) return;
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
   const start = startOfCurrentWeek(today);
-  const end = addDays(start, 20);
   const counts = calendarEventCounts(today);
-  const shortDate = new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "short" });
   const fullDate = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+  const month = new Intl.DateTimeFormat("pt-BR", { month: "short" }).format(today).replace(".", "").toUpperCase();
 
-  document.querySelector("#mini-calendar-range").textContent = `${shortDate.format(start)} – ${shortDate.format(end)}`.replaceAll(".", "");
+  document.querySelector("#mini-calendar-day").textContent = today.getDate();
+  document.querySelector("#mini-calendar-month").textContent = month;
+  document.querySelector("#mini-calendar").setAttribute("aria-label", `Calendário a partir de ${fullDate.format(start)}, com o dia atual em ${fullDate.format(today)}`);
   calendar.innerHTML = Array.from({ length: 21 }, (_, index) => {
     const date = addDays(start, index);
     const key = dateKey(date);
@@ -141,7 +142,6 @@ function renderMiniCalendar(now) {
 function renderTemporalContext(now = new Date()) {
   const profile = getProfile();
   document.querySelector("#painel-title").textContent = `${greetingFor(now)}, ${profile.name.split(" ")[0]}`;
-  document.querySelector("#mini-calendar-date").textContent = new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "long", year: "numeric" }).format(now);
   renderMiniCalendar(now);
 }
 
