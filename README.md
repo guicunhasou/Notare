@@ -6,6 +6,7 @@ Aplicação local para organizar sinais de frequência, contatos, ocorrências, 
 
 - painel inicial com gráfico de frequência e indicadores;
 - menu lateral expansível e recolhível;
+- central de notificações ancorada ao sino, com banners e dois avisos automáticos em intervalos de um minuto;
 - fila de busca ativa escolar com filtros e pesquisa;
 - perfil do estudante com sinais explicáveis e histórico;
 - registro de ausências, contatos, ocorrências e devolutivas;

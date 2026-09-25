@@ -7,9 +7,9 @@
     <meta name="theme-color" content="#5b47e0" />
     <title>Notare — Permanência escolar</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%235b47e0'/%3E%3Cpath d='M18 45V19h7l14 16V19h7v26h-7L25 29v16z' fill='white'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="styles.css?v=5" />
-    <script src="data.js?v=5" defer></script>
-    <script src="app.js?v=5" defer></script>
+    <link rel="stylesheet" href="styles.css?v=8" />
+    <script src="data.js?v=8" defer></script>
+    <script src="app.js?v=8" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
@@ -65,10 +65,23 @@
             <div class="topbar-context"><strong id="topbar-school-name">Escola Horizonte Vivo</strong><span id="topbar-school-meta">Alameda Horizonte Vivo, 120</span></div>
           </div>
           <div class="topbar-actions">
-            <button class="icon-button" id="notification-button" aria-label="Notificações"><svg><use href="#i-bell"></use></svg><span class="notification-dot" aria-hidden="true"></span></button>
+            <div class="notification-center" id="notification-center">
+              <button class="icon-button" id="notification-button" type="button" aria-label="Notificações" aria-haspopup="true" aria-expanded="false"><svg><use href="#i-bell"></use></svg><span class="notification-badge" id="notification-badge" hidden aria-hidden="true">0</span></button>
+              <section class="notification-popover" id="notification-popover" aria-labelledby="notification-popover-title" hidden>
+                <div class="notification-popover-heading"><div><p class="eyebrow">Atualizações</p><h2 id="notification-popover-title">Notificações</h2></div><button class="icon-button" id="notification-close" type="button" aria-label="Fechar notificações">×</button></div>
+                <div class="notification-list" id="notification-list"></div>
+              </section>
+            </div>
             <button class="button button-primary button-compact" data-route="novo-registro" aria-label="Criar novo registro"><svg><use href="#i-plus"></use></svg><span>Novo registro</span></button>
           </div>
         </header>
+
+        <section class="notification-banner" id="notification-banner" aria-labelledby="notification-banner-title" hidden>
+          <span class="notification-banner-icon" aria-hidden="true"><svg><use href="#i-bell"></use></svg></span>
+          <div><strong id="notification-banner-title">Nova notificação</strong><p id="notification-banner-message"></p></div>
+          <button class="button button-secondary button-compact" id="notification-banner-open" type="button">Ver notificação</button>
+          <button class="icon-button" id="notification-banner-close" type="button" aria-label="Fechar aviso">×</button>
+        </section>
 
         <main id="main-content" tabindex="-1">
           <section class="view" data-view="painel" aria-labelledby="painel-title">
@@ -213,6 +226,7 @@
       <div class="role-list" id="role-list"></div>
       <div class="dialog-footer"><button class="text-button danger-text" id="reset-demo">Restaurar base inicial</button><button class="button button-secondary" id="profile-done">Concluir</button></div>
     </dialog>
+
     <div id="announcement" class="sr-only" aria-live="polite"></div>
   </body>
 </html>

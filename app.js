@@ -34,8 +34,18 @@ const toast = document.querySelector("#toast");
 const sidebar = document.querySelector("#sidebar");
 const scrim = document.querySelector("#sidebar-scrim");
 const profileDialog = document.querySelector("#profile-dialog");
+const notificationCenter = document.querySelector("#notification-center");
+const notificationPopover = document.querySelector("#notification-popover");
+const notificationButton = document.querySelector("#notification-button");
+const notificationBadge = document.querySelector("#notification-badge");
+const notificationBanner = document.querySelector("#notification-banner");
 const appShell = document.querySelector(".app-shell");
 const sidebarToggle = document.querySelector("#sidebar-toggle");
+const notifications = [];
+const notificationTemplates = [
+  { id: "review-ana", title: "Revisão pendente", message: "O plano de Ana Souza possui uma revisão prevista para hoje." },
+  { id: "return-joao", title: "Retorno sem confirmação", message: "O contato com o responsável de João Oliveira ainda não foi confirmado." }
+];
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
@@ -397,6 +407,82 @@ function toggleSidebar() {
   applySidebarState(collapsed);
 }
 
+function unreadNotifications() {
+  return notifications.filter((notification) => !notification.read).length;
+}
+
+function renderNotifications() {
+  const list = document.querySelector("#notification-list");
+  const unread = unreadNotifications();
+  notificationBadge.textContent = String(unread);
+  notificationBadge.hidden = unread === 0;
+  notificationButton.setAttribute("aria-label", unread ? `Notificações, ${unread} ${unread === 1 ? "nova" : "novas"}` : "Notificações");
+
+  if (!notifications.length) {
+    list.innerHTML = `<div class="notification-empty-state"><span class="notification-item-icon" aria-hidden="true"><svg><use href="#i-bell"></use></svg></span><strong>Tudo em dia</strong><p>Nenhuma notificação nova.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = notifications.slice().reverse().map((notification) => {
+    const stateLabel = notification.resolved ? "Resolvida" : notification.read ? "Lida" : "Nova";
+    const actions = [
+      !notification.read ? `<button type="button" data-notification-action="read" data-notification-id="${notification.id}">Marcar como lida</button>` : "",
+      !notification.resolved ? `<button type="button" data-notification-action="resolve" data-notification-id="${notification.id}">Resolver</button>` : ""
+    ].join("");
+    return `<article class="notification-item ${notification.read ? "" : "unread"} ${notification.resolved ? "resolved" : ""}">
+      <span class="notification-item-icon" aria-hidden="true"><svg><use href="#i-bell"></use></svg></span>
+      <div class="notification-item-body"><div class="notification-item-heading"><strong>${escapeHtml(notification.title)}</strong><span class="notification-state">${stateLabel}</span></div><p>${escapeHtml(notification.message)}</p>${actions ? `<div class="notification-item-actions">${actions}</div>` : ""}</div>
+    </article>`;
+  }).join("");
+}
+
+function openNotificationPopover() {
+  renderNotifications();
+  notificationPopover.hidden = false;
+  notificationButton.setAttribute("aria-expanded", "true");
+}
+
+function closeNotificationPopover() {
+  notificationPopover.hidden = true;
+  notificationButton.setAttribute("aria-expanded", "false");
+}
+
+function toggleNotificationPopover() {
+  if (notificationPopover.hidden) openNotificationPopover();
+  else closeNotificationPopover();
+}
+
+function showNotificationBanner(notification) {
+  notificationBanner.dataset.notificationId = notification.id;
+  document.querySelector("#notification-banner-title").textContent = notification.title;
+  document.querySelector("#notification-banner-message").textContent = notification.message;
+  notificationBanner.hidden = false;
+}
+
+function dismissNotificationBanner() {
+  notificationBanner.hidden = true;
+  delete notificationBanner.dataset.notificationId;
+}
+
+function createTimedNotification(template) {
+  if (notifications.some((notification) => notification.id === template.id)) return;
+  const notification = { ...template, read: false, resolved: false };
+  notifications.push(notification);
+  renderNotifications();
+  showNotificationBanner(notification);
+  announcement.textContent = `Nova notificação: ${notification.title}.`;
+}
+
+function updateNotification(notificationId, action) {
+  const notification = notifications.find((item) => item.id === notificationId);
+  if (!notification) return;
+  notification.read = true;
+  if (action === "resolve") notification.resolved = true;
+  if (notificationBanner.dataset.notificationId === notificationId) dismissNotificationBanner();
+  renderNotifications();
+  announcement.textContent = action === "resolve" ? "Notificação resolvida." : "Notificação marcada como lida.";
+}
+
 function openProfileDialog() {
   renderProfileIdentity();
   if (typeof profileDialog.showModal === "function") profileDialog.showModal();
@@ -518,7 +604,21 @@ document.querySelector("#menu-button").addEventListener("click", openSidebar);
 sidebarToggle.addEventListener("click", toggleSidebar);
 document.querySelector("#sidebar-close").addEventListener("click", closeSidebar);
 scrim.addEventListener("click", closeSidebar);
-document.querySelector("#notification-button").addEventListener("click", () => showToast("Há retornos e revisões previstos na agenda da equipe."));
+notificationButton.addEventListener("click", toggleNotificationPopover);
+document.querySelector("#notification-close").addEventListener("click", closeNotificationPopover);
+document.querySelector("#notification-banner-close").addEventListener("click", dismissNotificationBanner);
+document.querySelector("#notification-banner-open").addEventListener("click", () => {
+  openNotificationPopover();
+  notificationButton.focus();
+});
+document.querySelector("#notification-list").addEventListener("click", (event) => {
+  const actionButton = event.target.closest("[data-notification-action]");
+  if (!actionButton) return;
+  updateNotification(actionButton.dataset.notificationId, actionButton.dataset.notificationAction);
+});
+document.addEventListener("click", (event) => {
+  if (!event.composedPath().includes(notificationCenter) && !notificationPopover.hidden) closeNotificationPopover();
+});
 document.querySelector("#profile-button").addEventListener("click", openProfileDialog);
 document.querySelector("#profile-close").addEventListener("click", closeProfileDialog);
 document.querySelector("#profile-done").addEventListener("click", closeProfileDialog);
@@ -535,10 +635,20 @@ document.querySelector("#reset-demo").addEventListener("click", () => {
   showToast("Base inicial restaurada.");
 });
 profileDialog.addEventListener("click", (event) => { if (event.target === profileDialog) closeProfileDialog(); });
-document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeSidebar(); });
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  closeSidebar();
+  closeNotificationPopover();
+});
 window.addEventListener("hashchange", () => showRoute(location.hash.slice(1) || "painel", { skipHistory: true }));
 
 if (!db.profiles.some((profile) => profile.id === state.profileId)) state.profileId = "direcao";
 renderAll();
 applySidebarState(localStorage.getItem(SIDEBAR_KEY) === "true");
 showRoute(location.hash.slice(1) || "painel", { skipHistory: true });
+renderNotifications();
+const notificationTestMode = new URLSearchParams(location.search).has("notification-test");
+const notificationDelays = notificationTestMode ? [500, 2500] : [60000, 120000];
+notificationTemplates.forEach((template, index) => {
+  window.setTimeout(() => createTimedNotification(template), notificationDelays[index]);
+});
