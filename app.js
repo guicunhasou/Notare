@@ -123,7 +123,6 @@ function renderChart() {
   const labels = db.analytics.labels;
   const className = profile.scope.startsWith("class:") ? profile.scope.replace("class:", "") : null;
   const attendance = className && db.analytics.byClass[className] ? db.analytics.byClass[className] : db.analytics.attendance;
-  const cases = db.analytics.newCases;
   const width = 760;
   const height = 250;
   const left = 42;
@@ -135,7 +134,6 @@ function renderChart() {
   const x = (index) => left + (chartWidth / (labels.length - 1)) * index;
   const y = (value) => top + ((100 - value) / 35) * chartHeight;
   const baseline = height - bottom;
-  const maxCases = Math.max(...cases, 1);
   const points = attendance.map((value, index) => `${x(index)},${y(value)}`).join(" ");
   const linePath = attendance.map((value, index) => `${index === 0 ? "M" : "L"} ${x(index)} ${y(value)}`).join(" ");
   const area = `M ${x(0)} ${baseline} L ${x(0)} ${y(attendance[0])} ${attendance.slice(1).map((value, index) => `L ${x(index + 1)} ${y(value)}`).join(" ")} L ${x(labels.length - 1)} ${baseline} Z`;
@@ -144,15 +142,12 @@ function renderChart() {
   const svg = document.querySelector("#attendance-chart");
   svg.innerHTML = `
     <defs><linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a89ff" stop-opacity=".34"/><stop offset="1" stop-color="#9a89ff" stop-opacity="0"/></linearGradient></defs>
-    ${gridValues.map((value) => `<line x1="${left}" y1="${y(value)}" x2="${width - right}" y2="${y(value)}" stroke="rgba(255,255,255,.1)"/><text x="${left - 10}" y="${y(value) + 4}" fill="#9fa0b8" font-size="11" text-anchor="end">${value}%</text>`).join("")}
-    ${cases.map((value, index) => { const barHeight = (value / maxCases) * 54; return `<rect x="${x(index) - 12}" y="${baseline - barHeight}" width="24" height="${barHeight}" rx="5" fill="rgba(57,201,213,.24)"/>`; }).join("")}
+    ${gridValues.map((value) => `<line x1="${left}" y1="${y(value)}" x2="${width - right}" y2="${y(value)}" stroke="rgba(255,255,255,.1)"/><text x="${left - 10}" y="${y(value) + 4}" fill="#aeb0c4" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="300" text-anchor="end">${value}%</text>`).join("")}
     <path d="${area}" fill="url(#chart-fill)"/>
     <polyline points="${points}" fill="none" stroke="#a99dfd" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
     ${attendance.map((value, index) => `<circle cx="${x(index)}" cy="${y(value)}" r="5" fill="#312c59" stroke="#c4bbff" stroke-width="3"><title>${labels[index]}: ${value}% de frequência</title></circle>`).join("")}
-    ${labels.map((label, index) => `<text x="${x(index)}" y="${height - 12}" fill="#a9aabd" font-size="10" text-anchor="middle">${escapeHtml(label)}</text>`).join("")}`;
-  document.querySelector("#chart-average").textContent = `${attendance.at(-1)}%`;
-  document.querySelector("#chart-cases").textContent = String(cases.at(-1));
-  svg.setAttribute("aria-label", `Frequência de ${attendance.at(-1)} por cento na semana atual e ${cases.at(-1)} novos casos`);
+    ${labels.map((label, index) => `<text x="${x(index)}" y="${height - 12}" fill="#b8b9cb" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="300" text-anchor="middle">${escapeHtml(label)}</text>`).join("")}`;
+  svg.setAttribute("aria-label", `Frequência de ${attendance.at(-1)} por cento na semana atual`);
 }
 
 function renderProfileIdentity() {

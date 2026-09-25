@@ -91,13 +91,12 @@ main { min-height: calc(100vh - 4.8rem); }
 .chart-copy h2 { margin: .4rem 0 .55rem; font-size: clamp(1.35rem,2.5vw,2rem); letter-spacing: -.04em; }
 .chart-copy > p:not(.eyebrow) { margin: 0; color: #bebed0; font-size: .73rem; line-height: 1.6; }
 .chart-summary { display: grid; gap: .6rem; margin-top: 1.4rem; }
-.chart-summary span { display: grid; grid-template-columns: 1.5rem auto 1fr; align-items: center; gap: .45rem; color: #bebed0; font-size: .64rem; }
-.chart-summary strong { color: white; font-size: .85rem; }
+.chart-summary span { display: grid; grid-template-columns: 1.5rem auto; align-items: center; justify-content: start; gap: .45rem; color: #dedeee; font-size: .72rem; font-weight: 400; }
 .chart-summary i { display: block; width: 1.4rem; }
 .legend-line { height: 3px; border-radius: 999px; background: #9a89ff; }
-.legend-bar { height: .65rem; border-radius: 3px; background: rgba(57,201,213,.6); }
 .chart-canvas { display: flex; min-width: 0; align-items: center; padding: 1rem 1.4rem 1rem 0; }
 .chart-canvas svg { width: 100%; height: auto; min-height: 220px; overflow: visible; }
+.chart-canvas text { stroke: none; font-weight: 300; }
 
 .app-shell.sidebar-collapsed { grid-template-columns: 76px minmax(0,1fr); }
 .sidebar-collapsed .sidebar { padding-inline: .7rem; }
