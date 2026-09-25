@@ -40,13 +40,3 @@ O arquivo `data.js` contém uma base versionada com:
 Novos registros, planos, perfil selecionado e estado do menu são persistidos no `localStorage`. A opção **Restaurar base inicial**, disponível no seletor de perfil, recupera os dados originais.
 
 O sistema não calcula uma pontuação oculta nem toma decisões automatizadas sobre estudantes.
-
-## Como executar
-
-Você pode abrir `index.html` diretamente no navegador ou servir esta pasta com um servidor HTTP estático:
-
-```sh
-python3 -m http.server 4173
-```
-
-Depois, acesse `http://localhost:4173`.
