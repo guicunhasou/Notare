@@ -51,6 +51,100 @@ function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
 }
 
+function assetSlug(value) {
+  return String(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function personPhoto(person) {
+  return `<img class="avatar-photo" src="assets/profiles/${assetSlug(person.name)}.png" alt="" loading="lazy" />`;
+}
+
+function dateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function addDays(date, amount) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + amount);
+  return next;
+}
+
+function startOfCurrentWeek(date) {
+  const day = date.getDay();
+  const distanceToMonday = day === 0 ? -6 : 1 - day;
+  const monday = addDays(date, distanceToMonday);
+  monday.setHours(12, 0, 0, 0);
+  return monday;
+}
+
+function agendaDate(item, now) {
+  if (/^\d{2}:\d{2}$/.test(item.time)) return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
+  if (item.time === "Amanhã") return addDays(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12), 1);
+  const match = item.time.match(/^(\d{2})\/(\d{2})$/);
+  if (!match) return null;
+  let date = new Date(now.getFullYear(), Number(match[2]) - 1, Number(match[1]), 12);
+  if (date < addDays(startOfCurrentWeek(now), -1)) date = new Date(now.getFullYear() + 1, Number(match[2]) - 1, Number(match[1]), 12);
+  return date;
+}
+
+function calendarEventCounts(now) {
+  const counts = new Map();
+  const visibleIds = new Set(visibleStudents().map((student) => student.id));
+  const addEvent = (date) => {
+    if (!date || Number.isNaN(date.getTime())) return;
+    const key = dateKey(date);
+    counts.set(key, (counts.get(key) || 0) + 1);
+  };
+
+  db.agenda.filter((item) => visibleIds.has(item.studentId)).forEach((item) => addEvent(agendaDate(item, now)));
+  visiblePlans().forEach((plan) => addEvent(new Date(`${plan.date}T12:00:00`)));
+  return counts;
+}
+
+function greetingFor(date) {
+  const hour = date.getHours();
+  if (hour >= 5 && hour < 12) return "Bom dia";
+  if (hour >= 12 && hour < 18) return "Boa tarde";
+  return "Boa noite";
+}
+
+function renderMiniCalendar(now) {
+  const calendar = document.querySelector("#calendar-days");
+  if (!calendar) return;
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
+  const start = startOfCurrentWeek(today);
+  const end = addDays(start, 20);
+  const counts = calendarEventCounts(today);
+  const shortDate = new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "short" });
+  const fullDate = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+
+  document.querySelector("#mini-calendar-range").textContent = `${shortDate.format(start)} – ${shortDate.format(end)}`.replaceAll(".", "");
+  calendar.innerHTML = Array.from({ length: 21 }, (_, index) => {
+    const date = addDays(start, index);
+    const key = dateKey(date);
+    const eventCount = counts.get(key) || 0;
+    const isToday = key === dateKey(today);
+    const eventLabel = eventCount ? `, ${eventCount} ${eventCount === 1 ? "evento" : "eventos"}` : ", sem eventos";
+    const dots = Array.from({ length: Math.min(eventCount, 4) }, () => "<i></i>").join("");
+    return `<span class="calendar-day ${isToday ? "is-today" : ""} ${date.getMonth() !== today.getMonth() ? "other-month" : ""}" ${isToday ? 'aria-current="date"' : ""} aria-label="${escapeHtml(fullDate.format(date))}${eventLabel}"><strong>${date.getDate()}</strong><span class="event-dots" aria-hidden="true">${dots}</span></span>`;
+  }).join("");
+}
+
+function renderTemporalContext(now = new Date()) {
+  const profile = getProfile();
+  document.querySelector("#painel-title").textContent = `${greetingFor(now)}, ${profile.name.split(" ")[0]}`;
+  document.querySelector("#mini-calendar-date").textContent = new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "long", year: "numeric" }).format(now);
+  renderMiniCalendar(now);
+}
+
 function saveDatabase() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
 }
@@ -108,13 +202,13 @@ function formatDate(value) {
 }
 
 function todayLabel() {
-  return "25/09/2026";
+  return new Intl.DateTimeFormat("pt-BR").format(new Date());
 }
 
 function studentButton(student) {
   return `
     <button class="student-row" type="button" data-student="${escapeHtml(student.id)}">
-      <span class="mini-avatar">${escapeHtml(student.initials)}</span>
+      <span class="mini-avatar">${personPhoto(student)}</span>
       <span class="student-identity"><strong>${escapeHtml(student.name)}</strong><span>${escapeHtml(student.className)}</span></span>
       <span class="signal-copy">${escapeHtml(student.signals)}</span>
       <span class="status-badge ${statusClass(student.priority)}">${escapeHtml(student.status)}</span>
@@ -126,6 +220,7 @@ function renderSchool() {
   const school = db.school;
   document.querySelector("#topbar-school-name").textContent = school.name;
   document.querySelector("#topbar-school-meta").textContent = school.address;
+  document.querySelector("#school-logo-image").src = "assets/profiles/escola-logo.png";
 }
 
 function renderChart() {
@@ -162,10 +257,10 @@ function renderChart() {
 
 function renderProfileIdentity() {
   const profile = getProfile();
-  document.querySelector("#user-avatar").textContent = profile.initials;
+  document.querySelector("#user-avatar").innerHTML = personPhoto(profile);
   document.querySelector("#user-name").textContent = profile.name;
   document.querySelector("#user-role").textContent = profile.role;
-  document.querySelector("#painel-title").textContent = `Bom dia, ${profile.name.split(" ")[0]}`;
+  renderTemporalContext();
   document.querySelector("#dashboard-subtitle").textContent = profile.scope.startsWith("class:")
     ? `Você está vendo apenas estudantes da turma ${profile.scope.replace("class:", "")}.`
     : "Veja quem precisa de atenção e organize as próximas ações.";
@@ -176,7 +271,7 @@ function renderProfileIdentity() {
 
   document.querySelector("#role-list").innerHTML = db.profiles.map((item) => `
     <button class="role-option ${item.id === profile.id ? "active" : ""}" type="button" data-profile="${escapeHtml(item.id)}" aria-pressed="${item.id === profile.id}">
-      <span class="user-avatar">${escapeHtml(item.initials)}</span>
+      <span class="user-avatar">${personPhoto(item)}</span>
       <span><strong>${escapeHtml(item.role)}</strong><small>${escapeHtml(item.name)} · ${escapeHtml(item.description)}</small></span>
       <span class="role-check" aria-hidden="true">${item.id === profile.id ? "✓" : ""}</span>
     </button>`).join("");
@@ -249,7 +344,7 @@ function renderStudents() {
 
   document.querySelector("#student-table").innerHTML = visible.map((student) => `
     <tr>
-      <td><div class="table-student"><span class="mini-avatar">${escapeHtml(student.initials)}</span><div><strong>${escapeHtml(student.name)}</strong><span>${escapeHtml(student.className)}</span></div></div></td>
+      <td><div class="table-student"><span class="mini-avatar">${personPhoto(student)}</span><div><strong>${escapeHtml(student.name)}</strong><span>${escapeHtml(student.className)}</span></div></div></td>
       <td class="table-signals">${escapeHtml(student.signals)}</td>
       <td class="table-muted">${escapeHtml(student.updated)}</td>
       <td><span class="status-badge ${statusClass(student.priority)}">${escapeHtml(student.status)}</span></td>
@@ -258,7 +353,7 @@ function renderStudents() {
   document.querySelector("#student-empty").hidden = visible.length > 0;
   document.querySelector("#student-directory").innerHTML = scopedStudents.map((student) => `
     <button class="directory-card" data-student="${escapeHtml(student.id)}">
-      <span class="mini-avatar">${escapeHtml(student.initials)}</span>
+      <span class="mini-avatar">${personPhoto(student)}</span>
       <div><strong>${escapeHtml(student.name)}</strong><span>${escapeHtml(student.className)} · ${escapeHtml(student.code)}</span><span class="status-badge ${statusClass(student.priority)}">${escapeHtml(student.status)}</span></div>
     </button>`).join("");
 }
@@ -273,7 +368,7 @@ function renderStudentSelect() {
 function renderStudentProfile() {
   const student = getStudent();
   state.currentStudent = student.id;
-  document.querySelector("#student-initials").textContent = student.initials;
+  document.querySelector("#student-initials").innerHTML = personPhoto(student);
   document.querySelector("#student-name").textContent = student.name;
   document.querySelector("#student-meta").textContent = `${student.className} · cadastro ${student.code}`;
   const badge = document.querySelector("#student-status");
@@ -318,7 +413,7 @@ function renderAll() {
 }
 
 function routeTitle(route) {
-  const labels = { painel: "Visão geral", "busca-ativa": "Busca ativa escolar", estudante: "Perfil do estudante", registros: "Registros", estudantes: "Estudantes", "novo-registro": "Novo registro", plano: "Plano de ação", conclusao: "Plano criado" };
+  const labels = { painel: "Visão geral", "busca-ativa": "Acompanhamento escolar", estudante: "Perfil do estudante", registros: "Registros", estudantes: "Estudantes", "novo-registro": "Novo registro", plano: "Plano de ação", conclusao: "Plano criado" };
   return labels[route] || "Notare";
 }
 
@@ -607,8 +702,10 @@ scrim.addEventListener("click", closeSidebar);
 notificationButton.addEventListener("click", toggleNotificationPopover);
 document.querySelector("#notification-close").addEventListener("click", closeNotificationPopover);
 document.querySelector("#notification-banner-close").addEventListener("click", dismissNotificationBanner);
-document.querySelector("#notification-banner-open").addEventListener("click", () => {
+document.querySelector("#notification-banner-open").addEventListener("click", (event) => {
+  event.stopPropagation();
   openNotificationPopover();
+  dismissNotificationBanner();
   notificationButton.focus();
 });
 document.querySelector("#notification-list").addEventListener("click", (event) => {
@@ -617,7 +714,8 @@ document.querySelector("#notification-list").addEventListener("click", (event) =
   updateNotification(actionButton.dataset.notificationId, actionButton.dataset.notificationAction);
 });
 document.addEventListener("click", (event) => {
-  if (!event.composedPath().includes(notificationCenter) && !notificationPopover.hidden) closeNotificationPopover();
+  const path = event.composedPath();
+  if (!path.includes(notificationCenter) && !path.includes(notificationBanner) && !notificationPopover.hidden) closeNotificationPopover();
 });
 document.querySelector("#profile-button").addEventListener("click", openProfileDialog);
 document.querySelector("#profile-close").addEventListener("click", closeProfileDialog);
@@ -652,3 +750,4 @@ const notificationDelays = notificationTestMode ? [500, 2500] : [60000, 120000];
 notificationTemplates.forEach((template, index) => {
   window.setTimeout(() => createTimedNotification(template), notificationDelays[index]);
 });
+window.setInterval(renderTemporalContext, 60000);

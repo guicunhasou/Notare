@@ -5,9 +5,11 @@ Aplicação local para organizar sinais de frequência, contatos, ocorrências, 
 ## Funcionalidades
 
 - painel inicial com gráfico de frequência e indicadores;
+- saudação, data e calendário de três semanas atualizados automaticamente;
 - menu lateral expansível e recolhível;
 - central de notificações ancorada ao sino, com banners e dois avisos automáticos em intervalos de um minuto;
-- fila de busca ativa escolar com filtros e pesquisa;
+- fotos da escola, da equipe e dos estudantes aplicadas à interface;
+- fila de acompanhamento escolar com filtros e pesquisa;
 - perfil do estudante com sinais explicáveis e histórico;
 - registro de ausências, contatos, ocorrências e devolutivas;
 - criação de planos com responsável e prazo;

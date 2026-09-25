@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="MVP navegável da Notare para busca ativa, acompanhamento e permanência escolar." />
+    <meta name="description" content="MVP navegável da Notare para acompanhamento e permanência escolar." />
     <meta name="theme-color" content="#5b47e0" />
     <title>Notare — Permanência escolar</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%235b47e0'/%3E%3Cpath d='M18 45V19h7l14 16V19h7v26h-7L25 29v16z' fill='white'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="styles.css?v=8" />
-    <script src="data.js?v=8" defer></script>
-    <script src="app.js?v=8" defer></script>
+    <link rel="stylesheet" href="styles.css?v=9" />
+    <script src="data.js?v=9" defer></script>
+    <script src="app.js?v=9" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
@@ -40,7 +40,7 @@
         <nav class="main-nav">
           <p class="nav-label">Acompanhamento</p>
           <a href="#painel" data-route="painel"><svg><use href="#i-grid"></use></svg><span>Visão geral</span></a>
-          <a href="#busca-ativa" data-route="busca-ativa" data-permission="followup:view"><svg><use href="#i-search"></use></svg><span>Busca ativa escolar</span><strong class="nav-count" id="nav-priority-count">4</strong></a>
+          <a href="#busca-ativa" data-route="busca-ativa" data-permission="followup:view"><svg><use href="#i-search"></use></svg><span>Acompanhamento</span><strong class="nav-count" id="nav-priority-count">4</strong></a>
           <a href="#registros" data-route="registros"><svg><use href="#i-clipboard"></use></svg><span>Registros</span></a>
           <a href="#estudantes" data-route="estudantes"><svg><use href="#i-users"></use></svg><span>Estudantes</span></a>
         </nav>
@@ -48,7 +48,7 @@
         <div class="sidebar-footer">
           <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Recolher menu lateral" aria-expanded="true" title="Recolher menu"><svg><use href="#i-back"></use></svg><span>Recolher menu</span></button>
           <button class="user-card" id="profile-button" type="button" aria-haspopup="dialog" aria-label="Trocar perfil de acesso">
-            <span class="user-avatar" id="user-avatar">CD</span>
+            <span class="user-avatar" id="user-avatar"><img class="avatar-photo" src="assets/profiles/camila-duarte.png" alt="" /></span>
             <span><strong id="user-name">Camila Duarte</strong><small id="user-role">Direção escolar</small></span>
             <svg><use href="#i-arrow"></use></svg>
           </button>
@@ -61,7 +61,7 @@
         <header class="topbar">
           <button class="icon-button menu-button" id="menu-button" aria-label="Abrir menu"><svg><use href="#i-menu"></use></svg></button>
           <div class="topbar-school">
-            <span class="school-logo" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="16" r="6"/><path d="M24 5v4M11 16H7m34 0h-4M14.8 6.8l2.8 2.8m15.6-2.8-2.8 2.8M11 27c5.5-2.2 9.8-1.6 13 1.7 3.2-3.3 7.5-3.9 13-1.7v13c-5.5-2.2-9.8-1.6-13 1.7-3.2-3.3-7.5-3.9-13-1.7V27Z"/><path d="M24 29v12"/></svg></span>
+            <span class="school-logo" aria-hidden="true"><img id="school-logo-image" src="assets/profiles/escola-logo.png" alt="" /></span>
             <div class="topbar-context"><strong id="topbar-school-name">Escola Horizonte Vivo</strong><span id="topbar-school-meta">Alameda Horizonte Vivo, 120</span></div>
           </div>
           <div class="topbar-actions">
@@ -87,7 +87,15 @@
           <section class="view" data-view="painel" aria-labelledby="painel-title">
             <div class="page-heading">
               <div><p class="eyebrow">Visão geral</p><h1 id="painel-title">Bom dia, Camila</h1><p id="dashboard-subtitle">Veja quem precisa de atenção e organize as próximas ações.</p></div>
-              <div class="date-chip"><svg><use href="#i-calendar"></use></svg><span>25 de setembro de 2026</span></div>
+              <section class="mini-calendar" aria-labelledby="mini-calendar-date">
+                <div class="mini-calendar-heading">
+                  <span class="mini-calendar-icon" aria-hidden="true"><svg><use href="#i-calendar"></use></svg></span>
+                  <div><strong id="mini-calendar-date">25 de setembro de 2026</strong><span id="mini-calendar-range">Esta semana e as próximas duas</span></div>
+                </div>
+                <div class="calendar-weekdays" aria-hidden="true"><span>seg</span><span>ter</span><span>qua</span><span>qui</span><span>sex</span><span>sáb</span><span>dom</span></div>
+                <div class="calendar-days" id="calendar-days"></div>
+                <div class="calendar-legend" aria-hidden="true"><span><i class="today-marker"></i>Hoje</span><span><i class="event-marker"></i>Eventos</span></div>
+              </section>
             </div>
 
             <section class="card dashboard-chart" aria-labelledby="chart-title">
@@ -137,7 +145,7 @@
 
           <section class="view" data-view="busca-ativa" aria-labelledby="busca-title">
             <div class="page-heading compact-heading">
-              <div><p class="eyebrow">Busca ativa escolar</p><h1 id="busca-title">Fila de acompanhamento</h1><p>Sinais reunidos para apoiar a priorização humana da equipe.</p></div>
+              <div><p class="eyebrow">Acompanhamento escolar</p><h1 id="busca-title">Fila de acompanhamento</h1><p>Sinais reunidos para apoiar a priorização humana da equipe.</p></div>
               <button class="button button-primary" data-route="novo-registro"><svg><use href="#i-plus"></use></svg>Novo registro</button>
             </div>
             <div class="toolbar card">
@@ -153,9 +161,9 @@
           </section>
 
           <section class="view" data-view="estudante" aria-labelledby="student-name">
-            <button class="back-button" data-route="busca-ativa"><svg><use href="#i-back"></use></svg>Voltar à busca ativa</button>
+            <button class="back-button" data-route="busca-ativa"><svg><use href="#i-back"></use></svg>Voltar ao acompanhamento</button>
             <div class="profile-hero">
-              <div class="profile-avatar" id="student-initials">AS</div>
+              <div class="profile-avatar" id="student-initials"><img class="avatar-photo" src="assets/profiles/ana-souza.png" alt="" /></div>
               <div class="profile-title"><span class="status-badge status-high" id="student-status">Atenção alta</span><h1 id="student-name">Ana Souza</h1><p id="student-meta">8º B · cadastro EST-014</p></div>
               <div class="profile-actions"><button class="button button-secondary" data-route="novo-registro" data-permission="records:create">Registrar sinal</button><button class="button button-primary" data-route="plano" data-permission="plans:create">Criar plano de ação</button></div>
             </div>

@@ -44,8 +44,9 @@ svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-wi
 .sidebar-toggle:hover { background: rgba(255,255,255,.11); color: white; }
 .sidebar-toggle svg { flex: 0 0 auto; width: 1rem; transition: transform .22s ease; }
 .sidebar-close { display: none !important; color: white !important; font-size: 1.7rem; }
-.school-logo { display: grid; width: 2.4rem; height: 2.4rem; place-items: center; border-radius: 11px; background: linear-gradient(145deg, #ffcf69, #f4a83c); color: #5a3711; }
+.school-logo { display: grid; width: 2.4rem; height: 2.4rem; overflow: hidden; place-items: center; border: 1px solid #eadcae; border-radius: 11px; background: #fff6d8; color: #5a3711; }
 .school-logo svg { width: 1.9rem; height: 1.9rem; stroke-width: 1.65; }
+.school-logo img { width: 100%; height: 100%; object-fit: cover; }
 .main-nav { display: grid; gap: .35rem; margin-top: 1.4rem; }
 .nav-label { margin: 0 0 .45rem .75rem; color: #9698aa; font-size: .68rem; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
 .main-nav a { display: grid; grid-template-columns: 1.35rem 1fr auto; align-items: center; gap: .7rem; min-height: 2.9rem; border-radius: 11px; padding: .68rem .78rem; color: #c9cad4; text-decoration: none; font-size: .9rem; font-weight: 650; transition: .18s ease; }
@@ -54,7 +55,8 @@ svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-wi
 .nav-count { min-width: 1.35rem; border-radius: 999px; padding: .13rem .38rem; background: rgba(255,255,255,.16); color: white; font-size: .65rem; text-align: center; }
 .sidebar-footer { display: grid; gap: .7rem; margin-top: auto; border-top: 1px solid rgba(255,255,255,.1); padding-top: 1rem; }
 .user-card { display: grid; grid-template-columns: 2.1rem 1fr 1rem; align-items: center; gap: .65rem; min-width: 0; width: 100%; border: 0; padding: 0 .15rem; background: transparent; color: white; text-align: left; }
-.user-avatar { display: grid; width: 2.1rem; height: 2.1rem; place-items: center; border-radius: 50%; background: #3ab2c9; color: #142a34; font-size: .72rem; font-weight: 850; }
+.user-avatar { display: grid; width: 2.1rem; height: 2.1rem; overflow: hidden; place-items: center; border-radius: 50%; background: #3ab2c9; color: #142a34; font-size: .72rem; font-weight: 850; }
+.avatar-photo { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 32%; }
 .user-card > span:nth-child(2) { display: grid; gap: .15rem; min-width: 0; }
 .user-card strong { overflow: hidden; font-size: .77rem; text-overflow: ellipsis; white-space: nowrap; }
 .user-card small { overflow: hidden; color: #aeb0bf; font-size: .63rem; text-overflow: ellipsis; white-space: nowrap; }
@@ -115,8 +117,29 @@ main { min-height: calc(100vh - 4.8rem); }
 .page-heading p:last-child { margin: 0; color: var(--muted); font-size: .92rem; }
 .compact-heading { align-items: flex-end; }
 .eyebrow { margin: 0; color: var(--primary); font-size: .66rem; font-weight: 850; letter-spacing: .105em; text-transform: uppercase; }
-.date-chip { display: flex; align-items: center; gap: .5rem; margin-top: .25rem; border: 1px solid var(--line); border-radius: 10px; padding: .65rem .8rem; background: white; color: var(--muted); font-size: .75rem; }
-.date-chip svg { width: 1rem; color: var(--primary); }
+.mini-calendar { flex: 0 0 min(360px, 38vw); width: min(360px, 38vw); border: 1px solid var(--line); border-radius: 16px; padding: .85rem; background: white; box-shadow: 0 10px 28px rgba(29,30,53,.07); }
+.mini-calendar-heading { display: flex; align-items: center; gap: .65rem; }
+.mini-calendar-heading > div { display: grid; gap: .08rem; }
+.mini-calendar-heading strong { color: var(--ink-strong); font-size: .75rem; }
+.mini-calendar-heading span { color: var(--muted); font-size: .59rem; }
+.mini-calendar-icon { display: grid; flex: 0 0 2rem; width: 2rem; height: 2rem; place-items: center; border-radius: 9px; background: var(--primary-soft); color: var(--primary); }
+.mini-calendar-icon svg { width: 1rem; }
+.calendar-weekdays, .calendar-days { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: .18rem; }
+.calendar-weekdays { margin-top: .7rem; }
+.calendar-weekdays span { color: var(--muted-2); font-size: .5rem; font-weight: 720; text-align: center; text-transform: uppercase; }
+.calendar-days { margin-top: .28rem; row-gap: .3rem; }
+.calendar-day { display: grid; min-height: 2.05rem; align-content: center; justify-items: center; border-radius: 8px; color: var(--ink); }
+.calendar-day strong { font-size: .62rem; font-weight: 650; line-height: 1; }
+.calendar-day.other-month { color: var(--muted-2); }
+.calendar-day.is-today { background: var(--primary); color: white; box-shadow: 0 5px 13px rgba(91,71,224,.26); }
+.event-dots { display: flex; min-height: .28rem; align-items: center; justify-content: center; gap: 2px; margin-top: .22rem; }
+.event-dots i { width: 3px; height: 3px; border-radius: 50%; background: var(--primary); }
+.calendar-day.is-today .event-dots i { background: white; }
+.calendar-legend { display: flex; justify-content: flex-end; gap: .75rem; margin-top: .55rem; color: var(--muted); font-size: .52rem; }
+.calendar-legend span { display: flex; align-items: center; gap: .27rem; }
+.calendar-legend i { display: block; width: .35rem; height: .35rem; border-radius: 50%; }
+.today-marker { background: var(--primary); }
+.event-marker { border: 1px solid var(--primary); background: white; }
 
 .card.dashboard-chart { display: grid; grid-template-columns: minmax(220px,.55fr) minmax(0,1.45fr); min-height: 17rem; overflow: hidden; margin-bottom: 1rem; border: 0; background: linear-gradient(135deg, #252640 0%, #312c59 58%, #40347b 100%); color: white; box-shadow: 0 18px 48px rgba(37,38,64,.2); }
 .chart-copy { display: flex; flex-direction: column; justify-content: center; padding: clamp(1.25rem,3vw,2rem); }
@@ -177,10 +200,10 @@ main { min-height: calc(100vh - 4.8rem); }
 .card-heading h2, .profile-side h2 { margin: .22rem 0 1rem; color: var(--ink-strong); font-size: 1.05rem; letter-spacing: -.025em; }
 .card-caption { color: var(--muted); font-size: .7rem; }
 .student-list { display: grid; gap: .55rem; }
-.student-row { display: grid; grid-template-columns: auto minmax(130px, 1.1fr) minmax(135px, 1fr) auto; align-items: center; gap: .85rem; width: 100%; border: 1px solid transparent; border-top-color: var(--line); padding: .83rem .35rem; background: white; color: var(--ink); text-align: left; }
+.student-row { display: grid; grid-template-columns: auto minmax(130px, 1.1fr) minmax(135px, 1fr) auto auto; align-items: center; gap: .85rem; width: 100%; border: 1px solid transparent; border-top-color: var(--line); padding: .83rem .35rem; background: white; color: var(--ink); text-align: left; }
 .student-row:first-child { border-top-color: transparent; }
 .student-row:hover { border-color: #d6d1fb; border-radius: 12px; background: #fbfaff; }
-.mini-avatar { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border-radius: 10px; background: var(--primary-soft); color: var(--primary-dark); font-size: .72rem; font-weight: 850; }
+.mini-avatar { display: grid; width: 2.5rem; height: 2.5rem; overflow: hidden; place-items: center; border-radius: 10px; background: var(--primary-soft); color: var(--primary-dark); font-size: .72rem; font-weight: 850; }
 .student-identity { display: grid; gap: .16rem; }
 .student-identity strong { font-size: .82rem; }
 .student-identity span, .signal-copy { color: var(--muted); font-size: .67rem; line-height: 1.4; }
@@ -233,7 +256,7 @@ td { border-top: 1px solid var(--line); padding: 1rem; font-size: .73rem; }
 .empty-state { margin: 0; padding: 2rem; color: var(--muted); text-align: center; }
 
 .profile-hero { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; border-radius: var(--radius); padding: 1.4rem; background: linear-gradient(125deg, var(--sidebar), #303250); color: white; box-shadow: var(--shadow); }
-.profile-avatar { display: grid; flex: 0 0 4rem; width: 4rem; height: 4rem; place-items: center; border-radius: 14px; background: var(--primary); font-weight: 850; }
+.profile-avatar { display: grid; flex: 0 0 4rem; width: 4rem; height: 4rem; overflow: hidden; place-items: center; border-radius: 14px; background: var(--primary); font-weight: 850; }
 .profile-title { flex: 1; }
 .profile-title h1 { margin: .35rem 0 .13rem; font-size: 1.7rem; letter-spacing: -.04em; }
 .profile-title p { margin: 0; color: #c0c1cd; font-size: .7rem; }
@@ -380,6 +403,7 @@ td { border-top: 1px solid var(--line); padding: 1rem; font-size: .73rem; }
   .profile-actions { flex-wrap: wrap; justify-content: flex-end; }
   .form-intro { max-width: 60ch; }
   .dashboard-chart { grid-template-columns: 1fr; }
+  .mini-calendar { flex-basis: 330px; width: 330px; }
   .chart-copy { padding-bottom: .5rem; }
   .chart-canvas { padding: 0 1rem 1rem; }
 }
@@ -395,14 +419,14 @@ td { border-top: 1px solid var(--line); padding: 1rem; font-size: .73rem; }
   .topbar-school .school-logo { width: 2.2rem; height: 2.2rem; flex-basis: 2.2rem; }
   .view { width: min(100% - 1.2rem, 1380px); padding-top: 1.35rem; }
   .page-heading, .compact-heading { align-items: flex-start; flex-direction: column; gap: 1rem; }
-  .date-chip { align-self: stretch; justify-content: center; }
+  .mini-calendar { align-self: stretch; width: 100%; }
   .metrics { grid-template-columns: 1fr 1fr; gap: .6rem; }
   .dashboard-chart { min-height: auto; }
   .chart-canvas svg { min-height: 190px; }
   .metric { min-height: 9rem; padding: 1rem; }
   .metric strong { font-size: 1.8rem; }
   .metric-trend { right: .8rem; bottom: .75rem; }
-  .student-row { grid-template-columns: auto 1fr auto; }
+  .student-row { grid-template-columns: auto 1fr auto auto; }
   .student-row .signal-copy { display: none; }
   .status-bars > div { grid-template-columns: 7.5rem 1fr 1.3rem; }
   .toolbar { align-items: stretch; flex-direction: column; }
