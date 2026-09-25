@@ -1,10 +1,10 @@
 window.NOTARE_SEED = {
-  schemaVersion: 4,
+  schemaVersion: 5,
   school: {
     id: "school-demo-001",
     name: "Escola Horizonte Vivo",
     shortLocation: "Cidade Modelo · Ensino Fundamental",
-    address: "Alameda Horizonte Vivo, 120 — Bairro Modelo — Cidade Modelo/BR — CEP 00000-000",
+    address: "Alameda Horizonte Vivo, 120",
     contact: "(00) 0000-0000 · contato@horizontevivo.exemplo",
     code: "ESC-001"
   },

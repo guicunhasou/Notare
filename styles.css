@@ -40,8 +40,9 @@ svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-wi
 .brand-wrap { display: flex; align-items: center; justify-content: space-between; padding: 0 .35rem; }
 .brand { display: flex; align-items: center; gap: .72rem; color: white; text-decoration: none; font-size: 1.15rem; font-weight: 820; letter-spacing: -.02em; }
 .brand-mark { display: grid; width: 2.45rem; height: 2.45rem; place-items: center; border-radius: 12px; background: var(--primary); font-weight: 900; box-shadow: inset 0 0 0 1px rgba(255,255,255,.16); }
-.sidebar-toggle { flex: 0 0 auto; color: #aeb0bf; }
-.sidebar-toggle:hover { background: rgba(255,255,255,.08); color: white; }
+.sidebar-toggle { display: flex; width: 100%; min-height: 2.55rem; align-items: center; gap: .65rem; border: 1px solid rgba(255,255,255,.13); border-radius: 10px; padding: .58rem .72rem; background: rgba(255,255,255,.06); color: #d9dae5; font-size: .76rem; font-weight: 680; text-align: left; transition: background .18s ease, color .18s ease; }
+.sidebar-toggle:hover { background: rgba(255,255,255,.11); color: white; }
+.sidebar-toggle svg { flex: 0 0 auto; width: 1rem; transition: transform .22s ease; }
 .sidebar-close { display: none !important; color: white !important; font-size: 1.7rem; }
 .school-logo { display: grid; width: 2.4rem; height: 2.4rem; place-items: center; border-radius: 11px; background: linear-gradient(145deg, #ffcf69, #f4a83c); color: #5a3711; }
 .school-logo svg { width: 1.9rem; height: 1.9rem; stroke-width: 1.65; }
@@ -51,7 +52,8 @@ svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-wi
 .main-nav a:hover { background: rgba(255,255,255,.07); color: white; }
 .main-nav a.active { background: var(--primary); color: white; box-shadow: 0 8px 24px rgba(26, 18, 96, .35); }
 .nav-count { min-width: 1.35rem; border-radius: 999px; padding: .13rem .38rem; background: rgba(255,255,255,.16); color: white; font-size: .65rem; text-align: center; }
-.user-card { display: grid; grid-template-columns: 2.1rem 1fr 1rem; align-items: center; gap: .65rem; width: 100%; margin-top: auto; border: 0; border-top: 1px solid rgba(255,255,255,.1); padding: 1rem .25rem 0; background: transparent; color: white; text-align: left; }
+.sidebar-footer { display: grid; gap: .7rem; margin-top: auto; border-top: 1px solid rgba(255,255,255,.1); padding-top: 1rem; }
+.user-card { display: grid; grid-template-columns: 2.1rem 1fr 1rem; align-items: center; gap: .65rem; min-width: 0; width: 100%; border: 0; padding: 0 .15rem; background: transparent; color: white; text-align: left; }
 .user-avatar { display: grid; width: 2.1rem; height: 2.1rem; place-items: center; border-radius: 50%; background: #3ab2c9; color: #142a34; font-size: .72rem; font-weight: 850; }
 .user-card > span:nth-child(2) { display: grid; gap: .15rem; min-width: 0; }
 .user-card strong { overflow: hidden; font-size: .77rem; text-overflow: ellipsis; white-space: nowrap; }
@@ -64,7 +66,7 @@ svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-wi
 .topbar-school .school-logo { flex: 0 0 2.45rem; }
 .topbar-context { display: grid; min-width: 0; gap: .12rem; }
 .topbar-context strong { font-size: .83rem; }
-.topbar-context span { max-width: min(52vw, 620px); overflow: hidden; color: var(--muted); font-size: .68rem; text-overflow: ellipsis; white-space: nowrap; }
+.topbar-context span { color: var(--muted); font-size: .68rem; white-space: nowrap; }
 .topbar-actions { display: flex; align-items: center; gap: .55rem; margin-left: auto; }
 .icon-button { position: relative; display: grid; width: 2.55rem; height: 2.55rem; place-items: center; border: 0; border-radius: 10px; background: transparent; color: var(--ink); }
 .icon-button:hover { background: var(--surface); }
@@ -100,12 +102,14 @@ main { min-height: calc(100vh - 4.8rem); }
 .app-shell.sidebar-collapsed { grid-template-columns: 76px minmax(0,1fr); }
 .sidebar-collapsed .sidebar { padding-inline: .7rem; }
 .sidebar-collapsed .brand-wrap { flex-direction: column; gap: .7rem; padding: 0; }
-.sidebar-collapsed .brand > span:last-child, .sidebar-collapsed .nav-label, .sidebar-collapsed .main-nav a > span, .sidebar-collapsed .user-card > span:nth-child(2), .sidebar-collapsed .user-card > svg { display: none; }
+.sidebar-collapsed .brand > span:last-child, .sidebar-collapsed .sidebar-toggle span, .sidebar-collapsed .nav-label, .sidebar-collapsed .main-nav a > span, .sidebar-collapsed .user-card > span:nth-child(2), .sidebar-collapsed .user-card > svg { display: none; }
+.sidebar-collapsed .sidebar-toggle { width: 2.9rem; justify-content: center; margin-inline: auto; padding-inline: 0; }
 .sidebar-collapsed .sidebar-toggle svg { transform: rotate(180deg); }
 .sidebar-collapsed .main-nav { margin-top: 1.5rem; }
 .sidebar-collapsed .main-nav a { position: relative; grid-template-columns: 1.35rem; justify-content: center; padding-inline: .7rem; }
 .sidebar-collapsed .nav-count { position: absolute; top: .28rem; right: .2rem; min-width: 1.15rem; padding-inline: .25rem; }
-.sidebar-collapsed .user-card { grid-template-columns: 2.1rem; justify-content: center; padding-inline: 0; }
+.sidebar-collapsed .sidebar-footer { grid-template-columns: 1fr; justify-items: center; }
+.sidebar-collapsed .user-card { grid-template-columns: 2.1rem; justify-content: center; width: 2.1rem; padding-inline: 0; }
 .sidebar-collapsed .brand, .sidebar-collapsed .brand-mark { flex: 0 0 auto; }
 
 .button { display: inline-flex; min-height: 2.7rem; align-items: center; justify-content: center; gap: .5rem; border: 1px solid transparent; border-radius: 10px; padding: .7rem 1rem; font-size: .8rem; font-weight: 780; transition: .18s ease; }

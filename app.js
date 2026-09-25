@@ -1,4 +1,4 @@
-const STORAGE_KEY = "notare-database-v4";
+const STORAGE_KEY = "notare-database-v5";
 const PROFILE_KEY = "notare-profile-v4";
 const SIDEBAR_KEY = "notare-sidebar-collapsed";
 

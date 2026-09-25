@@ -22,7 +22,6 @@
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
       <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></symbol>
       <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
-      <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M14 9l3 3-3 3"/></symbol>
       <symbol id="i-arrow" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
       <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
       <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></symbol>
@@ -35,7 +34,6 @@
       <aside class="sidebar" id="sidebar" aria-label="Navegação principal">
         <div class="brand-wrap">
           <a class="brand" href="#painel" data-route="painel" aria-label="Notare, ir ao painel"><span class="brand-mark">N</span><span>Notare</span></a>
-          <button class="icon-button sidebar-toggle" id="sidebar-toggle" aria-label="Recolher menu lateral" aria-expanded="true" title="Recolher menu"><svg><use href="#i-panel"></use></svg></button>
           <button class="icon-button sidebar-close" id="sidebar-close" aria-label="Fechar menu">×</button>
         </div>
 
@@ -47,11 +45,14 @@
           <a href="#estudantes" data-route="estudantes"><svg><use href="#i-users"></use></svg><span>Estudantes</span></a>
         </nav>
 
-        <button class="user-card" id="profile-button" type="button" aria-haspopup="dialog" aria-label="Trocar perfil de acesso">
-          <span class="user-avatar" id="user-avatar">CD</span>
-          <span><strong id="user-name">Camila Duarte</strong><small id="user-role">Direção escolar</small></span>
-          <svg><use href="#i-arrow"></use></svg>
-        </button>
+        <div class="sidebar-footer">
+          <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Recolher menu lateral" aria-expanded="true" title="Recolher menu"><svg><use href="#i-back"></use></svg><span>Recolher menu</span></button>
+          <button class="user-card" id="profile-button" type="button" aria-haspopup="dialog" aria-label="Trocar perfil de acesso">
+            <span class="user-avatar" id="user-avatar">CD</span>
+            <span><strong id="user-name">Camila Duarte</strong><small id="user-role">Direção escolar</small></span>
+            <svg><use href="#i-arrow"></use></svg>
+          </button>
+        </div>
       </aside>
 
       <div class="sidebar-scrim" id="sidebar-scrim" hidden></div>
@@ -61,7 +62,7 @@
           <button class="icon-button menu-button" id="menu-button" aria-label="Abrir menu"><svg><use href="#i-menu"></use></svg></button>
           <div class="topbar-school">
             <span class="school-logo" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="16" r="6"/><path d="M24 5v4M11 16H7m34 0h-4M14.8 6.8l2.8 2.8m15.6-2.8-2.8 2.8M11 27c5.5-2.2 9.8-1.6 13 1.7 3.2-3.3 7.5-3.9 13-1.7v13c-5.5-2.2-9.8-1.6-13 1.7-3.2-3.3-7.5-3.9-13-1.7V27Z"/><path d="M24 29v12"/></svg></span>
-            <div class="topbar-context"><strong id="topbar-school-name">Escola Horizonte Vivo</strong><span id="topbar-school-meta">Alameda Horizonte Vivo, 120 · Cidade Modelo/BR</span></div>
+            <div class="topbar-context"><strong id="topbar-school-name">Escola Horizonte Vivo</strong><span id="topbar-school-meta">Alameda Horizonte Vivo, 120</span></div>
           </div>
           <div class="topbar-actions">
             <button class="icon-button" id="notification-button" aria-label="Notificações"><svg><use href="#i-bell"></use></svg><span class="notification-dot" aria-hidden="true"></span></button>
