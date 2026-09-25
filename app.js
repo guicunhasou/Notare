@@ -1,4 +1,4 @@
-const STORAGE_KEY = "notare-database-v5";
+const STORAGE_KEY = "notare-database-v6";
 const PROFILE_KEY = "notare-profile-v4";
 const SIDEBAR_KEY = "notare-sidebar-collapsed";
 
@@ -61,7 +61,7 @@ function assetSlug(value) {
 }
 
 function personPhoto(person) {
-  return `<img class="avatar-photo" src="assets/profiles/${assetSlug(person.name)}.png" alt="" loading="lazy" />`;
+  return `<img class="avatar-photo" src="assets/profiles/${escapeHtml(person.photo || assetSlug(person.name))}.png" alt="" loading="lazy" />`;
 }
 
 function dateKey(date) {
@@ -85,14 +85,34 @@ function startOfCurrentWeek(date) {
   return monday;
 }
 
+function startOfAgenda(date) {
+  const start = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12);
+  if (start.getDay() === 6) return addDays(start, 2);
+  if (start.getDay() === 0) return addDays(start, 1);
+  return start;
+}
+
+function addBusinessDays(date, amount) {
+  let next = new Date(date);
+  let remaining = Math.max(0, Number(amount) || 0);
+  while (remaining > 0) {
+    next = addDays(next, 1);
+    if (next.getDay() !== 0 && next.getDay() !== 6) remaining -= 1;
+  }
+  return next;
+}
+
 function agendaDate(item, now) {
-  if (/^\d{2}:\d{2}$/.test(item.time)) return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
-  if (item.time === "Amanhã") return addDays(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12), 1);
-  const match = item.time.match(/^(\d{2})\/(\d{2})$/);
-  if (!match) return null;
-  let date = new Date(now.getFullYear(), Number(match[2]) - 1, Number(match[1]), 12);
-  if (date < addDays(startOfCurrentWeek(now), -1)) date = new Date(now.getFullYear() + 1, Number(match[2]) - 1, Number(match[1]), 12);
-  return date;
+  return addBusinessDays(startOfAgenda(now), item.dayOffset);
+}
+
+function agendaSlot(item, now) {
+  const date = agendaDate(item, now);
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
+  const dayLabel = dateKey(date) === dateKey(today)
+    ? "Hoje"
+    : new Intl.DateTimeFormat("pt-BR", { weekday: "short" }).format(date).replace(".", "");
+  return `${dayLabel} · ${item.time}`;
 }
 
 function calendarEventCounts(now) {
@@ -105,7 +125,6 @@ function calendarEventCounts(now) {
   };
 
   db.agenda.filter((item) => visibleIds.has(item.studentId)).forEach((item) => addEvent(agendaDate(item, now)));
-  visiblePlans().forEach((plan) => addEvent(new Date(`${plan.date}T12:00:00`)));
   return counts;
 }
 
@@ -219,7 +238,6 @@ function studentButton(student) {
 function renderSchool() {
   const school = db.school;
   document.querySelector("#topbar-school-name").textContent = school.name;
-  document.querySelector("#topbar-school-meta").textContent = school.address;
   document.querySelector("#school-logo-image").src = "assets/profiles/escola-logo.png";
 }
 
@@ -246,12 +264,12 @@ function renderChart() {
 
   const svg = document.querySelector("#attendance-chart");
   svg.innerHTML = `
-    <defs><linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a89ff" stop-opacity=".34"/><stop offset="1" stop-color="#9a89ff" stop-opacity="0"/></linearGradient></defs>
-    ${gridValues.map((value) => `<line x1="${left}" y1="${y(value)}" x2="${width - right}" y2="${y(value)}" stroke="rgba(255,255,255,.1)"/><text x="${left - 10}" y="${y(value) + 4}" fill="#aeb0c4" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="300" text-anchor="end">${value}%</text>`).join("")}
+    <defs><linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6F927D" stop-opacity=".24"/><stop offset="1" stop-color="#6F927D" stop-opacity="0"/></linearGradient></defs>
+    ${gridValues.map((value) => `<line x1="${left}" y1="${y(value)}" x2="${width - right}" y2="${y(value)}" stroke="rgba(24,59,70,.10)"/><text x="${left - 10}" y="${y(value) + 4}" fill="#768184" font-family="Manrope, system-ui, sans-serif" font-size="11" font-weight="500" text-anchor="end">${value}%</text>`).join("")}
     <path d="${area}" fill="url(#chart-fill)"/>
-    <polyline points="${points}" fill="none" stroke="#a99dfd" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    ${attendance.map((value, index) => `<circle cx="${x(index)}" cy="${y(value)}" r="5" fill="#312c59" stroke="#c4bbff" stroke-width="3"><title>${labels[index]}: ${value}% de frequência</title></circle>`).join("")}
-    ${labels.map((label, index) => `<text x="${x(index)}" y="${height - 12}" fill="#b8b9cb" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="300" text-anchor="middle">${escapeHtml(label)}</text>`).join("")}`;
+    <polyline points="${points}" fill="none" stroke="#183B46" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    ${attendance.map((value, index) => `<circle cx="${x(index)}" cy="${y(value)}" r="5" fill="#F7F5F0" stroke="#6F927D" stroke-width="3"><title>${labels[index]}: ${value}% de frequência</title></circle>`).join("")}
+    ${labels.map((label, index) => `<text x="${x(index)}" y="${height - 12}" fill="#768184" font-family="Manrope, system-ui, sans-serif" font-size="10" font-weight="500" text-anchor="middle">${escapeHtml(label)}</text>`).join("")}`;
   svg.setAttribute("aria-label", `Frequência de ${attendance.at(-1)} por cento na semana atual`);
 }
 
@@ -288,12 +306,15 @@ function renderOwnerOptions() {
   if (planOwners.some((profile) => profile.id === state.profileId)) document.querySelector("#plan-owner").value = state.profileId;
 }
 
-function renderDashboard() {
+function renderDashboard(now = new Date()) {
   const students = visibleStudents();
   const priorities = students.filter((student) => student.priority === "alta");
   const plans = visiblePlans();
   const visibleIds = new Set(students.map((student) => student.id));
-  const agenda = db.agenda.filter((item) => visibleIds.has(item.studentId));
+  const agenda = db.agenda
+    .filter((item) => visibleIds.has(item.studentId))
+    .map((item) => ({ ...item, date: agendaDate(item, now) }))
+    .sort((a, b) => a.date - b.date || a.time.localeCompare(b.time));
   const pendingReturns = agenda.length;
   const averageAttendance = students.length ? Math.round(students.reduce((total, student) => total + student.attendance, 0) / students.length) : 0;
 
@@ -304,7 +325,14 @@ function renderDashboard() {
   document.querySelector("#nav-priority-count").textContent = String(priorities.length);
   document.querySelector(".metric:nth-child(1) .metric-trend").textContent = `${priorities.length} para revisar`;
   document.querySelector(".metric:nth-child(2) .metric-trend").textContent = `${students.filter((student) => student.priority === "evolucao").length} evoluindo`;
-  document.querySelector(".metric:nth-child(3) .metric-trend").textContent = `${agenda.filter((item) => item.time.includes(":" )).length} para hoje`;
+  const agendaStart = startOfAgenda(now);
+  const firstDayCount = agenda.filter((item) => dateKey(item.date) === dateKey(agendaStart)).length;
+  const startsToday = dateKey(agendaStart) === dateKey(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12));
+  const agendaStartLabel = new Intl.DateTimeFormat("pt-BR", { weekday: "long" }).format(agendaStart);
+  document.querySelector(".metric:nth-child(3) .metric-trend").textContent = startsToday
+    ? `${firstDayCount} para hoje`
+    : `${firstDayCount} para ${agendaStartLabel}`;
+  document.querySelector(".agenda-card .today-pill").textContent = startsToday ? "Hoje" : `A partir de ${agendaStartLabel}`;
 
   const order = { alta: 0, media: 1, evolucao: 2 };
   const ordered = [...students].sort((a, b) => order[a.priority] - order[b.priority]);
@@ -313,7 +341,7 @@ function renderDashboard() {
   document.querySelector("#agenda-list").innerHTML = agenda.slice(0, 4).map((item) => {
     const student = getStudent(item.studentId);
     const owner = getOwner(item.ownerId);
-    return `<li><span class="agenda-time">${escapeHtml(item.time)}</span><span class="agenda-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(student.name)} · ${escapeHtml(owner?.name.split(" ")[0] || "Equipe")}</span></span></li>`;
+    return `<li><span class="agenda-time">${escapeHtml(agendaSlot(item, now))}</span><span class="agenda-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(student.name)} · ${escapeHtml(owner?.name.split(" ")[0] || "Equipe")}</span></span></li>`;
   }).join("");
 
   const active = plans.filter((plan) => plan.status === "active").length;
@@ -330,7 +358,7 @@ function renderDashboard() {
   const casesWithReturn = students.filter((student) => student.actionsCompleted > 0).length;
   const returnRate = students.length ? Math.round((casesWithReturn / students.length) * 100) : 0;
   document.querySelector(".outcome-ring strong").textContent = `${returnRate}%`;
-  document.querySelector(".outcome-ring").style.background = `radial-gradient(circle, white 55%, transparent 57%), conic-gradient(var(--green) 0 ${returnRate}%, #e6e9e8 ${returnRate}% 100%)`;
+  document.querySelector(".outcome-ring").style.background = `radial-gradient(circle, var(--paper) 55%, transparent 57%), conic-gradient(var(--green) 0 ${returnRate}%, #e4e7e3 ${returnRate}% 100%)`;
   renderChart();
 }
 

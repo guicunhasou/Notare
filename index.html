@@ -4,12 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="MVP navegável da Notare para acompanhamento e permanência escolar." />
-    <meta name="theme-color" content="#5b47e0" />
+    <meta name="theme-color" content="#183B46" />
     <title>Notare — Permanência escolar</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%235b47e0'/%3E%3Cpath d='M18 45V19h7l14 16V19h7v26h-7L25 29v16z' fill='white'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="styles.css?v=9" />
+    <link rel="icon" href="assets/brand/notare-logo-transparent.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=10" />
     <script src="data.js?v=9" defer></script>
-    <script src="app.js?v=9" defer></script>
+    <script src="app.js?v=10" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
@@ -33,7 +36,10 @@
     <div class="app-shell">
       <aside class="sidebar" id="sidebar" aria-label="Navegação principal">
         <div class="brand-wrap">
-          <a class="brand" href="#painel" data-route="painel" aria-label="Notare, ir ao painel"><span class="brand-mark">N</span><span>Notare</span></a>
+          <a class="brand" href="#painel" data-route="painel" aria-label="Notare, ir ao painel">
+            <span class="brand-lockup"><img src="assets/brand/notare-logo-sidebar.png" alt="" /></span>
+            <span class="brand-symbol" aria-hidden="true"><img src="assets/brand/notare-logo-sidebar.png" alt="" /></span>
+          </a>
           <button class="icon-button sidebar-close" id="sidebar-close" aria-label="Fechar menu">×</button>
         </div>
 
@@ -47,6 +53,7 @@
 
         <div class="sidebar-footer">
           <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Recolher menu lateral" aria-expanded="true" title="Recolher menu"><svg><use href="#i-back"></use></svg><span>Recolher menu</span></button>
+          <span class="sidebar-divider" aria-hidden="true"></span>
           <button class="user-card" id="profile-button" type="button" aria-haspopup="dialog" aria-label="Trocar perfil de acesso">
             <span class="user-avatar" id="user-avatar"><img class="avatar-photo" src="assets/profiles/camila-duarte.png" alt="" /></span>
             <span><strong id="user-name">Camila Duarte</strong><small id="user-role">Direção escolar</small></span>
@@ -62,13 +69,13 @@
           <button class="icon-button menu-button" id="menu-button" aria-label="Abrir menu"><svg><use href="#i-menu"></use></svg></button>
           <div class="topbar-school">
             <span class="school-logo" aria-hidden="true"><img id="school-logo-image" src="assets/profiles/escola-logo.png" alt="" /></span>
-            <div class="topbar-context"><strong id="topbar-school-name">Escola Horizonte Vivo</strong><span id="topbar-school-meta">Alameda Horizonte Vivo, 120</span></div>
+            <div class="topbar-context"><strong id="topbar-school-name">Escola Horizonte Vivo</strong></div>
           </div>
           <div class="topbar-actions">
             <div class="notification-center" id="notification-center">
               <button class="icon-button" id="notification-button" type="button" aria-label="Notificações" aria-haspopup="true" aria-expanded="false"><svg><use href="#i-bell"></use></svg><span class="notification-badge" id="notification-badge" hidden aria-hidden="true">0</span></button>
               <section class="notification-popover" id="notification-popover" aria-labelledby="notification-popover-title" hidden>
-                <div class="notification-popover-heading"><div><p class="eyebrow">Atualizações</p><h2 id="notification-popover-title">Notificações</h2></div><button class="icon-button" id="notification-close" type="button" aria-label="Fechar notificações">×</button></div>
+                <div class="notification-popover-heading"><div><h2 id="notification-popover-title">Notificações</h2></div><button class="icon-button" id="notification-close" type="button" aria-label="Fechar notificações">×</button></div>
                 <div class="notification-list" id="notification-list"></div>
               </section>
             </div>
@@ -86,7 +93,7 @@
         <main id="main-content" tabindex="-1">
           <section class="view" data-view="painel" aria-labelledby="painel-title">
             <div class="page-heading">
-              <div><p class="eyebrow">Visão geral</p><h1 id="painel-title">Bom dia, Camila</h1><p id="dashboard-subtitle">Veja quem precisa de atenção e organize as próximas ações.</p></div>
+              <div><h1 id="painel-title">Bom dia, Camila</h1><p id="dashboard-subtitle">Veja quem precisa de atenção e organize as próximas ações.</p></div>
               <section class="mini-calendar" id="mini-calendar" aria-label="Calendário das próximas três semanas">
                 <div class="mini-calendar-icon" aria-hidden="true">
                   <i></i><i></i>
@@ -102,7 +109,6 @@
 
             <section class="card dashboard-chart" aria-labelledby="chart-title">
               <div class="chart-copy">
-                <p class="eyebrow">Últimas 8 semanas</p>
                 <h2 id="chart-title">Evolução da frequência</h2>
                 <p>Acompanhe a presença média ao longo do período.</p>
                 <div class="chart-summary"><span><i class="legend-line"></i>Frequência</span></div>
@@ -121,19 +127,19 @@
 
             <div class="dashboard-grid">
               <section class="card priority-card" aria-labelledby="prioridades-title">
-                <div class="card-heading"><div><p class="eyebrow">Fila de cuidado</p><h2 id="prioridades-title">Prioridades de hoje</h2></div><button class="text-button" data-route="busca-ativa" data-permission="followup:view">Ver todos <svg><use href="#i-arrow"></use></svg></button></div>
+                <div class="card-heading"><div><h2 id="prioridades-title">Prioridades de hoje</h2></div><button class="text-button" data-route="busca-ativa" data-permission="followup:view">Ver todos <svg><use href="#i-arrow"></use></svg></button></div>
                 <div class="student-list" id="dashboard-students"></div>
               </section>
 
               <aside class="card agenda-card" aria-labelledby="agenda-title">
-                <div class="card-heading"><div><p class="eyebrow">Agenda</p><h2 id="agenda-title">Próximas ações</h2></div><span class="today-pill">Hoje</span></div>
+                <div class="card-heading"><div><h2 id="agenda-title">Próximas ações</h2></div><span class="today-pill">Hoje</span></div>
                 <ol class="agenda-list" id="agenda-list"></ol>
                 <button class="button button-soft button-block" data-route="registros">Ver acompanhamentos</button>
               </aside>
             </div>
 
             <section class="card overview-card" aria-labelledby="overview-title">
-              <div class="card-heading"><div><p class="eyebrow">Panorama</p><h2 id="overview-title">Situação dos acompanhamentos</h2></div><p class="card-caption">Últimos 30 dias</p></div>
+              <div class="card-heading"><div><h2 id="overview-title">Situação dos acompanhamentos</h2></div><p class="card-caption">Últimos 30 dias</p></div>
               <div class="status-overview">
                 <div class="status-bars" role="img" aria-label="7 em acompanhamento, 5 aguardando retorno e 12 concluídos">
                   <div><span>Em acompanhamento</span><div class="bar-track"><i style="width:58%"></i></div><strong>7</strong></div>
@@ -147,7 +153,7 @@
 
           <section class="view" data-view="busca-ativa" aria-labelledby="busca-title">
             <div class="page-heading compact-heading">
-              <div><p class="eyebrow">Acompanhamento escolar</p><h1 id="busca-title">Fila de acompanhamento</h1><p>Sinais reunidos para apoiar a priorização humana da equipe.</p></div>
+              <div><h1 id="busca-title">Fila de acompanhamento</h1><p>Sinais reunidos para apoiar a priorização humana da equipe.</p></div>
               <button class="button button-primary" data-route="novo-registro"><svg><use href="#i-plus"></use></svg>Novo registro</button>
             </div>
             <div class="toolbar card">
@@ -165,39 +171,39 @@
           <section class="view" data-view="estudante" aria-labelledby="student-name">
             <button class="back-button" data-route="busca-ativa"><svg><use href="#i-back"></use></svg>Voltar ao acompanhamento</button>
             <div class="profile-hero">
-              <div class="profile-avatar" id="student-initials"><img class="avatar-photo" src="assets/profiles/ana-souza.png" alt="" /></div>
+              <div class="profile-avatar" id="student-initials"><img class="avatar-photo" src="assets/profiles/lucas-lima.png" alt="" /></div>
               <div class="profile-title"><span class="status-badge status-high" id="student-status">Atenção alta</span><h1 id="student-name">Ana Souza</h1><p id="student-meta">8º B · cadastro EST-014</p></div>
               <div class="profile-actions"><button class="button button-secondary" data-route="novo-registro" data-permission="records:create">Registrar sinal</button><button class="button button-primary" data-route="plano" data-permission="plans:create">Criar plano de ação</button></div>
             </div>
 
             <div class="profile-grid">
               <section class="card profile-main" aria-labelledby="signals-title">
-                <div class="card-heading"><div><p class="eyebrow">Leitura conjunta</p><h2 id="signals-title">Sinais que pedem atenção</h2></div><span class="explain-chip">Sem pontuação oculta</span></div>
+                <div class="card-heading"><div><h2 id="signals-title">Sinais que pedem atenção</h2></div><span class="explain-chip">Sem pontuação oculta</span></div>
                 <div class="signal-grid" id="signal-grid"></div>
                 <div class="callout"><strong>Por que este caso aparece como prioridade?</strong><p id="priority-reason">A frequência caiu, há faltas consecutivas e o primeiro contato ainda não teve retorno. A classificação apenas organiza os sinais; a decisão continua com a equipe.</p></div>
                 <div class="timeline"><div class="card-heading"><h3>Histórico recente</h3><button class="text-button" data-route="registros">Ver todos</button></div><div id="student-timeline"></div></div>
               </section>
               <aside class="profile-side">
-                <section class="card next-step"><p class="eyebrow">Próximo passo sugerido</p><h2>Acolher, entender e combinar retorno</h2><p>Converse com a estudante, valide o contexto com a família e registre uma ação com responsável e prazo.</p><button class="button button-soft button-block" data-route="plano" data-permission="plans:create">Criar acompanhamento</button></section>
-                <section class="card contact-card"><p class="eyebrow">Rede de apoio</p><h2>Contato responsável</h2><dl><div><dt>Vínculo</dt><dd>Responsável familiar</dd></div><div><dt>Canal preferencial</dt><dd>Telefone cadastrado</dd></div><div><dt>Último contato</dt><dd id="last-contact">há 3 dias · sem retorno</dd></div></dl><small>Os detalhes de contato respeitam as permissões do perfil de acesso.</small></section>
+                <section class="card next-step"><h2>Próximo passo sugerido</h2><p>Acolher, entender e combinar retorno. Converse com a estudante, valide o contexto com a família e registre uma ação com responsável e prazo.</p><button class="button button-soft button-block" data-route="plano" data-permission="plans:create">Criar acompanhamento</button></section>
+                <section class="card contact-card"><h2>Contato responsável</h2><dl><div><dt>Vínculo</dt><dd>Responsável familiar</dd></div><div><dt>Canal preferencial</dt><dd>Telefone cadastrado</dd></div><div><dt>Último contato</dt><dd id="last-contact">há 3 dias · sem retorno</dd></div></dl><small>Os detalhes de contato respeitam as permissões do perfil de acesso.</small></section>
               </aside>
             </div>
           </section>
 
           <section class="view placeholder-view" data-view="registros" aria-labelledby="registros-title">
-            <div class="page-heading compact-heading"><div><p class="eyebrow">Histórico compartilhado</p><h1 id="registros-title">Registros</h1><p>Acompanhe sinais, contatos, devolutivas e planos criados.</p></div><button class="button button-primary" data-route="novo-registro"><svg><use href="#i-plus"></use></svg>Novo registro</button></div>
+            <div class="page-heading compact-heading"><div><h1 id="registros-title">Registros</h1><p>Acompanhe sinais, contatos, devolutivas e planos criados.</p></div><button class="button button-primary" data-route="novo-registro"><svg><use href="#i-plus"></use></svg>Novo registro</button></div>
             <div class="card records-shell"><div class="record-tabs" role="group" aria-label="Filtrar registros"><button class="active" data-record-filter="todos">Todos</button><button data-record-filter="Plano">Planos de ação</button><button data-record-filter="Contato">Contatos</button><button data-record-filter="Ocorrência" data-permission="occurrences:view">Ocorrências</button></div><div id="records-list" class="records-list"></div><p class="empty-state" id="records-empty" hidden>Nenhum registro encontrado nesta categoria.</p></div>
           </section>
 
           <section class="view" data-view="estudantes" aria-labelledby="estudantes-title">
-            <div class="page-heading compact-heading"><div><p class="eyebrow">Pessoas acompanhadas</p><h1 id="estudantes-title">Estudantes</h1><p>Consulte o cadastro e abra o histórico de cada estudante.</p></div></div>
+            <div class="page-heading compact-heading"><div><h1 id="estudantes-title">Estudantes</h1><p>Consulte o cadastro e abra o histórico de cada estudante.</p></div></div>
             <div class="student-directory" id="student-directory"></div>
           </section>
 
           <section class="view form-view" data-view="novo-registro" aria-labelledby="registro-title">
             <button class="back-button" data-back><svg><use href="#i-back"></use></svg>Voltar</button>
             <div class="form-layout">
-              <div class="form-intro"><p class="eyebrow">Novo registro</p><h1 id="registro-title">Acrescente um sinal ao histórico</h1><p>Registre somente informações necessárias ao acompanhamento. Evite diagnósticos, julgamentos ou detalhes sensíveis.</p><div class="privacy-tip"><svg><use href="#i-shield"></use></svg><span><strong>Privacidade desde o início</strong>Os registros ficam armazenados somente neste navegador.</span></div></div>
+              <div class="form-intro"><h1 id="registro-title">Acrescente um sinal ao histórico</h1><p>Registre somente informações necessárias ao acompanhamento. Evite diagnósticos, julgamentos ou detalhes sensíveis.</p><div class="privacy-tip"><svg><use href="#i-shield"></use></svg><span><strong>Privacidade desde o início</strong>Os registros ficam armazenados somente neste navegador.</span></div></div>
               <form class="card data-form" id="record-form">
                 <label>Estudante<select name="student" id="record-student" required></select></label>
                 <fieldset><legend>Tipo de registro</legend><div class="choice-row"><label><input type="radio" name="kind" value="Ausência" checked><span>Ausência</span></label><label><input type="radio" name="kind" value="Contato"><span>Contato</span></label><label data-permission="occurrences:create"><input type="radio" name="kind" value="Ocorrência"><span>Ocorrência</span></label><label><input type="radio" name="kind" value="Devolutiva"><span>Devolutiva</span></label></div></fieldset>
@@ -212,7 +218,7 @@
           <section class="view form-view" data-view="plano" aria-labelledby="plano-title">
             <button class="back-button" data-route="estudante"><svg><use href="#i-back"></use></svg>Voltar ao perfil</button>
             <div class="form-layout">
-              <div class="form-intro"><p class="eyebrow">Plano de ação</p><h1 id="plano-title">Combine o próximo passo</h1><p id="plan-student-caption">Ana Souza · 8º B</p><ol class="process-list"><li class="done"><span>1</span>Identificar sinais</li><li class="active"><span>2</span>Definir ação</li><li><span>3</span>Acompanhar retorno</li></ol></div>
+              <div class="form-intro"><h1 id="plano-title">Combine o próximo passo</h1><p id="plan-student-caption">Ana Souza · 8º B</p><ol class="process-list"><li class="done"><span>1</span>Identificar sinais</li><li class="active"><span>2</span>Definir ação</li><li><span>3</span>Acompanhar retorno</li></ol></div>
               <form class="card data-form" id="plan-form">
                 <fieldset><legend>Qual ação será realizada?</legend><div class="choice-cards"><label><input type="radio" name="type" value="Conversa de acolhimento" checked><span><strong>Conversa de acolhimento</strong><small>Escuta individual com a estudante</small></span></label><label><input type="radio" name="type" value="Contato com responsável"><span><strong>Contato com responsável</strong><small>Alinhar contexto e apoio familiar</small></span></label><label><input type="radio" name="type" value="Reunião pedagógica"><span><strong>Reunião pedagógica</strong><small>Construir apoio com a equipe</small></span></label></div></fieldset>
                 <div class="two-fields"><label>Responsável pela ação<select name="owner" id="plan-owner"></select></label><label>Prazo<input type="date" name="date" value="2026-09-29" required></label></div>
@@ -224,7 +230,7 @@
           </section>
 
           <section class="view success-view" data-view="conclusao" aria-labelledby="success-title">
-            <div class="success-card card"><span class="success-icon"><svg><use href="#i-check"></use></svg></span><p class="eyebrow">Acompanhamento atualizado</p><h1 id="success-title">Plano criado com sucesso</h1><p>A equipe agora tem uma ação clara, uma pessoa responsável e um prazo para revisar a situação.</p><dl class="success-summary"><div><dt>Estudante</dt><dd id="summary-student">Ana Souza</dd></div><div><dt>Ação</dt><dd id="summary-action">Conversa de acolhimento</dd></div><div><dt>Responsável</dt><dd id="summary-owner">Camila Duarte · Direção escolar</dd></div><div><dt>Prazo</dt><dd id="summary-date">29/09/2026</dd></div></dl><div class="success-actions"><button class="button button-primary" data-route="painel">Voltar à visão geral</button><button class="button button-secondary" data-route="estudante">Ver perfil atualizado</button></div><small>O plano foi salvo neste navegador.</small></div>
+            <div class="success-card card"><span class="success-icon"><svg><use href="#i-check"></use></svg></span><h1 id="success-title">Plano criado com sucesso</h1><p>A equipe agora tem uma ação clara, uma pessoa responsável e um prazo para revisar a situação.</p><dl class="success-summary"><div><dt>Estudante</dt><dd id="summary-student">Ana Souza</dd></div><div><dt>Ação</dt><dd id="summary-action">Conversa de acolhimento</dd></div><div><dt>Responsável</dt><dd id="summary-owner">Camila Duarte · Direção escolar</dd></div><div><dt>Prazo</dt><dd id="summary-date">29/09/2026</dd></div></dl><div class="success-actions"><button class="button button-primary" data-route="painel">Voltar à visão geral</button><button class="button button-secondary" data-route="estudante">Ver perfil atualizado</button></div><small>O plano foi salvo neste navegador.</small></div>
           </section>
         </main>
         <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
@@ -232,7 +238,7 @@
     </div>
 
     <dialog class="profile-dialog" id="profile-dialog" aria-labelledby="profile-dialog-title">
-      <div class="dialog-heading"><div><p class="eyebrow">Visualizar como</p><h2 id="profile-dialog-title">Trocar perfil de acesso</h2><p>Cada cargo enxerga apenas os dados e ações necessários ao seu trabalho.</p></div><button class="icon-button" id="profile-close" aria-label="Fechar">×</button></div>
+      <div class="dialog-heading"><div><h2 id="profile-dialog-title">Trocar perfil de acesso</h2><p>Cada cargo enxerga apenas os dados e ações necessários ao seu trabalho.</p></div><button class="icon-button" id="profile-close" aria-label="Fechar">×</button></div>
       <div class="role-list" id="role-list"></div>
       <div class="dialog-footer"><button class="text-button danger-text" id="reset-demo">Restaurar base inicial</button><button class="button button-secondary" id="profile-done">Concluir</button></div>
     </dialog>

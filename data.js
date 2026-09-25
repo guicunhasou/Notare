@@ -1,5 +1,5 @@
 window.NOTARE_SEED = {
-  schemaVersion: 5,
+  schemaVersion: 6,
   school: {
     id: "school-demo-001",
     name: "Escola Horizonte Vivo",
@@ -83,7 +83,7 @@ window.NOTARE_SEED = {
   },
   students: [
     {
-      id: "ana", name: "Ana Souza", initials: "AS", className: "8º B", code: "EST-014", priority: "alta", status: "Atenção alta",
+      id: "ana", name: "Ana Souza", initials: "AS", photo: "lucas-lima", className: "8º B", code: "EST-014", priority: "alta", status: "Atenção alta",
       signals: "Frequência em queda · 3 faltas consecutivas", updated: "Hoje, 09:18", attendance: 78, consecutiveAbsences: 3, actionsCompleted: 1,
       metrics: [["78%", "frequência no mês", "−9 p.p. em 30 dias"], ["3", "faltas consecutivas", "última presença: 21/09"], ["1", "contato registrado", "sem retorno até agora"]],
       reason: "A frequência caiu, há faltas consecutivas e o primeiro contato ainda não teve retorno. A classificação apenas organiza os sinais; a decisão continua com a equipe.",
@@ -91,7 +91,7 @@ window.NOTARE_SEED = {
       timeline: [["25/09", "Docência registrou nova ausência no primeiro horário."], ["22/09", "Mensagem enviada ao responsável familiar."], ["18/09", "Queda de participação observada em sala."], ["15/09", "Sinal de frequência incluído no acompanhamento."]]
     },
     {
-      id: "lucas", name: "Lucas Lima", initials: "LL", className: "9º A", code: "EST-027", priority: "media", status: "Acompanhar",
+      id: "lucas", name: "Lucas Lima", initials: "LL", photo: "ana-souza", className: "9º A", code: "EST-027", priority: "media", status: "Acompanhar",
       signals: "Queda de participação · devolutiva pendente", updated: "Ontem, 16:40", attendance: 88, consecutiveAbsences: 0, actionsCompleted: 2,
       metrics: [["88%", "frequência no mês", "−3 p.p. em 30 dias"], ["1", "devolutiva pendente", "prazo: amanhã"], ["2", "ações realizadas", "uma resposta registrada"]],
       reason: "A participação diminuiu e existe uma devolutiva próxima do prazo. O histórico sugere acompanhamento, sem determinar uma conclusão sobre o estudante.",
@@ -99,7 +99,7 @@ window.NOTARE_SEED = {
       timeline: [["24/09", "Orientação solicitou devolutiva pedagógica."], ["20/09", "Conversa de acolhimento realizada."], ["17/09", "Sinal de participação registrado."]]
     },
     {
-      id: "beatriz", name: "Beatriz Santos", initials: "BS", className: "9º C", code: "EST-031", priority: "evolucao", status: "Em evolução",
+      id: "beatriz", name: "Beatriz Santos", initials: "BS", photo: "joao-oliveira", className: "9º C", code: "EST-031", priority: "evolucao", status: "Em evolução",
       signals: "Plano em andamento · presença regularizada", updated: "Há 2 dias", attendance: 94, consecutiveAbsences: 0, actionsCompleted: 3,
       metrics: [["94%", "frequência no mês", "+6 p.p. em 30 dias"], ["0", "faltas consecutivas", "presença regularizada"], ["3", "ações concluídas", "próxima revisão: 30/09"]],
       reason: "A presença melhorou após as ações combinadas. O caso permanece visível para que a equipe acompanhe a estabilidade dessa evolução.",
@@ -107,7 +107,7 @@ window.NOTARE_SEED = {
       timeline: [["23/09", "Presença regularizada na última semana."], ["19/09", "Família confirmou apoio ao plano."], ["16/09", "Plano de retorno iniciado."]]
     },
     {
-      id: "joao", name: "João Oliveira", initials: "JO", className: "7º A", code: "EST-043", priority: "alta", status: "Atenção alta",
+      id: "joao", name: "João Oliveira", initials: "JO", photo: "beatriz-santos", className: "7º A", code: "EST-043", priority: "alta", status: "Atenção alta",
       signals: "4 ausências no mês · contato não concluído", updated: "Hoje, 08:05", attendance: 74, consecutiveAbsences: 2, actionsCompleted: 0,
       metrics: [["74%", "frequência no mês", "−12 p.p. em 30 dias"], ["2", "faltas consecutivas", "nova ausência hoje"], ["2", "tentativas de contato", "sem confirmação"]],
       reason: "A frequência apresenta queda relevante e ainda não houve confirmação de contato. A equipe deve validar o contexto antes de definir qualquer encaminhamento.",
@@ -115,7 +115,7 @@ window.NOTARE_SEED = {
       timeline: [["25/09", "Nova ausência registrada."], ["24/09", "Segunda tentativa de contato."], ["21/09", "Caso incluído na fila de prioridade."]]
     },
     {
-      id: "marina", name: "Marina Costa", initials: "MC", className: "6º C", code: "EST-052", priority: "media", status: "Acompanhar",
+      id: "marina", name: "Marina Costa", initials: "MC", photo: "gabriel-rocha", className: "6º C", code: "EST-052", priority: "media", status: "Acompanhar",
       signals: "Mudança de comportamento · escuta agendada", updated: "Há 3 dias", attendance: 96, consecutiveAbsences: 0, actionsCompleted: 1,
       metrics: [["96%", "frequência no mês", "estável"], ["1", "escuta agendada", "prazo: 28/09"], ["1", "observação pedagógica", "aguardando devolutiva"]],
       reason: "A frequência está estável, mas a equipe registrou uma mudança que merece escuta. O acompanhamento evita conclusões antecipadas.",
@@ -123,7 +123,7 @@ window.NOTARE_SEED = {
       timeline: [["22/09", "Escuta individual agendada."], ["21/09", "Observação pedagógica registrada."]]
     },
     {
-      id: "gabriel", name: "Gabriel Rocha", initials: "GR", className: "8º B", code: "EST-058", priority: "evolucao", status: "Em evolução",
+      id: "gabriel", name: "Gabriel Rocha", initials: "GR", photo: "marina-costa", className: "8º B", code: "EST-058", priority: "evolucao", status: "Em evolução",
       signals: "Retorno confirmado · frequência em recuperação", updated: "Há 3 dias", attendance: 91, consecutiveAbsences: 0, actionsCompleted: 2,
       metrics: [["91%", "frequência no mês", "+4 p.p. em 30 dias"], ["0", "faltas consecutivas", "retorno confirmado"], ["2", "ações concluídas", "revisão em 7 dias"]],
       reason: "O retorno foi confirmado e a frequência está se recuperando. O caso segue em observação por um período combinado.",
@@ -322,15 +322,15 @@ window.NOTARE_SEED = {
     { id: "plan-010", studentId: "manuela", type: "Devolutiva final", ownerId: "orientacao", owner: "Lívia Moura · Orientação educacional", date: "2026-09-30", status: "review", notes: "Realizar devolutiva e encerrar acompanhamento.", family: true, created: "18/09/2026" }
   ],
   agenda: [
-    { time: "14:00", title: "Contato com responsável", studentId: "ana", ownerId: "orientacao" },
-    { time: "15:30", title: "Escuta individual", studentId: "marina", ownerId: "orientacao" },
-    { time: "Amanhã", title: "Revisar devolutiva", studentId: "lucas", ownerId: "coordenacao" },
-    { time: "26/09", title: "Revisar plano interrompido", studentId: "thiago", ownerId: "direcao" },
-    { time: "28/09", title: "Conversa pedagógica", studentId: "sofia", ownerId: "docencia" },
-    { time: "11:30", title: "Contato com responsável", studentId: "caio", ownerId: "orientacao" },
-    { time: "13:45", title: "Revisar ausências", studentId: "luana", ownerId: "coordenacao" },
-    { time: "27/09", title: "Devolutiva pedagógica", studentId: "matheus", ownerId: "coordenacao" },
-    { time: "30/09", title: "Escuta individual", studentId: "davi", ownerId: "orientacao" },
-    { time: "01/10", title: "Reunião pedagógica", studentId: "vinicius", ownerId: "coordenacao" }
+    { dayOffset: 0, time: "14:00", title: "Contato com responsável", studentId: "ana", ownerId: "orientacao" },
+    { dayOffset: 0, time: "15:30", title: "Escuta individual", studentId: "marina", ownerId: "orientacao" },
+    { dayOffset: 1, time: "09:30", title: "Revisar devolutiva", studentId: "lucas", ownerId: "coordenacao" },
+    { dayOffset: 1, time: "13:30", title: "Revisar plano interrompido", studentId: "thiago", ownerId: "direcao" },
+    { dayOffset: 2, time: "10:00", title: "Conversa pedagógica", studentId: "sofia", ownerId: "docencia" },
+    { dayOffset: 2, time: "11:30", title: "Contato com responsável", studentId: "caio", ownerId: "orientacao" },
+    { dayOffset: 3, time: "13:45", title: "Revisar ausências", studentId: "luana", ownerId: "coordenacao" },
+    { dayOffset: 3, time: "15:00", title: "Devolutiva pedagógica", studentId: "matheus", ownerId: "coordenacao" },
+    { dayOffset: 4, time: "09:00", title: "Escuta individual", studentId: "davi", ownerId: "orientacao" },
+    { dayOffset: 5, time: "14:30", title: "Reunião pedagógica", studentId: "vinicius", ownerId: "coordenacao" }
   ]
 };
