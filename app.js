@@ -108,8 +108,23 @@ function addBusinessDays(date, amount) {
   return next;
 }
 
+function isWeekend(date) {
+  return date.getDay() === 0 || date.getDay() === 6;
+}
+
+function nextBusinessDay(date) {
+  let next = new Date(date);
+  while (isWeekend(next)) next = addDays(next, 1);
+  return next;
+}
+
 function agendaDate(item, now) {
-  return addBusinessDays(startOfAgenda(now), item.dayOffset);
+  const agendaStart = startOfAgenda(now);
+  if (item.date) {
+    const fixedDate = nextBusinessDay(new Date(`${item.date}T12:00:00`));
+    if (!Number.isNaN(fixedDate.getTime())) return fixedDate < agendaStart ? agendaStart : fixedDate;
+  }
+  return addBusinessDays(agendaStart, item.dayOffset);
 }
 
 function agendaSlot(item, now) {
@@ -118,7 +133,22 @@ function agendaSlot(item, now) {
   const dayLabel = dateKey(date) === dateKey(today)
     ? "Hoje"
     : new Intl.DateTimeFormat("pt-BR", { weekday: "short" }).format(date).replace(".", "");
-  return `${dayLabel} · ${item.time}`;
+  if (item.date && !item.time) {
+    const shortDate = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" }).format(date);
+    return `${dayLabel} · ${shortDate}`;
+  }
+  return item.time ? `${dayLabel} · ${item.time}` : dayLabel;
+}
+
+function syncPlanDeadline(now = new Date()) {
+  const input = document.querySelector('#plan-form input[name="date"]');
+  if (!input) return;
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
+  const minimum = dateKey(startOfAgenda(today));
+  input.min = minimum;
+  if (!input.value || input.value < minimum) {
+    input.value = dateKey(addBusinessDays(startOfAgenda(today), 2));
+  }
 }
 
 function calendarEventCounts(now) {
@@ -222,6 +252,16 @@ function statusClass(priority) {
   return "status-stable";
 }
 
+function planStatusLabel(status) {
+  const labels = {
+    active: "Em acompanhamento",
+    review: "Aguardando revisão",
+    overdue: "Revisão pendente",
+    done: "Concluído"
+  };
+  return labels[status] || "Em acompanhamento";
+}
+
 function formatDate(value) {
   if (!value) return "—";
   if (/^\d{2}\/\d{2}\/\d{4}$/.test(value)) return value;
@@ -323,7 +363,15 @@ function renderDashboard(now = new Date()) {
   const agenda = db.agenda
     .filter((item) => visibleIds.has(item.studentId))
     .map((item) => ({ ...item, date: agendaDate(item, now) }))
-    .sort((a, b) => a.date - b.date || a.time.localeCompare(b.time));
+    .sort((a, b) => a.date - b.date || (a.time || "23:59").localeCompare(b.time || "23:59"));
+  const latestPlanAgendaId = db.agenda.find(
+    (item) => item.sourcePlanId && visibleIds.has(item.studentId)
+  )?.id;
+  const latestPlanAgenda = agenda.find((item) => item.id === latestPlanAgendaId);
+  let agendaPreview = agenda.slice(0, 4);
+  if (latestPlanAgenda && !agendaPreview.some((item) => item.id === latestPlanAgenda.id)) {
+    agendaPreview = [...agendaPreview.slice(0, 3), latestPlanAgenda];
+  }
   const pendingReturns = agenda.length;
   const averageAttendance = students.length ? Math.round(students.reduce((total, student) => total + student.attendance, 0) / students.length) : 0;
 
@@ -347,7 +395,7 @@ function renderDashboard(now = new Date()) {
   const ordered = [...students].sort((a, b) => order[a.priority] - order[b.priority]);
   document.querySelector("#dashboard-students").innerHTML = ordered.slice(0, 5).map(studentButton).join("");
 
-  document.querySelector("#agenda-list").innerHTML = agenda.slice(0, 4).map((item) => {
+  document.querySelector("#agenda-list").innerHTML = agendaPreview.map((item) => {
     const student = getStudent(item.studentId);
     const owner = getOwner(item.ownerId);
     return `<li><span class="agenda-time">${escapeHtml(agendaSlot(item, now))}</span><span class="agenda-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(student.name)} · ${escapeHtml(owner?.name.split(" ")[0] || "Equipe")}</span></span></li>`;
@@ -421,6 +469,12 @@ function renderStudentProfile() {
   const badge = document.querySelector("#student-status");
   badge.textContent = student.status;
   badge.className = `status-badge ${statusClass(student.priority)}`;
+
+  const activePlan = db.plans.some(
+    (plan) => plan.studentId === student.id && plan.status !== "done"
+  );
+  document.querySelector("#student-plan-status").hidden = !activePlan;
+
   document.querySelector("#priority-reason").textContent = student.reason;
   document.querySelector("#last-contact").textContent = student.contact;
   const contactRows = document.querySelectorAll(".contact-card dd");
@@ -428,9 +482,18 @@ function renderStudentProfile() {
   contactRows[1].textContent = student.preferredChannel;
   document.querySelector("#signal-grid").innerHTML = student.metrics.map(([value, label, note]) => `<article class="signal-tile"><strong>${escapeHtml(value)}</strong><span>${escapeHtml(label)}</span><small>${escapeHtml(note)}</small></article>`).join("");
 
-  const planEntries = db.plans.filter((plan) => plan.studentId === student.id).map((plan) => [plan.created, `Plano criado: ${plan.type}. Responsável: ${plan.owner}.`]);
+  const planEntries = db.plans
+    .filter((plan) => plan.studentId === student.id)
+    .map((plan) => {
+      const status = planStatusLabel(plan.status);
+      return [
+        plan.created,
+        `${status}: ${plan.type}. Responsável: ${plan.owner}. Prazo: ${formatDate(plan.date)}.`
+      ];
+    });
   document.querySelector("#student-timeline").innerHTML = [...planEntries, ...student.timeline].map(([date, copy]) => `<div class="timeline-entry"><span class="timeline-dot"></span><time>${escapeHtml(date)}</time><p>${escapeHtml(copy)}</p></div>`).join("");
   document.querySelector("#plan-student-caption").textContent = `${student.name} · ${student.className}`;
+  syncPlanDeadline();
   renderStudentSelect();
 }
 
@@ -702,6 +765,19 @@ document.querySelector("#plan-form").addEventListener("submit", (event) => {
   event.preventDefault();
   if (!hasPermission("plans:create")) return showToast("Este perfil não pode criar planos de ação.");
   const data = new FormData(event.currentTarget);
+  const deadlineInput = event.currentTarget.elements.date;
+  const deadlineValue = data.get("date");
+  const deadline = new Date(`${deadlineValue}T12:00:00`);
+  const agendaStart = startOfAgenda(new Date());
+  if (Number.isNaN(deadline.getTime()) || deadline < agendaStart) {
+    syncPlanDeadline();
+    deadlineInput.focus();
+    return showToast("Escolha um prazo a partir do próximo dia útil disponível.");
+  }
+  if (isWeekend(deadline)) {
+    deadlineInput.focus();
+    return showToast("Escolha um dia útil para o prazo do acompanhamento.");
+  }
   const student = getStudent();
   const owner = getProfile(data.get("owner"));
   const plan = {
@@ -710,18 +786,29 @@ document.querySelector("#plan-form").addEventListener("submit", (event) => {
     type: data.get("type"),
     ownerId: owner.id,
     owner: `${owner.name} · ${owner.role}`,
-    date: data.get("date"),
+    date: deadlineValue,
     status: "active",
     notes: data.get("notes"),
     family: data.get("family") === "on",
     created: todayLabel()
   };
   db.plans.unshift(plan);
+  db.agenda.unshift({
+    id: `agenda-${plan.id}`,
+    date: plan.date,
+    title: `Revisar plano: ${plan.type}`,
+    studentId: student.id,
+    ownerId: owner.id,
+    sourcePlanId: plan.id
+  });
   saveDatabase();
   document.querySelector("#summary-student").textContent = student.name;
   document.querySelector("#summary-action").textContent = plan.type;
   document.querySelector("#summary-owner").textContent = plan.owner;
   document.querySelector("#summary-date").textContent = formatDate(plan.date);
+  document.querySelector("#success-next-step").textContent =
+    `Próximo passo: revisar este acompanhamento em ${formatDate(plan.date)}. O prazo já aparece na agenda da equipe.`;
+  event.currentTarget.reset();
   renderAll();
   showRoute("conclusao");
 });

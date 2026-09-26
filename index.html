@@ -6,7 +6,7 @@
     <meta name="description" content="MVP navegável da Notare para acompanhamento e permanência escolar." />
     <meta name="theme-color" content="#183B46" />
     <title>Notare — Permanência escolar</title>
-    <link rel="icon" href="assets/brand/notare-logo-transparent.png" />
+    <link rel="icon" href="assets/brand/notare-logo-sidebar.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
@@ -171,8 +171,8 @@
           <section class="view" data-view="estudante" aria-labelledby="student-name">
             <button class="back-button" data-route="busca-ativa"><svg><use href="#i-back"></use></svg>Voltar ao acompanhamento</button>
             <div class="profile-hero">
-              <div class="profile-avatar" id="student-initials"><img class="avatar-photo" src="assets/profiles/lucas-lima.png" alt="" /></div>
-              <div class="profile-title"><span class="status-badge status-high" id="student-status">Atenção alta</span><h1 id="student-name">Ana Souza</h1><p id="student-meta">8º B · cadastro EST-014</p></div>
+              <div class="profile-avatar" id="student-initials"></div>
+              <div class="profile-title"><span class="status-badge status-high" id="student-status">Atenção alta</span><span class="status-badge status-plan" id="student-plan-status" hidden>Plano em acompanhamento</span><h1 id="student-name">Ana Souza</h1><p id="student-meta">8º B · cadastro EST-014</p></div>
               <div class="profile-actions"><button class="button button-secondary" data-route="novo-registro" data-permission="records:create">Registrar sinal</button><button class="button button-primary" data-route="plano" data-permission="plans:create">Criar plano de ação</button></div>
             </div>
 
@@ -231,7 +231,7 @@
           </section>
 
           <section class="view success-view" data-view="conclusao" aria-labelledby="success-title">
-            <div class="success-card card"><span class="success-icon"><svg><use href="#i-check"></use></svg></span><h1 id="success-title">Plano criado com sucesso</h1><p>A equipe agora tem uma ação clara, uma pessoa responsável e um prazo para revisar a situação.</p><dl class="success-summary"><div><dt>Estudante</dt><dd id="summary-student">Ana Souza</dd></div><div><dt>Ação</dt><dd id="summary-action">Conversa de acolhimento</dd></div><div><dt>Responsável</dt><dd id="summary-owner">Camila Duarte · Direção escolar</dd></div><div><dt>Prazo</dt><dd id="summary-date">29/09/2026</dd></div></dl><div class="success-actions"><button class="button button-primary" data-route="painel">Voltar à visão geral</button><button class="button button-secondary" data-route="estudante">Ver perfil atualizado</button></div><small>O plano foi salvo neste navegador.</small></div>
+            <div class="success-card card"><span class="success-icon"><svg><use href="#i-check"></use></svg></span><h1 id="success-title">Plano criado com sucesso</h1><p>A equipe agora tem uma ação clara, uma pessoa responsável e um prazo para revisar a situação.</p><p id="success-next-step">O acompanhamento já tem um próximo passo definido.</p><dl class="success-summary"><div><dt>Estudante</dt><dd id="summary-student">Ana Souza</dd></div><div><dt>Ação</dt><dd id="summary-action">Conversa de acolhimento</dd></div><div><dt>Responsável</dt><dd id="summary-owner">Camila Duarte · Direção escolar</dd></div><div><dt>Prazo</dt><dd id="summary-date">29/09/2026</dd></div></dl><div class="success-actions"><button class="button button-primary" data-route="painel">Voltar à visão geral</button><button class="button button-secondary" data-route="estudante">Ver perfil atualizado</button></div><small>O plano foi salvo neste navegador e já está disponível no histórico da estudante.</small></div>
           </section>
         </main>
         <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
