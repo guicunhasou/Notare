@@ -85,7 +85,28 @@ test("o HTML preserva datas dinâmicas e os contratos básicos de acessibilidade
   assert.match(html, /styles\.css\?v=11/);
   assert.match(html, /data\.js\?v=10/);
   assert.match(html, /core\.js\?v=1/);
-  assert.match(html, /app\.js\?v=13/);
+  assert.match(html, /ui\.js\?v=1/);
+  assert.match(html, /app\.js\?v=14/);
+});
+
+test("o indicador representa todas as ações agendadas", () => {
+  const html = read("index.html");
+  const source = read("app.js");
+
+  assert.match(html, /Ações agendadas/);
+  assert.doesNotMatch(html, /Retornos pendentes/);
+  assert.match(source, /const scheduledActions = agenda\.length/);
+});
+
+test("o menu móvel isola o conteúdo e contém a navegação por teclado", () => {
+  const source = read("ui.js");
+  const app = read("app.js");
+
+  assert.match(source, /background\.inert = true/);
+  assert.match(source, /drawer\.setAttribute\("aria-modal", "true"\)/);
+  assert.match(source, /event\.key !== "Tab"/);
+  assert.match(source, /element\.getClientRects\(\)\.length > 0/);
+  assert.match(app, /sidebarDrawer\.trapFocus\(event\)/);
 });
 
 test("a navegação usa histórico real e responde a Voltar e Avançar", () => {
