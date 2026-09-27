@@ -83,7 +83,7 @@ window.NOTARE_SEED = {
       initials: "CD",
       role: "Direção escolar",
       description: "Visão completa da unidade e de todos os acompanhamentos.",
-      permissions: ["dashboard:view", "followup:view", "students:view", "records:view", "records:create", "occurrences:view", "occurrences:create", "plans:create", "privacy:view"],
+      permissions: ["dashboard:view", "followup:view", "students:view", "records:view", "records:create", "occurrences:view", "occurrences:create", "plans:create", "privacy:view", "school:view"],
       scope: "all"
     },
     {
@@ -411,7 +411,7 @@ Object.entries(NOTARE_CLASS_ROSTERS).forEach(([className, names]) => {
     const student = notareStudentsById.get(id);
     if (!student) return;
     student.className = className;
-    student.photoSheet = `assets/rosters/estudantes-${grade}-ano.png`;
+    student.photoSheet = `assets/rosters/estudantes-${grade}-ano.webp`;
     student.photoIndex = classOffset + index;
   });
 });

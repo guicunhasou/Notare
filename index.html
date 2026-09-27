@@ -10,9 +10,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=10" />
-    <script src="data.js?v=9" defer></script>
-    <script src="app.js?v=10" defer></script>
+    <link rel="stylesheet" href="styles.css?v=11" />
+    <script src="data.js?v=10" defer></script>
+    <script src="core.js?v=1" defer></script>
+    <script src="app.js?v=13" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
@@ -49,6 +50,7 @@
           <a href="#busca-ativa" data-route="busca-ativa" data-permission="followup:view"><svg><use href="#i-search"></use></svg><span>Acompanhamento</span><strong class="nav-count" id="nav-priority-count">4</strong></a>
           <a href="#registros" data-route="registros"><svg><use href="#i-clipboard"></use></svg><span>Registros</span></a>
           <a href="#estudantes" data-route="estudantes"><svg><use href="#i-users"></use></svg><span>Estudantes</span></a>
+          <a href="#ativacao" data-route="ativacao" data-permission="school:view"><svg><use href="#i-shield"></use></svg><span>Ativação</span></a>
         </nav>
 
         <div class="sidebar-footer">
@@ -66,15 +68,15 @@
 
       <div class="workspace">
         <header class="topbar">
-          <button class="icon-button menu-button" id="menu-button" aria-label="Abrir menu"><svg><use href="#i-menu"></use></svg></button>
+          <button class="icon-button menu-button" id="menu-button" type="button" aria-label="Abrir menu" aria-controls="sidebar" aria-expanded="false"><svg><use href="#i-menu"></use></svg></button>
           <div class="topbar-school">
             <span class="school-logo" aria-hidden="true"><img id="school-logo-image" src="assets/profiles/escola-logo.png" alt="" /></span>
             <div class="topbar-context"><strong id="topbar-school-name">Escola Horizonte Vivo</strong></div>
           </div>
           <div class="topbar-actions">
             <div class="notification-center" id="notification-center">
-              <button class="icon-button" id="notification-button" type="button" aria-label="Notificações" aria-haspopup="true" aria-expanded="false"><svg><use href="#i-bell"></use></svg><span class="notification-badge" id="notification-badge" hidden aria-hidden="true">0</span></button>
-              <section class="notification-popover" id="notification-popover" aria-labelledby="notification-popover-title" hidden>
+              <button class="icon-button" id="notification-button" type="button" aria-label="Notificações" aria-haspopup="dialog" aria-controls="notification-popover" aria-expanded="false"><svg><use href="#i-bell"></use></svg><span class="notification-badge" id="notification-badge" hidden aria-hidden="true">0</span></button>
+              <section class="notification-popover" id="notification-popover" role="dialog" aria-labelledby="notification-popover-title" hidden>
                 <div class="notification-popover-heading"><div><h2 id="notification-popover-title">Notificações</h2></div><button class="icon-button" id="notification-close" type="button" aria-label="Fechar notificações">×</button></div>
                 <div class="notification-list" id="notification-list"></div>
               </section>
@@ -159,7 +161,7 @@
             <div class="toolbar card">
               <label class="search-field"><span class="sr-only">Buscar estudante</span><svg><use href="#i-search"></use></svg><input id="student-search" type="search" placeholder="Buscar por nome ou turma" /></label>
               <div class="filter-group" role="group" aria-label="Filtrar prioridade">
-                <button class="filter active" data-filter="todos">Todos</button><button class="filter" data-filter="alta">Alta</button><button class="filter" data-filter="media">Acompanhar</button><button class="filter" data-filter="evolucao">Em evolução</button><button class="filter" data-filter="estavel">Sem alertas</button>
+                <button class="filter active" type="button" data-filter="todos" aria-pressed="true">Todos</button><button class="filter" type="button" data-filter="alta" aria-pressed="false">Alta</button><button class="filter" type="button" data-filter="media" aria-pressed="false">Acompanhar</button><button class="filter" type="button" data-filter="evolucao" aria-pressed="false">Em evolução</button><button class="filter" type="button" data-filter="estavel" aria-pressed="false">Sem alertas</button>
               </div>
             </div>
             <div class="table-card card">
@@ -191,8 +193,9 @@
           </section>
 
           <section class="view placeholder-view" data-view="registros" aria-labelledby="registros-title">
+            <button class="back-button" type="button" data-back><svg><use href="#i-back"></use></svg>Voltar</button>
             <div class="page-heading compact-heading"><div><h1 id="registros-title">Registros</h1><p>Acompanhe sinais, contatos, devolutivas e planos criados.</p></div><button class="button button-primary" data-route="novo-registro"><svg><use href="#i-plus"></use></svg>Novo registro</button></div>
-            <div class="card records-shell"><div class="record-tabs" role="group" aria-label="Filtrar registros"><button class="active" data-record-filter="todos">Todos</button><button data-record-filter="Plano">Planos de ação</button><button data-record-filter="Contato">Contatos</button><button data-record-filter="Ocorrência" data-permission="occurrences:view">Ocorrências</button></div><div id="records-list" class="records-list"></div><p class="empty-state" id="records-empty" hidden>Nenhum registro encontrado nesta categoria.</p></div>
+            <div class="card records-shell"><div class="record-tabs" role="group" aria-label="Filtrar registros"><button class="active" type="button" data-record-filter="todos" aria-pressed="true">Todos</button><button type="button" data-record-filter="Plano" aria-pressed="false">Planos de ação</button><button type="button" data-record-filter="Contato" aria-pressed="false">Contatos</button><button type="button" data-record-filter="Ocorrência" aria-pressed="false" data-permission="occurrences:view">Ocorrências</button></div><div id="records-list" class="records-list"></div><p class="empty-state" id="records-empty" hidden>Nenhum registro encontrado nesta categoria.</p></div>
           </section>
 
           <section class="view" data-view="estudantes" aria-labelledby="estudantes-title">
@@ -208,7 +211,7 @@
               <form class="card data-form" id="record-form">
                 <label>Estudante<select name="student" id="record-student" required></select></label>
                 <fieldset><legend>Tipo de registro</legend><div class="choice-row"><label><input type="radio" name="kind" value="Ausência" checked><span>Ausência</span></label><label><input type="radio" name="kind" value="Contato"><span>Contato</span></label><label data-permission="occurrences:create"><input type="radio" name="kind" value="Ocorrência"><span>Ocorrência</span></label><label><input type="radio" name="kind" value="Devolutiva"><span>Devolutiva</span></label></div></fieldset>
-                <div class="two-fields"><label>Data<input type="date" name="date" value="2026-09-25" required></label><label>Registrado por<select name="owner" id="record-owner"></select></label></div>
+                <div class="two-fields"><label>Data<input type="date" name="date" required></label><label>Registrado por<select name="owner" id="record-owner"></select></label></div>
                 <label>Descrição<textarea name="description" rows="5" placeholder="Descreva objetivamente o que foi observado ou realizado..." required></textarea><small>Não inclua dados de saúde ou outras informações sensíveis.</small></label>
                 <label class="check-field"><input type="checkbox" name="followup"><span>Este registro precisa de acompanhamento</span></label>
                 <div class="form-actions"><button type="button" class="button button-secondary" data-back>Cancelar</button><button class="button button-primary" type="submit">Salvar registro</button></div>
@@ -222,12 +225,41 @@
               <div class="form-intro"><h1 id="plano-title">Combine o próximo passo</h1><p id="plan-student-caption">Ana Souza · 8º B</p><ol class="process-list"><li class="done"><span>1</span>Identificar sinais</li><li class="active"><span>2</span>Definir ação</li><li><span>3</span>Acompanhar retorno</li></ol></div>
               <form class="card data-form" id="plan-form">
                 <fieldset><legend>Qual ação será realizada?</legend><div class="choice-cards"><label><input type="radio" name="type" value="Conversa de acolhimento" checked><span><strong>Conversa de acolhimento</strong><small>Escuta individual com a estudante</small></span></label><label><input type="radio" name="type" value="Contato com responsável"><span><strong>Contato com responsável</strong><small>Alinhar contexto e apoio familiar</small></span></label><label><input type="radio" name="type" value="Reunião pedagógica"><span><strong>Reunião pedagógica</strong><small>Construir apoio com a equipe</small></span></label></div></fieldset>
-                <div class="two-fields"><label>Responsável pela ação<select name="owner" id="plan-owner"></select></label><label>Prazo<input type="date" name="date" value="2026-09-29" required></label></div>
+                <div class="two-fields"><label>Responsável pela ação<select name="owner" id="plan-owner"></select></label><label>Prazo<input type="date" name="date" required></label></div>
                 <label>Objetivo e observações<textarea name="notes" rows="4" required>Compreender o motivo das ausências e combinar um retorno acompanhado, preservando a privacidade da estudante.</textarea></label>
                 <label class="check-field"><input type="checkbox" name="family" checked><span>Incluir contato com a família no acompanhamento</span></label>
                 <div class="form-actions"><button type="button" class="button button-secondary" data-route="estudante">Cancelar</button><button class="button button-primary" type="submit">Salvar plano de ação</button></div>
               </form>
             </div>
+          </section>
+
+          <section class="view activation-view" data-view="ativacao" aria-labelledby="activation-title">
+            <div class="page-heading activation-heading">
+              <div><span class="activation-kicker">Jornada institucional</span><h1 id="activation-title">Ativação da escola</h1><p>Da contratação institucional ao ambiente preparado para a equipe escolar.</p></div>
+              <span class="activation-status"><svg><use href="#i-check"></use></svg>Ambiente ativo</span>
+            </div>
+
+            <ol class="activation-flow" aria-label="Etapas da ativação institucional">
+              <li><span class="activation-step">1</span><div><strong>Contratação confirmada</strong><p>Escopo institucional e unidade escolar definidos.</p></div></li>
+              <li><span class="activation-step">2</span><div><strong>Unidade configurada</strong><p>Escola, segmento, turmas e período letivo organizados.</p></div></li>
+              <li><span class="activation-step">3</span><div><strong>Acessos definidos</strong><p>Perfis recebem apenas os dados e ações necessários.</p></div></li>
+              <li><span class="activation-step">4</span><div><strong>Operação iniciada</strong><p>A equipe entra no painel e começa o acompanhamento.</p></div></li>
+            </ol>
+
+            <div class="activation-details">
+              <section aria-labelledby="activation-school-title">
+                <h2 id="activation-school-title">Escola Horizonte Vivo</h2>
+                <p>A configuração demonstrativa está pronta para o Ensino Fundamental. A base usa dados fictícios e permite que a equipe conheça o fluxo antes de qualquer integração definitiva.</p>
+                <dl class="activation-facts"><div><dt>Unidade</dt><dd>ESC-001</dd></div><div><dt>Turmas</dt><dd>8</dd></div><div><dt>Estudantes fictícios</dt><dd>96</dd></div><div><dt>Perfis de acesso</dt><dd>5</dd></div></dl>
+              </section>
+              <section class="activation-next" aria-labelledby="activation-next-title">
+                <span class="activation-next-icon" aria-hidden="true"><svg><use href="#i-shield"></use></svg></span>
+                <h2 id="activation-next-title">Próximo passo</h2>
+                <p>Com a unidade configurada, a direção acessa a visão geral, identifica prioridades e organiza as primeiras ações.</p>
+                <button class="button button-primary" type="button" data-route="painel">Acessar visão geral</button>
+              </section>
+            </div>
+            <p class="activation-scope"><strong>Limite do MVP:</strong> contratação, cobrança e integrações comerciais acontecem fora deste ambiente. O fluxo exibido começa após a confirmação institucional.</p>
           </section>
 
           <section class="view success-view" data-view="conclusao" aria-labelledby="success-title">
