@@ -84,9 +84,30 @@ test("o HTML preserva datas dinâmicas e os contratos básicos de acessibilidade
   assert.doesNotMatch(html, /name="date" value="2026-/);
   assert.match(html, /styles\.css\?v=12/);
   assert.match(html, /data\.js\?v=10/);
-  assert.match(html, /core\.js\?v=1/);
+  assert.match(html, /core\.js\?v=2/);
   assert.match(html, /ui\.js\?v=1/);
-  assert.match(html, /app\.js\?v=15/);
+  assert.match(html, /app\.js\?v=16/);
+});
+
+test("a base salva recebe as referências atuais das fotos sem perder alterações", () => {
+  const api = loadDateApi();
+  const saved = {
+    students: [{ id: "ana", name: "Nome preservado", photo: "arquivo-antigo" }],
+    records: [{ id: "registro-local" }],
+    plans: [{ id: "plano-local" }]
+  };
+  const seed = {
+    students: [{ id: "ana", name: "Ana Souza", photoSheet: "assets/rosters/estudantes-8-ano.webp", photoIndex: 12 }]
+  };
+
+  const reconciled = api.reconcileStudentMedia(saved, seed);
+
+  assert.equal(reconciled.students[0].name, "Nome preservado");
+  assert.equal(reconciled.students[0].photo, undefined);
+  assert.equal(reconciled.students[0].photoSheet, seed.students[0].photoSheet);
+  assert.equal(reconciled.students[0].photoIndex, 12);
+  assert.deepEqual(reconciled.records, saved.records);
+  assert.deepEqual(reconciled.plans, saved.plans);
 });
 
 test("o indicador representa as ações agendadas do perfil conectado", () => {

@@ -14,6 +14,7 @@ const {
   nextBusinessDay,
   parseDisplayDate,
   planEffectiveStatus,
+  reconcileStudentMedia,
   relativeDateLabel,
   startOfAgenda,
   startOfCurrentWeek,
@@ -27,7 +28,9 @@ function cloneSeed() {
 function loadDatabase() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-    if (saved?.schemaVersion === window.NOTARE_SEED.schemaVersion) return saved;
+    if (saved?.schemaVersion === window.NOTARE_SEED.schemaVersion) {
+      return reconcileStudentMedia(saved, window.NOTARE_SEED);
+    }
   } catch (error) {
     console.warn("A base local não pôde ser carregada; usando a base inicial.", error);
   }

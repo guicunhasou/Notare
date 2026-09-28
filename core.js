@@ -117,6 +117,22 @@
     return plan.status;
   }
 
+  function reconcileStudentMedia(database, seed) {
+    if (!database || !Array.isArray(database.students) || !Array.isArray(seed?.students)) return database;
+    const seedStudents = new Map(seed.students.map((student) => [student.id, student]));
+    database.students = database.students.map((student) => {
+      const seedStudent = seedStudents.get(student.id);
+      if (!seedStudent) return student;
+      const nextStudent = { ...student };
+      for (const field of ["photo", "photoSheet", "photoIndex"]) {
+        if (seedStudent[field] === undefined) delete nextStudent[field];
+        else nextStudent[field] = seedStudent[field];
+      }
+      return nextStudent;
+    });
+    return database;
+  }
+
   window.NOTARE_CORE = Object.freeze({
     addBusinessDays,
     addDays,
@@ -130,6 +146,7 @@
     nextBusinessDay,
     parseDisplayDate,
     planEffectiveStatus,
+    reconcileStudentMedia,
     relativeDateLabel,
     startOfAgenda,
     startOfCurrentWeek,
