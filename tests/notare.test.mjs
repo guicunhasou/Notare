@@ -82,20 +82,21 @@ test("o HTML preserva datas dinâmicas e os contratos básicos de acessibilidade
   assert.match(html, /id="notification-popover" role="dialog"/);
   assert.match(html, /data-filter="todos" aria-pressed="true"/);
   assert.doesNotMatch(html, /name="date" value="2026-/);
-  assert.match(html, /styles\.css\?v=11/);
+  assert.match(html, /styles\.css\?v=12/);
   assert.match(html, /data\.js\?v=10/);
   assert.match(html, /core\.js\?v=1/);
   assert.match(html, /ui\.js\?v=1/);
-  assert.match(html, /app\.js\?v=14/);
+  assert.match(html, /app\.js\?v=15/);
 });
 
-test("o indicador representa todas as ações agendadas", () => {
+test("o indicador representa as ações agendadas do perfil conectado", () => {
   const html = read("index.html");
   const source = read("app.js");
 
   assert.match(html, /Ações agendadas/);
   assert.doesNotMatch(html, /Retornos pendentes/);
   assert.match(source, /const scheduledActions = agenda\.length/);
+  assert.match(source, /item\.ownerId === state\.profileId/);
 });
 
 test("o menu móvel isola o conteúdo e contém a navegação por teclado", () => {
@@ -118,14 +119,68 @@ test("a navegação usa histórico real e responde a Voltar e Avançar", () => {
   assert.doesNotMatch(source, /addEventListener\("hashchange"/);
 });
 
-test("a ativação institucional está disponível apenas para a direção", () => {
-  const seed = loadSeed();
+test("a jornada guiada representa o fluxo real sem fingir integrações", () => {
   const html = read("index.html");
   const source = read("app.js");
-  const allowed = seed.profiles.filter((profile) => profile.permissions.includes("school:view"));
 
-  assert.equal(allowed.map((profile) => profile.id).join(","), "direcao");
-  assert.match(html, /data-view="ativacao"/);
-  assert.match(html, /data-route="ativacao" data-permission="school:view"/);
-  assert.match(source, /ativacao: "school:view"/);
+  assert.match(html, /data-view="jornada"/);
+  assert.equal((html.match(/data-journey-step=/g) || []).length, 4);
+  assert.match(html, /Pular apresentação/);
+  assert.match(html, /Este MVP não autentica uma escola em servidor/);
+  assert.match(html, /Não há cobrança, assinatura ou processamento comercial/);
+  assert.match(html, /data-demo-text="Escola Horizonte Vivo"/);
+  assert.match(html, /Dados e fotos anexados/);
+  assert.match(source, /async function typeJourneyText/);
+  assert.match(source, /async function playJourneyStep/);
+  assert.doesNotMatch(source, /}, 6000\)/);
+  assert.match(source, /location\.hash\.slice\(1\) \|\| "jornada"/);
+});
+
+test("o novo registro escolhe turma antes do estudante", () => {
+  const html = read("index.html");
+  const source = read("app.js");
+
+  assert.ok(html.indexOf('id="record-class"') < html.indexOf('id="record-student"'));
+  assert.match(source, /student\.className === state\.recordClass/);
+  assert.match(source, /#record-class/);
+});
+
+test("a autoria do registro fica vinculada ao perfil conectado", () => {
+  const html = read("index.html");
+  const source = read("app.js");
+
+  assert.doesNotMatch(html, /id="record-owner"/);
+  assert.match(html, /id="record-owner-display"/);
+  assert.match(source, /ownerId: state\.profileId/);
+});
+
+test("a sugestão de texto declara e implementa uma simulação local", () => {
+  const html = read("index.html");
+  const source = read("app.js");
+
+  assert.match(html, /Gerar sugestão simulada/);
+  assert.match(html, /não usa inteligência artificial real/);
+  assert.match(source, /const suggestions = \{/);
+  assert.doesNotMatch(source, /\bfetch\s*\(/);
+});
+
+test("a escola oferece saída para o acesso institucional", () => {
+  const html = read("index.html");
+  const source = read("app.js");
+
+  assert.match(html, /id="school-menu-button"/);
+  assert.match(html, /id="school-logout"/);
+  assert.match(source, /showRoute\("jornada"\)/);
+});
+
+test("os seletores reservam espaço para a seta", () => {
+  const css = read("styles.css");
+  assert.match(css, /select \{ appearance: none; padding-right: 2\.8rem/);
+  assert.match(css, /background-position: right \.9rem center/);
+});
+
+test("a troca de perfis é identificada como recurso exclusivo do MVP", () => {
+  const html = read("index.html");
+  assert.match(html, /Perfis de demonstração/);
+  assert.match(html, /No produto real, cada funcionário acessa sua própria conta/);
 });

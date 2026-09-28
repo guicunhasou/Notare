@@ -10,6 +10,7 @@ const {
   escapeHtml,
   formatDate,
   greetingFor,
+  isWeekend,
   nextBusinessDay,
   parseDisplayDate,
   planEffectiveStatus,
@@ -38,10 +39,11 @@ let db = loadDatabase();
 const state = {
   profileId: localStorage.getItem(PROFILE_KEY) || "direcao",
   currentStudent: "ana",
-  currentRoute: "painel",
-  previousRoute: "painel",
+  currentRoute: "jornada",
+  previousRoute: "jornada",
   filter: "todos",
   classFilter: "6º A",
+  recordClass: "8º B",
   recordFilter: "todos",
   query: "",
   lastPlanId: null
@@ -55,6 +57,15 @@ const scrim = document.querySelector("#sidebar-scrim");
 const profileDialog = document.querySelector("#profile-dialog");
 const appShell = document.querySelector(".app-shell");
 const sidebarToggle = document.querySelector("#sidebar-toggle");
+const schoolMenuButton = document.querySelector("#school-menu-button");
+const schoolPopover = document.querySelector("#school-popover");
+const journeyCaptureMode = new URLSearchParams(location.search).has("capture");
+const journeyReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const requestedJourneyStep = Number.parseInt(new URLSearchParams(location.search).get("journey-step") || "0", 10);
+let journeyStep = Number.isInteger(requestedJourneyStep) ? Math.min(Math.max(requestedJourneyStep, 0), 3) : 0;
+let journeyPaused = false;
+let journeyTimer = null;
+let journeyRunId = 0;
 const notificationTemplates = [
   { id: "review-ana", title: "Revisão pendente", message: "O plano de Ana Souza possui uma revisão prevista para hoje." },
   { id: "return-joao", title: "Retorno sem confirmação", message: "O contato com o responsável de João Oliveira ainda não foi confirmado." }
@@ -155,7 +166,9 @@ function calendarEventCounts(now) {
     counts.set(key, (counts.get(key) || 0) + 1);
   };
 
-  db.agenda.filter((item) => visibleIds.has(item.studentId)).forEach((item) => addEvent(agendaDate(item, now)));
+  db.agenda
+    .filter((item) => visibleIds.has(item.studentId) && item.ownerId === state.profileId)
+    .forEach((item) => addEvent(agendaDate(item, now)));
   return counts;
 }
 
@@ -312,6 +325,7 @@ function studentButton(student) {
 function renderSchool() {
   const school = db.school;
   document.querySelector("#topbar-school-name").textContent = school.name;
+  document.querySelector("#school-popover-name").textContent = school.name;
   document.querySelector("#school-logo-image").src = "assets/profiles/escola-logo.png";
 }
 
@@ -371,12 +385,11 @@ function renderProfileIdentity() {
 }
 
 function renderOwnerOptions() {
-  const recordOwners = db.profiles.filter((profile) => profile.permissions.includes("records:create"));
   const planOwners = db.profiles.filter((profile) => profile.permissions.includes("plans:create"));
   const option = (profile) => `<option value="${escapeHtml(profile.id)}">${escapeHtml(profile.name)} · ${escapeHtml(profile.role)}</option>`;
-  document.querySelector("#record-owner").innerHTML = recordOwners.map(option).join("");
   document.querySelector("#plan-owner").innerHTML = planOwners.map(option).join("");
-  if (recordOwners.some((profile) => profile.id === state.profileId)) document.querySelector("#record-owner").value = state.profileId;
+  const profile = getProfile();
+  document.querySelector("#record-owner-display").textContent = `${profile.name} · ${profile.role}`;
   if (planOwners.some((profile) => profile.id === state.profileId)) document.querySelector("#plan-owner").value = state.profileId;
 }
 
@@ -386,11 +399,11 @@ function renderDashboard(now = new Date()) {
   const plans = visiblePlans();
   const visibleIds = new Set(students.map((student) => student.id));
   const agenda = db.agenda
-    .filter((item) => visibleIds.has(item.studentId))
+    .filter((item) => visibleIds.has(item.studentId) && item.ownerId === state.profileId)
     .map((item) => ({ ...item, scheduledDate: agendaDate(item, now), agendaState: agendaState(item, now) }))
     .sort((a, b) => a.scheduledDate - b.scheduledDate || (a.time || "23:59").localeCompare(b.time || "23:59"));
   const latestPlanAgendaId = db.agenda.find(
-    (item) => item.sourcePlanId && visibleIds.has(item.studentId)
+    (item) => item.sourcePlanId && visibleIds.has(item.studentId) && item.ownerId === state.profileId
   )?.id;
   const latestPlanAgenda = agenda.find((item) => item.id === latestPlanAgendaId);
   let agendaPreview = agenda.slice(0, 4);
@@ -420,12 +433,12 @@ function renderDashboard(now = new Date()) {
   const ordered = [...students].sort((a, b) => order[a.priority] - order[b.priority]);
   document.querySelector("#dashboard-students").innerHTML = ordered.slice(0, 5).map(studentButton).join("");
 
-  document.querySelector("#agenda-list").innerHTML = agendaPreview.map((item) => {
+  document.querySelector("#agenda-list").innerHTML = agendaPreview.length ? agendaPreview.map((item) => {
     const student = getStudent(item.studentId);
     const owner = getOwner(item.ownerId);
     const stateCopy = item.agendaState ? `<small class="agenda-state">${escapeHtml(item.agendaState.label)} · ${escapeHtml(item.agendaState.text)}</small>` : "";
     return `<li class="${item.agendaState ? "is-repositioned" : ""}"><span class="agenda-time">${escapeHtml(agendaSlot(item, now, item.scheduledDate))}</span><span class="agenda-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(student.name)} · ${escapeHtml(owner?.name.split(" ")[0] || "Equipe")}</span>${stateCopy}</span></li>`;
-  }).join("");
+  }).join("") : '<li class="agenda-empty">Nenhum compromisso atribuído a você.</li>';
 
   const active = plans.filter((plan) => planEffectiveStatus(plan, now) === "active").length;
   const review = plans.filter((plan) => ["review", "overdue"].includes(planEffectiveStatus(plan, now))).length;
@@ -480,10 +493,19 @@ function renderStudents() {
 }
 
 function renderStudentSelect() {
-  const select = document.querySelector("#record-student");
-  select.innerHTML = visibleStudents().map((student) => `<option value="${escapeHtml(student.id)}">${escapeHtml(student.name)} · ${escapeHtml(student.className)}</option>`).join("");
-  const currentIsVisible = visibleStudents().some((student) => student.id === state.currentStudent);
-  if (currentIsVisible) select.value = state.currentStudent;
+  const scopedStudents = visibleStudents();
+  const classSelect = document.querySelector("#record-class");
+  const studentSelect = document.querySelector("#record-student");
+  const classes = [...new Set(scopedStudents.map((student) => student.className))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  const currentStudent = scopedStudents.find((student) => student.id === state.currentStudent);
+  state.recordClass = currentStudent?.className || (classes.includes(state.recordClass) ? state.recordClass : classes[0] || "");
+  classSelect.innerHTML = classes.map((className) => `<option value="${escapeHtml(className)}">${escapeHtml(className)}</option>`).join("");
+  classSelect.value = state.recordClass;
+
+  const classStudents = scopedStudents.filter((student) => student.className === state.recordClass);
+  if (!classStudents.some((student) => student.id === state.currentStudent)) state.currentStudent = classStudents[0]?.id || scopedStudents[0]?.id;
+  studentSelect.innerHTML = classStudents.map((student) => `<option value="${escapeHtml(student.id)}">${escapeHtml(student.name)}</option>`).join("");
+  studentSelect.value = state.currentStudent;
 }
 
 function renderStudentProfile() {
@@ -568,7 +590,7 @@ function renderAll() {
 }
 
 function routeTitle(route) {
-  const labels = { painel: "Visão geral", "busca-ativa": "Acompanhamento escolar", estudante: "Perfil do estudante", registros: "Registros", estudantes: "Estudantes", ativacao: "Ativação da escola", "novo-registro": "Novo registro", plano: "Plano de ação", conclusao: "Plano criado" };
+  const labels = { painel: "Visão geral", "busca-ativa": "Acompanhamento escolar", estudante: "Perfil do estudante", registros: "Registros", estudantes: "Estudantes", jornada: "Jornada do produto", "novo-registro": "Novo registro", plano: "Plano de ação", conclusao: "Plano criado" };
   return labels[route] || "Notare";
 }
 
@@ -577,7 +599,6 @@ const routePermissions = {
   "busca-ativa": "followup:view",
   estudante: "students:view",
   estudantes: "students:view",
-  ativacao: "school:view",
   registros: "records:view",
   "novo-registro": "records:create",
   plano: "plans:create"
@@ -585,7 +606,7 @@ const routePermissions = {
 
 function showRoute(route, options = {}) {
   const exists = views.some((view) => view.dataset.view === route);
-  let nextRoute = exists ? route : "painel";
+  let nextRoute = exists ? route : "jornada";
   const permission = routePermissions[nextRoute];
   if (permission && !hasPermission(permission)) {
     showToast(`O perfil ${getProfile().role} não tem acesso a esta ação.`);
@@ -594,6 +615,9 @@ function showRoute(route, options = {}) {
 
   if (state.currentRoute !== nextRoute) state.previousRoute = state.currentRoute;
   state.currentRoute = nextRoute;
+  appShell.classList.toggle("journey-mode", nextRoute === "jornada");
+  if (nextRoute === "jornada") startJourney({ reset: !options.skipHistory });
+  else stopJourney();
   if (nextRoute === "estudante" || nextRoute === "plano" || nextRoute === "novo-registro") renderStudentProfile();
   if (nextRoute === "registros") renderRecords();
   if (nextRoute === "painel") renderDashboard();
@@ -622,6 +646,127 @@ function showRoute(route, options = {}) {
   document.querySelector("#main-content").focus({ preventScroll: true });
   window.scrollTo({ top: 0, behavior: "smooth" });
   sidebarDrawer.close();
+}
+
+function stopJourney() {
+  window.clearTimeout(journeyTimer);
+  journeyTimer = null;
+  journeyRunId += 1;
+}
+
+function journeyWait(milliseconds) {
+  return new Promise((resolve) => {
+    journeyTimer = window.setTimeout(resolve, milliseconds);
+  });
+}
+
+async function typeJourneyText(element, text, runId) {
+  element.textContent = "";
+  element.classList.add("is-typing");
+  for (const character of text) {
+    if (runId !== journeyRunId || journeyPaused || state.currentRoute !== "jornada") return false;
+    element.textContent += character;
+    await journeyWait(character === " " ? 18 : 32);
+  }
+  element.classList.remove("is-typing");
+  return true;
+}
+
+function completeJourneyPreview(step) {
+  step.querySelectorAll("[data-demo-text]").forEach((element) => { element.textContent = element.dataset.demoText; });
+  step.querySelectorAll(".demo-reveal, .demo-photo").forEach((element) => element.classList.add("is-visible"));
+}
+
+async function playJourneyStep() {
+  stopJourney();
+  if (journeyPaused || state.currentRoute !== "jornada") return;
+  const runId = journeyRunId;
+  const step = document.querySelector(`[data-journey-step="${journeyStep}"]`);
+  step.querySelectorAll("[data-demo-text]").forEach((element) => { element.textContent = ""; });
+  step.querySelectorAll(".demo-reveal, .demo-photo").forEach((element) => element.classList.remove("is-visible"));
+  if (journeyCaptureMode || journeyReducedMotion) {
+    completeJourneyPreview(step);
+    if (!journeyCaptureMode) {
+      await journeyWait(1200);
+      if (runId !== journeyRunId || journeyPaused || state.currentRoute !== "jornada") return;
+      if (journeyStep < 3) {
+        journeyStep += 1;
+        renderJourney();
+        playJourneyStep();
+      } else {
+        showRoute("painel");
+      }
+    }
+    return;
+  }
+
+  await journeyWait(350);
+  for (const element of step.querySelectorAll("[data-demo-text]")) {
+    if (!await typeJourneyText(element, element.dataset.demoText, runId)) return;
+    await journeyWait(180);
+  }
+  for (const element of step.querySelectorAll(".demo-reveal, .demo-photo")) {
+    if (runId !== journeyRunId || journeyPaused || state.currentRoute !== "jornada") return;
+    element.classList.add("is-visible");
+    await journeyWait(320);
+  }
+  await journeyWait(850);
+  if (runId !== journeyRunId || journeyPaused || state.currentRoute !== "jornada") return;
+  if (journeyStep < 3) {
+    journeyStep += 1;
+    renderJourney();
+    playJourneyStep();
+  } else {
+    showRoute("painel");
+  }
+}
+
+function scheduleJourney() {
+  if (journeyPaused || state.currentRoute !== "jornada") return;
+  playJourneyStep();
+}
+
+function renderJourney() {
+  document.querySelectorAll("[data-journey-step]").forEach((step) => {
+    const active = Number(step.dataset.journeyStep) === journeyStep;
+    step.hidden = !active;
+    step.classList.toggle("active", active);
+  });
+  document.querySelector("#journey-step-label").textContent = `Etapa ${journeyStep + 1} de 4`;
+  document.querySelector("#journey-progress-bar").style.width = `${(journeyStep + 1) * 25}%`;
+  document.querySelector("#journey-autoplay").textContent = journeyCaptureMode
+    ? "Modo de captura: preenchimento concluído."
+    : journeyPaused ? "Apresentação pausada." : "A demonstração preenche os dados e avança ao concluir cada ação.";
+  const pauseButton = document.querySelector("#journey-pause");
+  pauseButton.setAttribute("aria-pressed", String(journeyPaused));
+  pauseButton.setAttribute("aria-label", journeyPaused ? "Retomar apresentação" : "Pausar apresentação");
+  pauseButton.querySelector("use").setAttribute("href", journeyPaused ? "#i-play" : "#i-pause");
+}
+
+function startJourney({ reset = true } = {}) {
+  if (reset) journeyStep = 0;
+  journeyPaused = false;
+  renderJourney();
+  scheduleJourney();
+}
+
+function toggleJourneyPause() {
+  journeyPaused = !journeyPaused;
+  renderJourney();
+  scheduleJourney();
+}
+
+function closeSchoolMenu({ restoreFocus = false } = {}) {
+  schoolPopover.hidden = true;
+  schoolMenuButton.setAttribute("aria-expanded", "false");
+  if (restoreFocus) schoolMenuButton.focus();
+}
+
+function toggleSchoolMenu() {
+  const willOpen = schoolPopover.hidden;
+  schoolPopover.hidden = !willOpen;
+  schoolMenuButton.setAttribute("aria-expanded", String(willOpen));
+  if (willOpen) notificationCenter.close();
 }
 
 function openStudent(id) {
@@ -677,6 +822,7 @@ function switchProfile(profileId) {
   state.query = "";
   state.filter = "todos";
   state.classFilter = getProfile(profileId).scope.startsWith("class:") ? getProfile(profileId).scope.replace("class:", "") : "6º A";
+  state.recordClass = getProfile(profileId).scope.startsWith("class:") ? getProfile(profileId).scope.replace("class:", "") : getStudent().className;
   state.recordFilter = "todos";
   localStorage.setItem(PROFILE_KEY, profileId);
   document.querySelector("#student-search").value = "";
@@ -737,6 +883,32 @@ document.querySelectorAll("[data-filter]").forEach((button) => button.addEventLi
 document.querySelector("#class-filter").addEventListener("change", (event) => {
   state.classFilter = event.currentTarget.value;
   renderStudents();
+});
+
+document.querySelector("#record-class").addEventListener("change", (event) => {
+  state.recordClass = event.currentTarget.value;
+  const firstStudent = visibleStudents().find((student) => student.className === state.recordClass);
+  if (firstStudent) state.currentStudent = firstStudent.id;
+  renderStudentSelect();
+});
+
+document.querySelector("#record-student").addEventListener("change", (event) => {
+  state.currentStudent = event.currentTarget.value;
+});
+
+document.querySelector("#record-suggestion").addEventListener("click", () => {
+  const form = document.querySelector("#record-form");
+  const student = getStudent(form.elements.student.value);
+  const kind = new FormData(form).get("kind");
+  const suggestions = {
+    "Ausência": `${student.name} não esteve presente na data informada. O registro foi incluído para acompanhamento da frequência, sem informações adicionais sobre o motivo.`,
+    "Contato": `Foi realizado contato com o responsável de ${student.name}. A equipe aguarda confirmação ou devolutiva para definir o próximo passo.`,
+    "Ocorrência": `Foi observado um fato relacionado à rotina escolar de ${student.name}. O registro descreve apenas o que foi verificado e será revisado pela equipe responsável.`,
+    "Devolutiva": `Foi registrada uma devolutiva sobre o acompanhamento de ${student.name}. A equipe irá verificar o retorno e combinar a continuidade necessária.`
+  };
+  form.elements.description.value = suggestions[kind] || suggestions["Ausência"];
+  form.elements.description.focus();
+  announcement.textContent = "Sugestão simulada inserida. Revise o texto antes de salvar.";
 });
 
 document.querySelectorAll("[data-record-filter]").forEach((button) => button.addEventListener("click", () => {
@@ -809,7 +981,7 @@ document.querySelector("#record-form").addEventListener("submit", (event) => {
     studentId: student.id,
     description: data.get("description"),
     date: formatDate(data.get("date")),
-    ownerId: data.get("owner"),
+    ownerId: state.profileId,
     followup: data.get("followup") === "on"
   });
   saveDatabase();
@@ -833,6 +1005,22 @@ document.querySelector("#notification-banner-open").addEventListener("click", (e
 });
 document.querySelector("#notification-list").addEventListener("click", notificationCenter.handleAction);
 document.addEventListener("click", notificationCenter.closeWhenOutside);
+schoolMenuButton.addEventListener("click", (event) => {
+  event.stopPropagation();
+  toggleSchoolMenu();
+});
+document.querySelector("#school-logout").addEventListener("click", () => {
+  closeSchoolMenu();
+  closeProfileDialog();
+  journeyStep = 0;
+  showRoute("jornada");
+  announcement.textContent = "Sessão demonstrativa encerrada. Retorno ao acesso institucional.";
+});
+document.addEventListener("click", (event) => {
+  if (!event.target.closest("#school-menu")) closeSchoolMenu();
+});
+document.querySelector("#journey-skip").addEventListener("click", () => showRoute("painel"));
+document.querySelector("#journey-pause").addEventListener("click", toggleJourneyPause);
 document.querySelector("#profile-button").addEventListener("click", openProfileDialog);
 document.querySelector("#profile-close").addEventListener("click", closeProfileDialog);
 document.querySelector("#profile-done").addEventListener("click", closeProfileDialog);
@@ -854,13 +1042,14 @@ document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
   sidebarDrawer.close({ restoreFocus: true });
   notificationCenter.close({ restoreFocus: true });
+  closeSchoolMenu({ restoreFocus: true });
 });
-window.addEventListener("popstate", () => showRoute(location.hash.slice(1) || "painel", { skipHistory: true }));
+window.addEventListener("popstate", () => showRoute(location.hash.slice(1) || "jornada", { skipHistory: true }));
 
 if (!db.profiles.some((profile) => profile.id === state.profileId)) state.profileId = "direcao";
 renderAll();
 applySidebarState(localStorage.getItem(SIDEBAR_KEY) === "true");
-const initialRoute = location.hash.slice(1) || "painel";
+const initialRoute = location.hash.slice(1) || "jornada";
 history.replaceState({ route: initialRoute }, "", `#${initialRoute}`);
 showRoute(initialRoute, { skipHistory: true });
 notificationCenter.render();

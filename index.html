@@ -10,11 +10,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=11" />
+    <link rel="stylesheet" href="styles.css?v=12" />
     <script src="data.js?v=10" defer></script>
     <script src="core.js?v=1" defer></script>
     <script src="ui.js?v=1" defer></script>
-    <script src="app.js?v=14" defer></script>
+    <script src="app.js?v=15" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
@@ -33,6 +33,10 @@
       <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
       <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 5 3 8 7 10 4-2 7-5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 3 1.2 3.8L17 8l-3.8 1.2L12 13l-1.2-3.8L7 8l3.8-1.2L12 3Z"/><path d="m18 13 .8 2.2L21 16l-2.2.8L18 19l-.8-2.2L15 16l2.2-.8L18 13ZM5 13l.7 2.3L8 16l-2.3.7L5 19l-.7-2.3L2 16l2.3-.7L5 13Z"/></symbol>
+      <symbol id="i-logout" viewBox="0 0 24 24"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></symbol>
     </svg>
 
     <div class="app-shell">
@@ -51,13 +55,13 @@
           <a href="#busca-ativa" data-route="busca-ativa" data-permission="followup:view"><svg><use href="#i-search"></use></svg><span>Acompanhamento</span><strong class="nav-count" id="nav-priority-count">4</strong></a>
           <a href="#registros" data-route="registros"><svg><use href="#i-clipboard"></use></svg><span>Registros</span></a>
           <a href="#estudantes" data-route="estudantes"><svg><use href="#i-users"></use></svg><span>Estudantes</span></a>
-          <a href="#ativacao" data-route="ativacao" data-permission="school:view"><svg><use href="#i-shield"></use></svg><span>Ativação</span></a>
+          <a href="#jornada" data-route="jornada"><svg><use href="#i-shield"></use></svg><span>Jornada do produto</span></a>
         </nav>
 
         <div class="sidebar-footer">
           <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Recolher menu lateral" aria-expanded="true" title="Recolher menu"><svg><use href="#i-back"></use></svg><span>Recolher menu</span></button>
           <span class="sidebar-divider" aria-hidden="true"></span>
-          <button class="user-card" id="profile-button" type="button" aria-haspopup="dialog" aria-label="Trocar perfil de acesso">
+          <button class="user-card" id="profile-button" type="button" aria-haspopup="dialog" aria-label="Simular perfil do MVP">
             <span class="user-avatar" id="user-avatar"><img class="avatar-photo" src="assets/profiles/camila-duarte.png" alt="" /></span>
             <span><strong id="user-name">Camila Duarte</strong><small id="user-role">Direção escolar</small></span>
             <svg><use href="#i-arrow"></use></svg>
@@ -70,9 +74,16 @@
       <div class="workspace">
         <header class="topbar">
           <button class="icon-button menu-button" id="menu-button" type="button" aria-label="Abrir menu" aria-controls="sidebar" aria-expanded="false"><svg><use href="#i-menu"></use></svg></button>
-          <div class="topbar-school">
-            <span class="school-logo" aria-hidden="true"><img id="school-logo-image" src="assets/profiles/escola-logo.png" alt="" /></span>
-            <div class="topbar-context"><strong id="topbar-school-name">Escola Horizonte Vivo</strong></div>
+          <div class="school-menu" id="school-menu">
+            <button class="topbar-school" id="school-menu-button" type="button" aria-haspopup="menu" aria-controls="school-popover" aria-expanded="false">
+              <span class="school-logo" aria-hidden="true"><img id="school-logo-image" src="assets/profiles/escola-logo.png" alt="" /></span>
+              <span class="topbar-context"><strong id="topbar-school-name">Escola Horizonte Vivo</strong><small>Conta institucional</small></span>
+              <svg aria-hidden="true"><use href="#i-arrow"></use></svg>
+            </button>
+            <div class="school-popover" id="school-popover" role="menu" hidden>
+              <div><strong id="school-popover-name">Escola Horizonte Vivo</strong><small>Ambiente demonstrativo</small></div>
+              <button type="button" id="school-logout" role="menuitem"><svg><use href="#i-logout"></use></svg><span><strong>Sair da escola</strong><small>Voltar ao acesso institucional</small></span></button>
+            </div>
           </div>
           <div class="topbar-actions">
             <div class="notification-center" id="notification-center">
@@ -135,7 +146,7 @@
               </section>
 
               <aside class="card agenda-card" aria-labelledby="agenda-title">
-                <div class="card-heading"><div><h2 id="agenda-title">Próximas ações</h2></div><span class="today-pill">Hoje</span></div>
+                <div class="card-heading"><div><h2 id="agenda-title">Minha agenda</h2><p class="card-caption">Compromissos atribuídos ao perfil conectado</p></div><span class="today-pill">Hoje</span></div>
                 <ol class="agenda-list" id="agenda-list"></ol>
                 <button class="button button-soft button-block" data-route="registros">Ver acompanhamentos</button>
               </aside>
@@ -210,10 +221,10 @@
             <div class="form-layout">
               <div class="form-intro"><h1 id="registro-title">Acrescente um sinal ao histórico</h1><p>Registre somente informações necessárias ao acompanhamento. Evite diagnósticos, julgamentos ou detalhes sensíveis.</p><div class="privacy-tip"><svg><use href="#i-shield"></use></svg><span><strong>Privacidade desde o início</strong>Os registros ficam armazenados somente neste navegador.</span></div></div>
               <form class="card data-form" id="record-form">
-                <label>Estudante<select name="student" id="record-student" required></select></label>
+                <div class="two-fields"><label>Turma<select name="className" id="record-class" required></select></label><label>Estudante<select name="student" id="record-student" required></select></label></div>
                 <fieldset><legend>Tipo de registro</legend><div class="choice-row"><label><input type="radio" name="kind" value="Ausência" checked><span>Ausência</span></label><label><input type="radio" name="kind" value="Contato"><span>Contato</span></label><label data-permission="occurrences:create"><input type="radio" name="kind" value="Ocorrência"><span>Ocorrência</span></label><label><input type="radio" name="kind" value="Devolutiva"><span>Devolutiva</span></label></div></fieldset>
-                <div class="two-fields"><label>Data<input type="date" name="date" required></label><label>Registrado por<select name="owner" id="record-owner"></select></label></div>
-                <label>Descrição<textarea name="description" rows="5" placeholder="Descreva objetivamente o que foi observado ou realizado..." required></textarea><small>Não inclua dados de saúde ou outras informações sensíveis.</small></label>
+                <div class="two-fields"><label>Data<input type="date" name="date" required></label><label>Registrado por<span class="readonly-field" id="record-owner-display" aria-live="polite"></span></label></div>
+                <label class="description-field"><span class="field-heading"><span>Descrição</span><button class="text-button ai-simulation-button" id="record-suggestion" type="button"><svg><use href="#i-sparkles"></use></svg>Gerar sugestão simulada</button></span><textarea name="description" rows="5" placeholder="Descreva objetivamente o que foi observado ou realizado..." required></textarea><small><strong>Simulação do MVP:</strong> o texto é montado por regras locais e não usa inteligência artificial real. Revise antes de salvar e não inclua dados sensíveis.</small></label>
                 <label class="check-field"><input type="checkbox" name="followup"><span>Este registro precisa de acompanhamento</span></label>
                 <div class="form-actions"><button type="button" class="button button-secondary" data-back>Cancelar</button><button class="button button-primary" type="submit">Salvar registro</button></div>
               </form>
@@ -234,33 +245,32 @@
             </div>
           </section>
 
-          <section class="view activation-view" data-view="ativacao" aria-labelledby="activation-title">
-            <div class="page-heading activation-heading">
-              <div><span class="activation-kicker">Jornada institucional</span><h1 id="activation-title">Ativação da escola</h1><p>Da contratação institucional ao ambiente preparado para a equipe escolar.</p></div>
-              <span class="activation-status"><svg><use href="#i-check"></use></svg>Ambiente ativo</span>
+          <section class="view journey-view" data-view="jornada" aria-labelledby="journey-title">
+            <header class="journey-header">
+              <div><span class="journey-kicker">Demonstração guiada</span><h1 id="journey-title">Da escola ao acompanhamento</h1><p>O percurso avança sozinho. Você pode pausar ou pular a apresentação a qualquer momento.</p></div>
+              <button class="text-button" id="journey-skip" type="button">Pular apresentação</button>
+            </header>
+            <div class="journey-progress" aria-label="Progresso da apresentação"><span id="journey-progress-bar"></span></div>
+            <div class="journey-meta"><strong id="journey-step-label">Etapa 1 de 4</strong><button class="icon-button" id="journey-pause" type="button" aria-label="Pausar apresentação" aria-pressed="false"><svg><use href="#i-pause"></use></svg></button></div>
+            <div class="journey-stage" aria-live="polite">
+              <article class="journey-step" data-journey-step="0">
+                <div class="journey-copy"><span>1 · Acesso institucional</span><h2>A escola inicia com sua própria conta</h2><p>Na operação real, a instituição entra em um ambiente exclusivo e protegido. Esta tela representa o início desse vínculo.</p><div class="journey-note"><strong>Representação do produto real</strong><p>Este MVP não autentica uma escola em servidor e usa apenas dados fictícios no navegador.</p></div></div>
+                <div class="journey-preview"><span class="school-logo journey-logo demo-reveal" aria-hidden="true"><img src="assets/profiles/escola-logo.png" alt="" /></span><label class="demo-field"><span>Instituição</span><strong data-demo-text="Escola Horizonte Vivo"></strong></label><label class="demo-field"><span>Código da unidade</span><strong data-demo-text="ESC-001"></strong></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Dados institucionais validados</span></div>
+              </article>
+              <article class="journey-step" data-journey-step="1" hidden>
+                <div class="journey-copy"><span>2 · Contratação</span><h2>A instituição define o escopo do serviço</h2><p>A contratação real estabelece unidade, segmento atendido e perfis previstos antes da configuração do ambiente.</p><div class="journey-note"><strong>Simulação informativa</strong><p>Não há cobrança, assinatura ou processamento comercial neste protótipo.</p></div></div>
+                <div class="journey-preview"><label class="demo-field"><span>Unidade contratada</span><strong data-demo-text="Escola Horizonte Vivo"></strong></label><label class="demo-field"><span>Segmento</span><strong data-demo-text="Ensino Fundamental"></strong></label><label class="demo-field"><span>Plano institucional</span><strong data-demo-text="Acompanhamento escolar"></strong></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Proposta aprovada</span></div>
+              </article>
+              <article class="journey-step" data-journey-step="2" hidden>
+                <div class="journey-copy"><span>3 · Configuração da equipe</span><h2>Turmas e funcionários entram no ambiente</h2><p>A direção organiza os dados institucionais e cada funcionário recebe o acesso correspondente ao seu trabalho.</p><div class="journey-note"><strong>Dados desta demonstração</strong><p>A base contém 8 turmas, 96 estudantes fictícios e 5 perfis profissionais.</p></div></div>
+                <div class="journey-preview"><div class="demo-attachment demo-reveal"><svg><use href="#i-clipboard"></use></svg><span><strong>turmas-e-estudantes.csv</strong><small>8 turmas · 96 estudantes fictícios</small></span><i>anexado</i></div><div class="demo-attachment demo-reveal"><svg><use href="#i-users"></use></svg><span><strong>equipe-escolar.csv</strong><small>5 funcionários</small></span><i>anexado</i></div><div class="demo-photos" aria-label="Fotos de perfil anexadas"><span class="demo-photo"><img src="assets/profiles/camila-duarte.png" alt="" /></span><span class="demo-photo"><img src="assets/profiles/rafael-nunes.png" alt="" /></span><span class="demo-photo"><img src="assets/profiles/livia-moura.png" alt="" /></span><span class="demo-photo demo-photo-more">+2</span></div><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Dados e fotos anexados</span></div>
+              </article>
+              <article class="journey-step" data-journey-step="3" hidden>
+                <div class="journey-copy"><span>4 · Acesso do funcionário</span><h2>Camila entra na própria conta</h2><p>No produto real, cada funcionário utiliza credenciais individuais e não troca de identidade dentro do sistema.</p><div class="journey-note"><strong>Exclusivo deste MVP</strong><p>A troca rápida de perfis existe somente para demonstrar diferentes permissões durante a apresentação.</p></div></div>
+                <div class="journey-preview journey-login"><span class="user-avatar demo-reveal"><img class="avatar-photo" src="assets/profiles/camila-duarte.png" alt="" /></span><label class="demo-field"><span>E-mail profissional</span><strong data-demo-text="camila@horizontevivo.exemplo"></strong></label><label class="demo-field"><span>Senha</span><strong data-demo-text="••••••••••"></strong></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Acesso individual confirmado</span></div>
+              </article>
             </div>
-
-            <ol class="activation-flow" aria-label="Etapas da ativação institucional">
-              <li><span class="activation-step">1</span><div><strong>Contratação confirmada</strong><p>Escopo institucional e unidade escolar definidos.</p></div></li>
-              <li><span class="activation-step">2</span><div><strong>Unidade configurada</strong><p>Escola, segmento, turmas e período letivo organizados.</p></div></li>
-              <li><span class="activation-step">3</span><div><strong>Acessos definidos</strong><p>Perfis recebem apenas os dados e ações necessários.</p></div></li>
-              <li><span class="activation-step">4</span><div><strong>Operação iniciada</strong><p>A equipe entra no painel e começa o acompanhamento.</p></div></li>
-            </ol>
-
-            <div class="activation-details">
-              <section aria-labelledby="activation-school-title">
-                <h2 id="activation-school-title">Escola Horizonte Vivo</h2>
-                <p>A configuração demonstrativa está pronta para o Ensino Fundamental. A base usa dados fictícios e permite que a equipe conheça o fluxo antes de qualquer integração definitiva.</p>
-                <dl class="activation-facts"><div><dt>Unidade</dt><dd>ESC-001</dd></div><div><dt>Turmas</dt><dd>8</dd></div><div><dt>Estudantes fictícios</dt><dd>96</dd></div><div><dt>Perfis de acesso</dt><dd>5</dd></div></dl>
-              </section>
-              <section class="activation-next" aria-labelledby="activation-next-title">
-                <span class="activation-next-icon" aria-hidden="true"><svg><use href="#i-shield"></use></svg></span>
-                <h2 id="activation-next-title">Próximo passo</h2>
-                <p>Com a unidade configurada, a direção acessa a visão geral, identifica prioridades e organiza as primeiras ações.</p>
-                <button class="button button-primary" type="button" data-route="painel">Acessar visão geral</button>
-              </section>
-            </div>
-            <p class="activation-scope"><strong>Limite do MVP:</strong> contratação, cobrança e integrações comerciais acontecem fora deste ambiente. O fluxo exibido começa após a confirmação institucional.</p>
+            <p class="journey-autoplay" id="journey-autoplay">Próxima etapa em alguns segundos.</p>
           </section>
 
           <section class="view success-view" data-view="conclusao" aria-labelledby="success-title">
@@ -272,7 +282,8 @@
     </div>
 
     <dialog class="profile-dialog" id="profile-dialog" aria-labelledby="profile-dialog-title">
-      <div class="dialog-heading"><div><h2 id="profile-dialog-title">Trocar perfil de acesso</h2><p>Cada cargo enxerga apenas os dados e ações necessários ao seu trabalho.</p></div><button class="icon-button" id="profile-close" aria-label="Fechar">×</button></div>
+      <div class="dialog-heading"><div><h2 id="profile-dialog-title">Perfis de demonstração</h2><p>Compare permissões e experiências de acesso no protótipo.</p></div><button class="icon-button" id="profile-close" aria-label="Fechar">×</button></div>
+      <div class="mvp-profile-note"><strong>Recurso exclusivo do MVP</strong><p>No produto real, cada funcionário acessa sua própria conta e não pode trocar de usuário por este menu. A troca rápida existe apenas para demonstrar permissões.</p></div>
       <div class="role-list" id="role-list"></div>
       <div class="dialog-footer"><button class="text-button danger-text" id="reset-demo">Restaurar base inicial</button><button class="button button-secondary" id="profile-done">Concluir</button></div>
     </dialog>
