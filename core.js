@@ -133,6 +133,22 @@
     return database;
   }
 
+  function reconcileProfileConfiguration(database, seed) {
+    if (!database || !Array.isArray(database.profiles) || !Array.isArray(seed?.profiles)) return database;
+    const seedProfiles = new Map(seed.profiles.map((profile) => [profile.id, profile]));
+    database.profiles = database.profiles.map((profile) => {
+      const seedProfile = seedProfiles.get(profile.id);
+      if (!seedProfile) return profile;
+      return {
+        ...profile,
+        role: seedProfile.role,
+        description: seedProfile.description,
+        scope: seedProfile.scope
+      };
+    });
+    return database;
+  }
+
   window.NOTARE_CORE = Object.freeze({
     addBusinessDays,
     addDays,
@@ -146,6 +162,7 @@
     nextBusinessDay,
     parseDisplayDate,
     planEffectiveStatus,
+    reconcileProfileConfiguration,
     reconcileStudentMedia,
     relativeDateLabel,
     startOfAgenda,

@@ -14,6 +14,7 @@ const {
   nextBusinessDay,
   parseDisplayDate,
   planEffectiveStatus,
+  reconcileProfileConfiguration,
   reconcileStudentMedia,
   relativeDateLabel,
   startOfAgenda,
@@ -29,7 +30,7 @@ function loadDatabase() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
     if (saved?.schemaVersion === window.NOTARE_SEED.schemaVersion) {
-      return reconcileStudentMedia(saved, window.NOTARE_SEED);
+      return reconcileProfileConfiguration(reconcileStudentMedia(saved, window.NOTARE_SEED), window.NOTARE_SEED);
     }
   } catch (error) {
     console.warn("A base local não pôde ser carregada; usando a base inicial.", error);
@@ -58,6 +59,7 @@ const toast = document.querySelector("#toast");
 const sidebar = document.querySelector("#sidebar");
 const scrim = document.querySelector("#sidebar-scrim");
 const profileDialog = document.querySelector("#profile-dialog");
+const planDialog = document.querySelector("#institution-plan-dialog");
 const appShell = document.querySelector(".app-shell");
 const sidebarToggle = document.querySelector("#sidebar-toggle");
 const schoolMenuButton = document.querySelector("#school-menu-button");
@@ -216,12 +218,20 @@ function hasPermission(permission) {
   return getProfile().permissions.includes(permission);
 }
 
+function profileClassNames(profile = getProfile()) {
+  if (profile.scope.startsWith("classes:")) return profile.scope.replace("classes:", "").split("|").filter(Boolean);
+  if (profile.scope.startsWith("class:")) return [profile.scope.replace("class:", "")];
+  return [];
+}
+
+function sortStudentsByName(students) {
+  return [...students].sort((a, b) => a.name.localeCompare(b.name, "pt-BR", { sensitivity: "base" }));
+}
+
 function visibleStudents() {
   const profile = getProfile();
-  if (profile.scope.startsWith("class:")) {
-    const className = profile.scope.replace("class:", "");
-    return db.students.filter((student) => student.className === className);
-  }
+  const classNames = profileClassNames(profile);
+  if (classNames.length) return db.students.filter((student) => classNames.includes(student.className));
   if (profile.scope === "followup") return db.students.filter((student) => student.priority !== "estavel");
   return db.students;
 }
@@ -335,8 +345,10 @@ function renderSchool() {
 function renderChart() {
   const profile = getProfile();
   const labels = db.analytics.labels;
-  const className = profile.scope.startsWith("class:") ? profile.scope.replace("class:", "") : null;
-  const attendance = className && db.analytics.byClass[className] ? db.analytics.byClass[className] : db.analytics.attendance;
+  const classSeries = profileClassNames(profile).map((className) => db.analytics.byClass[className]).filter(Boolean);
+  const attendance = classSeries.length
+    ? labels.map((_, index) => Math.round(classSeries.reduce((total, values) => total + values[index], 0) / classSeries.length))
+    : db.analytics.attendance;
   const width = 760;
   const height = 250;
   const left = 42;
@@ -359,7 +371,12 @@ function renderChart() {
     ${gridValues.map((value) => `<line x1="${left}" y1="${y(value)}" x2="${width - right}" y2="${y(value)}" stroke="rgba(24,59,70,.10)"/><text x="${left - 10}" y="${y(value) + 4}" fill="#768184" font-family="Manrope, system-ui, sans-serif" font-size="11" font-weight="500" text-anchor="end">${value}%</text>`).join("")}
     <path d="${area}" fill="url(#chart-fill)"/>
     <polyline points="${points}" fill="none" stroke="#183B46" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    ${attendance.map((value, index) => `<circle cx="${x(index)}" cy="${y(value)}" r="5" fill="#F7F5F0" stroke="#6F927D" stroke-width="3"><title>${labels[index]}: ${value}% de frequência</title></circle>`).join("")}
+    ${attendance.map((value, index) => {
+      const tooltipX = Math.min(Math.max(x(index) - 45, left), width - right - 90);
+      const tooltipY = Math.max(y(value) - 44, 3);
+      const label = `${labels[index]}: ${value}%`;
+      return `<g class="chart-point" tabindex="0" role="img" aria-label="${escapeHtml(labels[index])}: ${value}% de frequência"><circle class="chart-point-hit" cx="${x(index)}" cy="${y(value)}" r="15"/><circle class="chart-point-dot" cx="${x(index)}" cy="${y(value)}" r="5"/><g class="chart-tooltip"><rect x="${tooltipX}" y="${tooltipY}" width="90" height="30" rx="7"/><text x="${tooltipX + 45}" y="${tooltipY + 19}" text-anchor="middle">${escapeHtml(label)}</text></g></g>`;
+    }).join("")}
     ${labels.map((label, index) => `<text x="${x(index)}" y="${height - 12}" fill="#768184" font-family="Manrope, system-ui, sans-serif" font-size="10" font-weight="500" text-anchor="middle">${escapeHtml(label)}</text>`).join("")}`;
   svg.setAttribute("aria-label", `Frequência de ${attendance.at(-1)} por cento na semana atual`);
 }
@@ -370,8 +387,9 @@ function renderProfileIdentity() {
   document.querySelector("#user-name").textContent = profile.name;
   document.querySelector("#user-role").textContent = profile.role;
   renderTemporalContext();
-  document.querySelector("#dashboard-subtitle").textContent = profile.scope.startsWith("class:")
-    ? `Você está vendo apenas estudantes da turma ${profile.scope.replace("class:", "")}.`
+  const classNames = profileClassNames(profile);
+  document.querySelector("#dashboard-subtitle").textContent = classNames.length
+    ? `Você está vendo estudantes das turmas ${classNames.join(" e ")}.`
     : "Veja quem precisa de atenção e organize as próximas ações.";
 
   document.querySelectorAll("[data-permission]").forEach((element) => {
@@ -438,9 +456,8 @@ function renderDashboard(now = new Date()) {
 
   document.querySelector("#agenda-list").innerHTML = agendaPreview.length ? agendaPreview.map((item) => {
     const student = getStudent(item.studentId);
-    const owner = getOwner(item.ownerId);
     const stateCopy = item.agendaState ? `<small class="agenda-state">${escapeHtml(item.agendaState.label)} · ${escapeHtml(item.agendaState.text)}</small>` : "";
-    return `<li class="${item.agendaState ? "is-repositioned" : ""}"><span class="agenda-time">${escapeHtml(agendaSlot(item, now, item.scheduledDate))}</span><span class="agenda-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(student.name)} · ${escapeHtml(owner?.name.split(" ")[0] || "Equipe")}</span>${stateCopy}</span></li>`;
+    return `<li class="${item.agendaState ? "is-repositioned" : ""}"><span class="agenda-time">${escapeHtml(agendaSlot(item, now, item.scheduledDate))}</span><span class="agenda-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(student.name)} (${escapeHtml(student.className)})</span>${stateCopy}</span></li>`;
   }).join("") : '<li class="agenda-empty">Nenhum compromisso atribuído a você.</li>';
 
   const active = plans.filter((plan) => planEffectiveStatus(plan, now) === "active").length;
@@ -462,7 +479,7 @@ function renderDashboard(now = new Date()) {
 }
 
 function renderStudents() {
-  const scopedStudents = visibleStudents();
+  const scopedStudents = sortStudentsByName(visibleStudents());
   const classNames = [...new Set(scopedStudents.map((student) => student.className))].sort((a, b) => a.localeCompare(b, "pt-BR"));
   const classSelect = document.querySelector("#class-filter");
   if (state.classFilter !== "todas" && !classNames.includes(state.classFilter)) state.classFilter = classNames[0] || "todas";
@@ -496,7 +513,7 @@ function renderStudents() {
 }
 
 function renderStudentSelect() {
-  const scopedStudents = visibleStudents();
+  const scopedStudents = sortStudentsByName(visibleStudents());
   const classSelect = document.querySelector("#record-class");
   const studentSelect = document.querySelector("#record-student");
   const classes = [...new Set(scopedStudents.map((student) => student.className))].sort((a, b) => a.localeCompare(b, "pt-BR"));
@@ -505,7 +522,7 @@ function renderStudentSelect() {
   classSelect.innerHTML = classes.map((className) => `<option value="${escapeHtml(className)}">${escapeHtml(className)}</option>`).join("");
   classSelect.value = state.recordClass;
 
-  const classStudents = scopedStudents.filter((student) => student.className === state.recordClass);
+  const classStudents = sortStudentsByName(scopedStudents.filter((student) => student.className === state.recordClass));
   if (!classStudents.some((student) => student.id === state.currentStudent)) state.currentStudent = classStudents[0]?.id || scopedStudents[0]?.id;
   studentSelect.innerHTML = classStudents.map((student) => `<option value="${escapeHtml(student.id)}">${escapeHtml(student.name)}</option>`).join("");
   studentSelect.value = state.currentStudent;
@@ -666,10 +683,11 @@ function journeyWait(milliseconds) {
 async function typeJourneyText(element, text, runId) {
   element.textContent = "";
   element.classList.add("is-typing");
-  for (const character of text) {
+  for (const [index, character] of [...text].entries()) {
     if (runId !== journeyRunId || journeyPaused || state.currentRoute !== "jornada") return false;
     element.textContent += character;
-    await journeyWait(character === " " ? 18 : 32);
+    const pause = /[.,@]/.test(character) ? 150 : character === " " ? 48 : 58 + (index % 4) * 7;
+    await journeyWait(pause);
   }
   element.classList.remove("is-typing");
   return true;
@@ -677,6 +695,10 @@ async function typeJourneyText(element, text, runId) {
 
 function completeJourneyPreview(step) {
   step.querySelectorAll("[data-demo-text]").forEach((element) => { element.textContent = element.dataset.demoText; });
+  step.querySelectorAll("[data-demo-select]").forEach((element) => {
+    element.value = element.dataset.demoSelect;
+    element.classList.add("is-set");
+  });
   step.querySelectorAll(".demo-reveal, .demo-photo").forEach((element) => element.classList.add("is-visible"));
 }
 
@@ -686,6 +708,10 @@ async function playJourneyStep() {
   const runId = journeyRunId;
   const step = document.querySelector(`[data-journey-step="${journeyStep}"]`);
   step.querySelectorAll("[data-demo-text]").forEach((element) => { element.textContent = ""; });
+  step.querySelectorAll("[data-demo-select]").forEach((element) => {
+    element.value = "";
+    element.classList.remove("is-set");
+  });
   step.querySelectorAll(".demo-reveal, .demo-photo").forEach((element) => element.classList.remove("is-visible"));
   if (journeyCaptureMode || journeyReducedMotion) {
     completeJourneyPreview(step);
@@ -703,17 +729,24 @@ async function playJourneyStep() {
     return;
   }
 
-  await journeyWait(350);
+  await journeyWait(650);
   for (const element of step.querySelectorAll("[data-demo-text]")) {
     if (!await typeJourneyText(element, element.dataset.demoText, runId)) return;
-    await journeyWait(180);
+    await journeyWait(360);
+  }
+  for (const element of step.querySelectorAll("[data-demo-select]")) {
+    if (runId !== journeyRunId || journeyPaused || state.currentRoute !== "jornada") return;
+    await journeyWait(520);
+    element.value = element.dataset.demoSelect;
+    element.classList.add("is-set");
+    await journeyWait(420);
   }
   for (const element of step.querySelectorAll(".demo-reveal, .demo-photo")) {
     if (runId !== journeyRunId || journeyPaused || state.currentRoute !== "jornada") return;
     element.classList.add("is-visible");
-    await journeyWait(320);
+    await journeyWait(480);
   }
-  await journeyWait(850);
+  await journeyWait(1100);
   if (runId !== journeyRunId || journeyPaused || state.currentRoute !== "jornada") return;
   if (journeyStep < 3) {
     journeyStep += 1;
@@ -819,13 +852,25 @@ function closeProfileDialog() {
   else profileDialog.removeAttribute("open");
 }
 
+function openInstitutionPlanDialog() {
+  closeSchoolMenu();
+  if (typeof planDialog.showModal === "function") planDialog.showModal();
+  else planDialog.setAttribute("open", "");
+}
+
+function closeInstitutionPlanDialog() {
+  if (typeof planDialog.close === "function" && planDialog.open) planDialog.close();
+  else planDialog.removeAttribute("open");
+}
+
 function switchProfile(profileId) {
   if (!db.profiles.some((profile) => profile.id === profileId)) return;
   state.profileId = profileId;
   state.query = "";
   state.filter = "todos";
-  state.classFilter = getProfile(profileId).scope.startsWith("class:") ? getProfile(profileId).scope.replace("class:", "") : "6º A";
-  state.recordClass = getProfile(profileId).scope.startsWith("class:") ? getProfile(profileId).scope.replace("class:", "") : getStudent().className;
+  const classNames = profileClassNames(getProfile(profileId));
+  state.classFilter = classNames[0] || "6º A";
+  state.recordClass = classNames[0] || getStudent().className;
   state.recordFilter = "todos";
   localStorage.setItem(PROFILE_KEY, profileId);
   document.querySelector("#student-search").value = "";
@@ -1012,6 +1057,7 @@ schoolMenuButton.addEventListener("click", (event) => {
   event.stopPropagation();
   toggleSchoolMenu();
 });
+document.querySelector("#school-plan").addEventListener("click", openInstitutionPlanDialog);
 document.querySelector("#school-logout").addEventListener("click", () => {
   closeSchoolMenu();
   closeProfileDialog();
@@ -1027,6 +1073,8 @@ document.querySelector("#journey-pause").addEventListener("click", toggleJourney
 document.querySelector("#profile-button").addEventListener("click", openProfileDialog);
 document.querySelector("#profile-close").addEventListener("click", closeProfileDialog);
 document.querySelector("#profile-done").addEventListener("click", closeProfileDialog);
+document.querySelector("#institution-plan-close").addEventListener("click", closeInstitutionPlanDialog);
+document.querySelector("#institution-plan-done").addEventListener("click", closeInstitutionPlanDialog);
 document.querySelector("#reset-demo").addEventListener("click", () => {
   if (!window.confirm("Restaurar a base inicial e apagar os registros adicionados neste navegador?")) return;
   db = cloneSeed();
@@ -1040,6 +1088,7 @@ document.querySelector("#reset-demo").addEventListener("click", () => {
   showToast("Base inicial restaurada.");
 });
 profileDialog.addEventListener("click", (event) => { if (event.target === profileDialog) closeProfileDialog(); });
+planDialog.addEventListener("click", (event) => { if (event.target === planDialog) closeInstitutionPlanDialog(); });
 document.addEventListener("keydown", (event) => {
   if (sidebarDrawer.trapFocus(event)) return;
   if (event.key !== "Escape") return;
@@ -1057,6 +1106,7 @@ history.replaceState({ route: initialRoute }, "", `#${initialRoute}`);
 showRoute(initialRoute, { skipHistory: true });
 notificationCenter.render();
 const notificationTestMode = new URLSearchParams(location.search).has("notification-test");
-const notificationDelays = notificationTestMode ? [500, 2500] : [60000, 120000];
+// As notificações entram depois que o usuário já teve tempo de reconhecer o painel.
+const notificationDelays = notificationTestMode ? [500, 2500] : [90000, 180000];
 notificationCenter.schedule(notificationDelays);
 window.setInterval(renderTemporalContext, 60000);

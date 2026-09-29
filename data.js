@@ -108,10 +108,10 @@ window.NOTARE_SEED = {
       id: "docencia",
       name: "Bruno Reis",
       initials: "BR",
-      role: "Docência · 8º B",
-      description: "Visualiza a própria turma e registra sinais pedagógicos.",
+      role: "Docência · 8º A e 8º B",
+      description: "Visualiza as duas turmas em que leciona e registra sinais pedagógicos.",
       permissions: ["dashboard:view", "students:view", "records:view", "records:create", "occurrences:view", "occurrences:create"],
-      scope: "class:8º B"
+      scope: "classes:8º A|8º B"
     },
     {
       id: "secretaria",

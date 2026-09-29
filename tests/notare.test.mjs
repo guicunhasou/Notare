@@ -82,11 +82,11 @@ test("o HTML preserva datas dinâmicas e os contratos básicos de acessibilidade
   assert.match(html, /id="notification-popover" role="dialog"/);
   assert.match(html, /data-filter="todos" aria-pressed="true"/);
   assert.doesNotMatch(html, /name="date" value="2026-/);
-  assert.match(html, /styles\.css\?v=12/);
-  assert.match(html, /data\.js\?v=10/);
-  assert.match(html, /core\.js\?v=2/);
+  assert.match(html, /styles\.css\?v=14/);
+  assert.match(html, /data\.js\?v=11/);
+  assert.match(html, /core\.js\?v=3/);
   assert.match(html, /ui\.js\?v=1/);
-  assert.match(html, /app\.js\?v=16/);
+  assert.match(html, /app\.js\?v=18/);
 });
 
 test("a base salva recebe as referências atuais das fotos sem perder alterações", () => {
@@ -108,6 +108,24 @@ test("a base salva recebe as referências atuais das fotos sem perder alteraçõ
   assert.equal(reconciled.students[0].photoIndex, 12);
   assert.deepEqual(reconciled.records, saved.records);
   assert.deepEqual(reconciled.plans, saved.plans);
+});
+
+test("a configuração atual dos perfis é aplicada sem apagar dados locais", () => {
+  const api = loadDateApi();
+  const saved = {
+    profiles: [{ id: "docencia", role: "Docência · 8º B", description: "Texto anterior", scope: "class:8º B", preference: "preservada" }],
+    records: [{ id: "registro-local" }]
+  };
+  const seed = {
+    profiles: [{ id: "docencia", role: "Docência · 8º A e 8º B", description: "Duas turmas", scope: "classes:8º A|8º B" }]
+  };
+
+  const reconciled = api.reconcileProfileConfiguration(saved, seed);
+
+  assert.equal(reconciled.profiles[0].scope, "classes:8º A|8º B");
+  assert.equal(reconciled.profiles[0].role, "Docência · 8º A e 8º B");
+  assert.equal(reconciled.profiles[0].preference, "preservada");
+  assert.deepEqual(reconciled.records, saved.records);
 });
 
 test("o indicador representa as ações agendadas do perfil conectado", () => {
@@ -147,14 +165,80 @@ test("a jornada guiada representa o fluxo real sem fingir integrações", () => 
   assert.match(html, /data-view="jornada"/);
   assert.equal((html.match(/data-journey-step=/g) || []).length, 4);
   assert.match(html, /Pular apresentação/);
+  assert.match(html, /assets\/brand\/notare-logo\.svg/);
+  assert.match(html, /assets\/brand\/notare-favicon\.svg/);
   assert.match(html, /Este MVP não autentica uma escola em servidor/);
   assert.match(html, /Não há cobrança, assinatura ou processamento comercial/);
   assert.match(html, /data-demo-text="Escola Horizonte Vivo"/);
-  assert.match(html, /Dados e fotos anexados/);
+  assert.match(html, /Importação concluída/);
   assert.match(source, /async function typeJourneyText/);
   assert.match(source, /async function playJourneyStep/);
+  assert.match(source, /character === " " \? 48 : 58/);
   assert.doesNotMatch(source, /}, 6000\)/);
   assert.match(source, /location\.hash\.slice\(1\) \|\| "jornada"/);
+});
+
+test("as quatro etapas simulam validação, contratação, anexos e acesso", () => {
+  const html = read("index.html");
+  const source = read("app.js");
+
+  assert.match(html, /Código INEP simulado/);
+  assert.match(html, /data-demo-text="26000000"/);
+  assert.match(html, /Importado da validação anterior/);
+  assert.match(html, /data-demo-select="Ensino Fundamental"/);
+  assert.match(html, /Educação de Jovens e Adultos/);
+  assert.match(html, /Notare Essencial/);
+  assert.match(html, /Notare Acompanhamento/);
+  assert.match(html, /Notare Rede/);
+  assert.match(html, /fotos-de-perfil\.zip/);
+  assert.match(html, /camila@horizontevivo\.edu/);
+  assert.match(source, /\[data-demo-select\]/);
+  assert.match(source, /element\.value = element\.dataset\.demoSelect/);
+});
+
+test("a navegação interna separa a introdução da consulta ao plano institucional", () => {
+  const html = read("index.html");
+  const source = read("app.js");
+
+  assert.doesNotMatch(html, /<span>Jornada do produto<\/span>/);
+  assert.match(html, /id="school-plan"/);
+  assert.match(html, /id="institution-plan-dialog"/);
+  assert.match(source, /openInstitutionPlanDialog/);
+});
+
+test("a agenda pessoal mostra estudante e turma sem repetir o responsável", () => {
+  const source = read("app.js");
+  assert.match(source, /student\.name\)} \(\$\{escapeHtml\(student\.className\)\}\)/);
+  assert.doesNotMatch(source, /owner\?\.name\.split/);
+});
+
+test("o gráfico expõe o valor de cada ponto no hover e no foco", () => {
+  const source = read("app.js");
+  const css = read("styles.css");
+  assert.match(source, /class="chart-point" tabindex="0"/);
+  assert.match(source, /class="chart-tooltip"/);
+  assert.match(css, /\.chart-point:hover \.chart-tooltip, \.chart-point:focus \.chart-tooltip/);
+});
+
+test("as listagens de estudantes são ordenadas por nome", () => {
+  const source = read("app.js");
+  assert.match(source, /function sortStudentsByName/);
+  assert.match(source, /const scopedStudents = sortStudentsByName\(visibleStudents\(\)\)/);
+  assert.match(source, /const classStudents = sortStudentsByName/);
+});
+
+test("o perfil docente reúne duas turmas e migra bases salvas", () => {
+  const seed = loadSeed();
+  const source = read("app.js");
+  const teacher = seed.profiles.find((profile) => profile.id === "docencia");
+  assert.equal(teacher.scope, "classes:8º A|8º B");
+  assert.match(source, /function profileClassNames/);
+  assert.match(source, /reconcileProfileConfiguration\(reconcileStudentMedia/);
+});
+
+test("as notificações comuns aguardam a leitura inicial do painel", () => {
+  const source = read("app.js");
+  assert.match(source, /notificationTestMode \? \[500, 2500\] : \[90000, 180000\]/);
 });
 
 test("o novo registro escolhe turma antes do estudante", () => {
@@ -183,6 +267,7 @@ test("a sugestão de texto declara e implementa uma simulação local", () => {
   assert.match(html, /não usa inteligência artificial real/);
   assert.match(source, /const suggestions = \{/);
   assert.doesNotMatch(source, /\bfetch\s*\(/);
+  assert.match(read("styles.css"), /\.ai-simulation-button \{[^}]*background: var\(--amber-soft\)/);
 });
 
 test("a escola oferece saída para o acesso institucional", () => {

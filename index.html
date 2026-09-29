@@ -6,15 +6,15 @@
     <meta name="description" content="MVP navegável da Notare para acompanhamento e permanência escolar." />
     <meta name="theme-color" content="#183B46" />
     <title>Notare — Permanência escolar</title>
-    <link rel="icon" href="assets/brand/notare-logo-sidebar.png" />
+    <link rel="icon" type="image/svg+xml" href="assets/brand/notare-favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=12" />
-    <script src="data.js?v=10" defer></script>
-    <script src="core.js?v=2" defer></script>
+    <link rel="stylesheet" href="styles.css?v=14" />
+    <script src="data.js?v=11" defer></script>
+    <script src="core.js?v=3" defer></script>
     <script src="ui.js?v=1" defer></script>
-    <script src="app.js?v=16" defer></script>
+    <script src="app.js?v=18" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
@@ -55,7 +55,6 @@
           <a href="#busca-ativa" data-route="busca-ativa" data-permission="followup:view"><svg><use href="#i-search"></use></svg><span>Acompanhamento</span><strong class="nav-count" id="nav-priority-count">4</strong></a>
           <a href="#registros" data-route="registros"><svg><use href="#i-clipboard"></use></svg><span>Registros</span></a>
           <a href="#estudantes" data-route="estudantes"><svg><use href="#i-users"></use></svg><span>Estudantes</span></a>
-          <a href="#jornada" data-route="jornada"><svg><use href="#i-shield"></use></svg><span>Jornada do produto</span></a>
         </nav>
 
         <div class="sidebar-footer">
@@ -82,6 +81,7 @@
             </button>
             <div class="school-popover" id="school-popover" role="menu" hidden>
               <div><strong id="school-popover-name">Escola Horizonte Vivo</strong><small>Ambiente demonstrativo</small></div>
+              <button class="school-plan-button" type="button" id="school-plan" role="menuitem" aria-haspopup="dialog"><svg><use href="#i-shield"></use></svg><span><strong>Plano e contratação</strong><small>Consultar o escopo institucional</small></span></button>
               <button type="button" id="school-logout" role="menuitem"><svg><use href="#i-logout"></use></svg><span><strong>Sair da escola</strong><small>Voltar ao acesso institucional</small></span></button>
             </div>
           </div>
@@ -247,7 +247,7 @@
 
           <section class="view journey-view" data-view="jornada" aria-labelledby="journey-title">
             <header class="journey-header">
-              <div><span class="journey-kicker">Demonstração guiada</span><h1 id="journey-title">Da escola ao acompanhamento</h1><p>O percurso avança sozinho. Você pode pausar ou pular a apresentação a qualquer momento.</p></div>
+              <div><img class="journey-brand" src="assets/brand/notare-logo.svg" alt="Notare" /><span class="journey-kicker">Demonstração guiada</span><h1 id="journey-title">Da escola ao acompanhamento</h1><p>O preenchimento e a passagem entre etapas acontecem automaticamente. Você pode pausar ou pular a apresentação a qualquer momento.</p></div>
               <button class="text-button" id="journey-skip" type="button">Pular apresentação</button>
             </header>
             <div class="journey-progress" aria-label="Progresso da apresentação"><span id="journey-progress-bar"></span></div>
@@ -255,19 +255,19 @@
             <div class="journey-stage" aria-live="polite">
               <article class="journey-step" data-journey-step="0">
                 <div class="journey-copy"><span>1 · Acesso institucional</span><h2>A escola inicia com sua própria conta</h2><p>Na operação real, a instituição entra em um ambiente exclusivo e protegido. Esta tela representa o início desse vínculo.</p><div class="journey-note"><strong>Representação do produto real</strong><p>Este MVP não autentica uma escola em servidor e usa apenas dados fictícios no navegador.</p></div></div>
-                <div class="journey-preview"><span class="school-logo journey-logo demo-reveal" aria-hidden="true"><img src="assets/profiles/escola-logo.png" alt="" /></span><label class="demo-field"><span>Instituição</span><strong data-demo-text="Escola Horizonte Vivo"></strong></label><label class="demo-field"><span>Código da unidade</span><strong data-demo-text="ESC-001"></strong></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Dados institucionais validados</span></div>
+                <div class="journey-preview journey-school-access"><span class="school-logo journey-logo demo-reveal" aria-hidden="true"><img src="assets/profiles/escola-logo.png" alt="" /></span><label class="demo-field"><span>Instituição</span><strong data-demo-text="Escola Horizonte Vivo"></strong></label><label class="demo-field"><span>Código INEP simulado</span><strong data-demo-text="26000000"></strong></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Instituição localizada e validada</span></div>
               </article>
               <article class="journey-step" data-journey-step="1" hidden>
                 <div class="journey-copy"><span>2 · Contratação</span><h2>A instituição define o escopo do serviço</h2><p>A contratação real estabelece unidade, segmento atendido e perfis previstos antes da configuração do ambiente.</p><div class="journey-note"><strong>Simulação informativa</strong><p>Não há cobrança, assinatura ou processamento comercial neste protótipo.</p></div></div>
-                <div class="journey-preview"><label class="demo-field"><span>Unidade contratada</span><strong data-demo-text="Escola Horizonte Vivo"></strong></label><label class="demo-field"><span>Segmento</span><strong data-demo-text="Ensino Fundamental"></strong></label><label class="demo-field"><span>Plano institucional</span><strong data-demo-text="Acompanhamento escolar"></strong></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Proposta aprovada</span></div>
+                <div class="journey-preview journey-contract"><label class="demo-field"><span>Unidade contratada</span><strong class="demo-prefilled">Escola Horizonte Vivo<small><svg><use href="#i-check"></use></svg>Importado da validação anterior</small></strong></label><label class="demo-field"><span>Segmento</span><select data-demo-select="Ensino Fundamental" aria-label="Segmento educacional"><option value="">Selecione o segmento</option><option>Educação Infantil</option><option>Ensino Fundamental</option><option>Ensino Médio</option><option>Educação de Jovens e Adultos</option><option>Educação Profissional e Tecnológica</option></select></label><label class="demo-field"><span>Plano institucional <small>opções demonstrativas</small></span><select data-demo-select="Notare Acompanhamento" aria-label="Plano institucional"><option value="">Selecione o plano</option><option>Notare Essencial</option><option>Notare Acompanhamento</option><option>Notare Rede</option></select></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Proposta configurada</span></div>
               </article>
               <article class="journey-step" data-journey-step="2" hidden>
                 <div class="journey-copy"><span>3 · Configuração da equipe</span><h2>Turmas e funcionários entram no ambiente</h2><p>A direção organiza os dados institucionais e cada funcionário recebe o acesso correspondente ao seu trabalho.</p><div class="journey-note"><strong>Dados desta demonstração</strong><p>A base contém 8 turmas, 96 estudantes fictícios e 5 perfis profissionais.</p></div></div>
-                <div class="journey-preview"><div class="demo-attachment demo-reveal"><svg><use href="#i-clipboard"></use></svg><span><strong>turmas-e-estudantes.csv</strong><small>8 turmas · 96 estudantes fictícios</small></span><i>anexado</i></div><div class="demo-attachment demo-reveal"><svg><use href="#i-users"></use></svg><span><strong>equipe-escolar.csv</strong><small>5 funcionários</small></span><i>anexado</i></div><div class="demo-photos" aria-label="Fotos de perfil anexadas"><span class="demo-photo"><img src="assets/profiles/camila-duarte.png" alt="" /></span><span class="demo-photo"><img src="assets/profiles/rafael-nunes.png" alt="" /></span><span class="demo-photo"><img src="assets/profiles/livia-moura.png" alt="" /></span><span class="demo-photo demo-photo-more">+2</span></div><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Dados e fotos anexados</span></div>
+                <div class="journey-preview journey-attachments"><div class="demo-attachment demo-reveal"><b class="demo-file-type">CSV</b><span><strong>turmas-e-estudantes.csv</strong><small>18 KB · 8 turmas · 96 estudantes fictícios</small></span><i><svg><use href="#i-check"></use></svg>Anexado</i></div><div class="demo-attachment demo-reveal"><b class="demo-file-type">CSV</b><span><strong>equipe-escolar.csv</strong><small>4 KB · 5 funcionários</small></span><i><svg><use href="#i-check"></use></svg>Anexado</i></div><div class="demo-photo-upload demo-reveal"><div class="demo-photos" aria-label="Fotos de perfil anexadas"><span class="demo-photo"><img src="assets/profiles/camila-duarte.png" alt="" /></span><span class="demo-photo"><img src="assets/profiles/rafael-nunes.png" alt="" /></span><span class="demo-photo"><img src="assets/profiles/livia-moura.png" alt="" /></span><span class="demo-photo demo-photo-more">+2</span></div><span><strong>fotos-de-perfil.zip</strong><small><svg><use href="#i-check"></use></svg>5 fotos vinculadas</small></span></div><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Importação concluída</span></div>
               </article>
               <article class="journey-step" data-journey-step="3" hidden>
                 <div class="journey-copy"><span>4 · Acesso do funcionário</span><h2>Camila entra na própria conta</h2><p>No produto real, cada funcionário utiliza credenciais individuais e não troca de identidade dentro do sistema.</p><div class="journey-note"><strong>Exclusivo deste MVP</strong><p>A troca rápida de perfis existe somente para demonstrar diferentes permissões durante a apresentação.</p></div></div>
-                <div class="journey-preview journey-login"><span class="user-avatar demo-reveal"><img class="avatar-photo" src="assets/profiles/camila-duarte.png" alt="" /></span><label class="demo-field"><span>E-mail profissional</span><strong data-demo-text="camila@horizontevivo.exemplo"></strong></label><label class="demo-field"><span>Senha</span><strong data-demo-text="••••••••••"></strong></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Acesso individual confirmado</span></div>
+                <div class="journey-preview journey-login"><span class="user-avatar demo-reveal"><img class="avatar-photo" src="assets/profiles/camila-duarte.png" alt="" /></span><label class="demo-field"><span>E-mail profissional</span><strong data-demo-text="camila@horizontevivo.edu"></strong></label><label class="demo-field"><span>Senha</span><strong data-demo-text="••••••••••"></strong></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Acesso individual confirmado</span></div>
               </article>
             </div>
             <p class="journey-autoplay" id="journey-autoplay">Próxima etapa em alguns segundos.</p>
@@ -286,6 +286,16 @@
       <div class="mvp-profile-note"><strong>Recurso exclusivo do MVP</strong><p>No produto real, cada funcionário acessa sua própria conta e não pode trocar de usuário por este menu. A troca rápida existe apenas para demonstrar permissões.</p></div>
       <div class="role-list" id="role-list"></div>
       <div class="dialog-footer"><button class="text-button danger-text" id="reset-demo">Restaurar base inicial</button><button class="button button-secondary" id="profile-done">Concluir</button></div>
+    </dialog>
+
+    <dialog class="profile-dialog institution-plan-dialog" id="institution-plan-dialog" aria-labelledby="institution-plan-title">
+      <div class="dialog-heading"><div><span class="dialog-kicker">Conta institucional</span><h2 id="institution-plan-title">Plano e contratação</h2><p>Resumo do escopo representado nesta demonstração.</p></div><button class="icon-button" id="institution-plan-close" aria-label="Fechar">×</button></div>
+      <div class="institution-plan-content">
+        <div class="institution-plan-status"><span>Plano ativo</span><strong>Notare Acompanhamento</strong><small>Escola Horizonte Vivo · Ensino Fundamental</small></div>
+        <dl class="institution-plan-details"><div><dt>Turmas</dt><dd>8</dd></div><div><dt>Estudantes</dt><dd>96</dd></div><div><dt>Perfis profissionais</dt><dd>5</dd></div><div><dt>Ambiente</dt><dd>1 unidade</dd></div></dl>
+        <p>Esta área demonstra onde a escola consultaria condições, escopo e dados da contratação. O MVP não realiza cobrança, assinatura ou processamento comercial.</p>
+      </div>
+      <div class="dialog-footer"><button class="button button-secondary" id="institution-plan-done">Concluir</button></div>
     </dialog>
 
     <div id="announcement" class="sr-only" aria-live="polite"></div>

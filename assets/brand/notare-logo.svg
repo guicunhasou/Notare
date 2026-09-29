@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1130" height="356" viewBox="0 0 1130 356" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Logo Notare</title>
+  <desc id="desc">Símbolo de porta aberta em azul, verde e amarelo, acompanhado do nome Notare em lettering arredondado.</desc>
+  <g id="simbolo">
+    <path id="porta-verde" d="M20 1C23 1 25 2 28 3L272 58C283 61 291 71 291 83V287C291 296 284 302 275 302H239C230 302 222 295 222 286V92C222 82 216 75 206 72L31 16L20 12Z" fill="#7F9E85"/>
+    <path id="porta-azul" d="M20 0C9 0 1 8 1 20V334C1 347 14 355 25 348L107 296V48C107 41 103 37 97 34L31 3C27 1 24 0 20 0Z" fill="#113747"/>
+    <path id="base-amarela" d="M129 295H201C205 295 208 297 211 300L263 349C268 354 264 356 258 356H54C48 356 46 353 51 349L118 300C121 297 125 295 129 295Z" fill="#DD9E3B"/>
+  </g>
+  <g id="lettering" fill="none" stroke="#113747" stroke-width="32" stroke-linecap="round" stroke-linejoin="round">
+    <path id="letra-n" d="M379 257V188C379 134 477 134 477 188V257"/>
+    <ellipse id="letra-o" cx="579" cy="202" rx="59" ry="55"/>
+    <path id="letra-t" d="M679 111V216C679 245 695 258 724 258"/>
+    <path id="barra-t" d="M679 165H725"/>
+    <ellipse id="letra-a-corpo" cx="819" cy="202" rx="59" ry="55"/>
+    <path id="letra-a-haste" d="M878 149V257"/>
+    <path id="letra-r" d="M919 257V190C919 159 941 149 972 149"/>
+    <path id="letra-e" d="M1110 237C1097 252 1080 258 1058 258C1021 258 997 235 997 202C997 168 1022 146 1058 146C1089 146 1110 164 1114 189C1116 196 1111 202 1104 202H1011"/>
+  </g>
+</svg>
