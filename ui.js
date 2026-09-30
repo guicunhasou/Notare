@@ -69,7 +69,7 @@
     return Object.freeze({ close, open, trapFocus });
   }
 
-  function createNotificationCenter({ announcement, escapeHtml, templates }) {
+  function createNotificationCenter({ announcement, escapeHtml }) {
     const center = document.querySelector("#notification-center");
     const popover = document.querySelector("#notification-popover");
     const button = document.querySelector("#notification-button");
@@ -78,6 +78,7 @@
     const list = document.querySelector("#notification-list");
     const closeButton = document.querySelector("#notification-close");
     const notifications = [];
+    let scheduledTimers = [];
 
     function render() {
       const unread = notifications.filter((notification) => !notification.read).length;
@@ -165,9 +166,24 @@
       if (!path.includes(center) && !path.includes(banner) && !popover.hidden) close();
     }
 
-    function schedule(delays) {
+    function clearSchedule() {
+      scheduledTimers.forEach((timer) => window.clearTimeout(timer));
+      scheduledTimers = [];
+    }
+
+    function reset() {
+      clearSchedule();
+      notifications.splice(0, notifications.length);
+      dismissBanner();
+      close();
+      render();
+    }
+
+    function schedule(templates, delays) {
+      clearSchedule();
       templates.forEach((template, index) => {
-        window.setTimeout(() => create(template), delays[index]);
+        const delay = delays[index] ?? delays.at(-1) ?? 0;
+        scheduledTimers.push(window.setTimeout(() => create(template), delay));
       });
     }
 
@@ -178,6 +194,7 @@
       handleAction,
       open,
       render,
+      reset,
       schedule,
       toggle
     });

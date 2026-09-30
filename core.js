@@ -143,7 +143,8 @@
         ...profile,
         role: seedProfile.role,
         description: seedProfile.description,
-        scope: seedProfile.scope
+        scope: seedProfile.scope,
+        permissions: [...seedProfile.permissions]
       };
     });
     return database;
