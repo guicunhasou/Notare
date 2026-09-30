@@ -43,6 +43,12 @@ test("registros, planos e agenda apontam para estudantes e responsáveis existen
   });
 });
 
+test("registros e planos demonstrativos incluem horário válido", () => {
+  const seed = loadSeed();
+  seed.records.forEach((record) => assert.match(record.time, /^([01]\d|2[0-3]):[0-5]\d$/));
+  seed.plans.forEach((plan) => assert.match(plan.createdTime, /^([01]\d|2[0-3]):[0-5]\d$/));
+});
+
 test("dados de estudantes respeitam os limites e estados previstos", () => {
   const seed = loadSeed();
   const priorities = new Set(["alta", "media", "evolucao", "estavel"]);
@@ -82,11 +88,11 @@ test("o HTML preserva datas dinâmicas e os contratos básicos de acessibilidade
   assert.match(html, /id="notification-popover" role="dialog"/);
   assert.match(html, /data-filter="todos" aria-pressed="true"/);
   assert.doesNotMatch(html, /name="date" value="2026-/);
-  assert.match(html, /styles\.css\?v=14/);
-  assert.match(html, /data\.js\?v=11/);
-  assert.match(html, /core\.js\?v=3/);
-  assert.match(html, /ui\.js\?v=1/);
-  assert.match(html, /app\.js\?v=18/);
+  assert.match(html, /styles\.css\?v=21/);
+  assert.match(html, /data\.js\?v=13/);
+  assert.match(html, /core\.js\?v=4/);
+  assert.match(html, /ui\.js\?v=2/);
+  assert.match(html, /app\.js\?v=26/);
 });
 
 test("a base salva recebe as referências atuais das fotos sem perder alterações", () => {
@@ -113,17 +119,18 @@ test("a base salva recebe as referências atuais das fotos sem perder alteraçõ
 test("a configuração atual dos perfis é aplicada sem apagar dados locais", () => {
   const api = loadDateApi();
   const saved = {
-    profiles: [{ id: "docencia", role: "Docência · 8º B", description: "Texto anterior", scope: "class:8º B", preference: "preservada" }],
+    profiles: [{ id: "docencia", role: "Docência · 8º B", description: "Texto anterior", scope: "class:8º B", permissions: ["legada:view"], preference: "preservada" }],
     records: [{ id: "registro-local" }]
   };
   const seed = {
-    profiles: [{ id: "docencia", role: "Docência · 8º A e 8º B", description: "Duas turmas", scope: "classes:8º A|8º B" }]
+    profiles: [{ id: "docencia", role: "Docência · 8º A e 8º B", description: "Duas turmas", scope: "classes:8º A|8º B", permissions: ["students:view"] }]
   };
 
   const reconciled = api.reconcileProfileConfiguration(saved, seed);
 
   assert.equal(reconciled.profiles[0].scope, "classes:8º A|8º B");
   assert.equal(reconciled.profiles[0].role, "Docência · 8º A e 8º B");
+  assert.equal([...reconciled.profiles[0].permissions].join("|"), "students:view");
   assert.equal(reconciled.profiles[0].preference, "preservada");
   assert.deepEqual(reconciled.records, saved.records);
 });
@@ -158,24 +165,28 @@ test("a navegação usa histórico real e responde a Voltar e Avançar", () => {
   assert.doesNotMatch(source, /addEventListener\("hashchange"/);
 });
 
-test("a jornada guiada representa o fluxo real sem fingir integrações", () => {
+test("a entrada destaca o painel e mantém a implantação como jornada opcional", () => {
   const html = read("index.html");
   const source = read("app.js");
 
+  assert.match(html, /data-view="entrada"/);
+  assert.match(html, /Acessar visão geral/);
+  assert.match(html, /Conhecer a implantação do Notare/);
+  assert.match(source, /#entry-dashboard"\)\.addEventListener\("click", \(\) => \{[\s\S]*switchProfile\("direcao", \{ announce: false \}\)/);
   assert.match(html, /data-view="jornada"/);
   assert.equal((html.match(/data-journey-step=/g) || []).length, 4);
-  assert.match(html, /Pular apresentação/);
+  assert.match(html, /Ir à visão geral/);
   assert.match(html, /assets\/brand\/notare-logo\.svg/);
   assert.match(html, /assets\/brand\/notare-favicon\.svg/);
-  assert.match(html, /Este MVP não autentica uma escola em servidor/);
-  assert.match(html, /Não há cobrança, assinatura ou processamento comercial/);
+  assert.match(html, /neste MVP, a validação usa apenas dados fictícios no navegador/);
+  assert.match(html, /sem cobrança ou assinatura real nesta demonstração/);
   assert.match(html, /data-demo-text="Escola Horizonte Vivo"/);
   assert.match(html, /Importação concluída/);
   assert.match(source, /async function typeJourneyText/);
   assert.match(source, /async function playJourneyStep/);
   assert.match(source, /character === " " \? 48 : 58/);
   assert.doesNotMatch(source, /}, 6000\)/);
-  assert.match(source, /location\.hash\.slice\(1\) \|\| "jornada"/);
+  assert.match(source, /location\.hash\.slice\(1\) \|\| "entrada"/);
 });
 
 test("as quatro etapas simulam validação, contratação, anexos e acesso", () => {
@@ -218,12 +229,20 @@ test("o gráfico expõe o valor de cada ponto no hover e no foco", () => {
   assert.match(source, /class="chart-point" tabindex="0"/);
   assert.match(source, /class="chart-tooltip"/);
   assert.match(css, /\.chart-point:hover \.chart-tooltip, \.chart-point:focus \.chart-tooltip/);
+  assert.match(css, /\.chart-point-hit \{[^}]*stroke: transparent/);
 });
 
-test("as listagens de estudantes são ordenadas por nome", () => {
+test("as listagens de estudantes permitem ordenar por nome ou prioridade", () => {
+  const html = read("index.html");
   const source = read("app.js");
+  assert.match(html, /id="student-sort"/);
+  assert.match(html, /value="name">Nome \(A–Z\)/);
+  assert.match(html, /value="priority">Prioridade/);
   assert.match(source, /function sortStudentsByName/);
+  assert.match(source, /function sortStudents\(students, mode = "name"\)/);
   assert.match(source, /const scopedStudents = sortStudentsByName\(visibleStudents\(\)\)/);
+  assert.match(source, /const visible = sortStudents\(scopedStudents\.filter/);
+  assert.match(source, /\}\), "priority"\);/);
   assert.match(source, /const classStudents = sortStudentsByName/);
 });
 
@@ -236,9 +255,61 @@ test("o perfil docente reúne duas turmas e migra bases salvas", () => {
   assert.match(source, /reconcileProfileConfiguration\(reconcileStudentMedia/);
 });
 
-test("as notificações comuns aguardam a leitura inicial do painel", () => {
+test("as notificações começam no painel, respeitam o perfil e reiniciam na troca", () => {
   const source = read("app.js");
-  assert.match(source, /notificationTestMode \? \[500, 2500\] : \[90000, 180000\]/);
+  const ui = read("ui.js");
+  assert.match(source, /notificationTestMode \? \[500, 2500\] : \[120000, 300000\]/);
+  assert.match(source, /function profileNotificationTemplates/);
+  assert.match(source, /state\.currentRoute !== "painel"/);
+  assert.match(source, /resetProfileNotifications\(\);[\s\S]*state\.profileId = profileId/);
+  assert.match(ui, /function reset\(\)/);
+  assert.match(ui, /scheduledTimers\.forEach/);
+});
+
+test("a entrada abre com a marca e a implantação usa avanço manual por padrão", () => {
+  const html = read("index.html");
+  const source = read("app.js");
+  const css = read("styles.css");
+  assert.match(html, /id="entry-opening"/);
+  assert.match(html, /class="opening-amber"/);
+  assert.match(html, /class="opening-green"/);
+  assert.match(html, /class="opening-blue"/);
+  assert.match(html, /class="opening-lettering"/);
+  assert.match(html, /data-journey-mode="automatic"/);
+  assert.match(html, /class="active" type="button" data-journey-mode="manual" aria-pressed="true"/);
+  assert.match(html, /id="journey-next"/);
+  assert.match(source, /journeyWait\(1500, runId\)/);
+  assert.match(source, /journeyWait\(3500, runId\)/);
+  assert.match(source, /let journeyMode = "manual"/);
+  assert.match(source, /function setJourneyMode/);
+  assert.match(source, /function finishJourney\(\) \{[\s\S]*switchProfile\("direcao", \{ announce: false \}\)/);
+  assert.match(source, /#journey-skip"\)\.addEventListener\("click", finishJourney\)/);
+  assert.equal((html.match(/demo-identity-reveal/g) || []).length, 2);
+  assert.match(css, /\.demo-identity-reveal \{[^}]*max-height: 0/);
+  assert.match(css, /\.demo-identity-reveal\.is-visible \{[^}]*max-height: 6\.5rem/);
+  assert.match(css, /@keyframes opening-amber-in/);
+  assert.match(css, /@keyframes opening-lettering-in/);
+  assert.match(css, /@keyframes entry-opening-out/);
+});
+
+test("os registros identificam o tipo com ícone, texto e cor", () => {
+  const html = read("index.html");
+  const source = read("app.js");
+  const css = read("styles.css");
+  assert.match(html, /id="i-absence"/);
+  assert.match(html, /id="i-contact"/);
+  assert.match(html, /id="i-occurrence"/);
+  assert.match(html, /id="i-feedback"/);
+  assert.match(source, /function recordKindPresentation/);
+  assert.match(source, /record-kind-\$\{presentation\.tone\}/);
+  assert.match(source, /\(\$\{escapeHtml\(student\.className\)\}\)/);
+  assert.match(source, /time: currentTimeLabel\(\)/);
+  assert.match(source, /Horário não informado/);
+  assert.match(source, /function reconcileRecordTimes/);
+  assert.match(css, /\.record-kind-absence/);
+  assert.match(css, /\.record-kind-contact/);
+  assert.match(css, /\.record-kind-occurrence/);
+  assert.match(css, /\.record-kind-feedback/);
 });
 
 test("o novo registro escolhe turma antes do estudante", () => {
@@ -270,13 +341,130 @@ test("a sugestão de texto declara e implementa uma simulação local", () => {
   assert.match(read("styles.css"), /\.ai-simulation-button \{[^}]*background: var\(--amber-soft\)/);
 });
 
+test("os textos pré-elaborados acompanham o tipo e permanecem editáveis", () => {
+  const html = read("index.html");
+  const source = read("app.js");
+
+  assert.match(html, /id="record-template"/);
+  assert.match(html, /O texto inserido poderá ser editado livremente/);
+  assert.doesNotMatch(html, /textarea[^>]*readonly/);
+  assert.match(source, /const recordTextTemplates = \{/);
+  ["Ausência", "Contato", "Ocorrência", "Devolutiva"].forEach((kind) => assert.match(source, new RegExp(`"${kind}": \\[`)));
+  assert.match(source, /input\[name="kind"\][^\n]*addEventListener\("change", \(event\) =>/);
+  assert.match(source, /insertRecordText\(template\.text\(student\)/);
+  assert.match(source, /insertRecordText\(suggestions\[kind\]/);
+});
+
+test("a área de cadastros consulta a base local sem oferecer gravação falsa", () => {
+  const html = read("index.html");
+  const source = read("app.js");
+
+  assert.match(html, /data-route="cadastros"/);
+  assert.match(html, /data-view="cadastros"/);
+  assert.match(html, /data-registration-tab="students"/);
+  assert.match(html, /data-registration-tab="staff"/);
+  assert.match(html, /data-registration-tab="classes"/);
+  assert.match(html, /id="registration-search"/);
+  assert.match(html, /id="registration-create"[^>]*disabled/);
+  assert.doesNotMatch(html, /id="registration-form"/);
+  assert.match(source, /cadastros: "Cadastros"/);
+  assert.match(source, /function renderRegistrations\(\)/);
+  assert.match(source, /#registration-search"\)\.addEventListener\("input"/);
+  assert.match(source, /state\.registrationTab = button\.dataset\.registrationTab/);
+});
+
+test("cadastros respeita permissão, escopo e paginação", () => {
+  const seed = loadSeed();
+  const html = read("index.html");
+  const source = read("app.js");
+  const accessByProfile = Object.fromEntries(seed.profiles.map((profile) => [profile.id, profile.permissions.includes("registrations:view")]));
+
+  assert.deepEqual(JSON.parse(JSON.stringify(accessByProfile)), {
+    direcao: true,
+    coordenacao: false,
+    orientacao: false,
+    docencia: false,
+    secretaria: true
+  });
+  assert.match(html, /data-route="cadastros" data-permission="registrations:view"/);
+  assert.match(source, /cadastros: "registrations:view"/);
+  assert.match(source, /sortStudentsByName\(visibleStudents\(\)\)/);
+  assert.match(source, /const pageSize = 8/);
+  assert.match(html, /id="registration-previous"/);
+  assert.match(html, /id="registration-next"/);
+  assert.match(source, /Mostrando \$\{firstVisible\}–\$\{lastVisible\} de \$\{records\.length\}/);
+});
+
+test("as abas de cadastros expõem relações e navegação por teclado", () => {
+  const html = read("index.html");
+  const source = read("app.js");
+
+  assert.match(html, /id="registration-tab-students"[^>]*aria-controls="registration-table"/);
+  assert.match(html, /id="registration-table" role="tabpanel" aria-labelledby="registration-tab-students" tabindex="0"/);
+  assert.match(source, /\["ArrowLeft", "ArrowRight", "Home", "End"\]/);
+  assert.match(source, /button\.tabIndex = active \? 0 : -1/);
+  assert.match(source, /table\.setAttribute\("aria-labelledby", button\.id\)/);
+});
+
+test("a troca de contexto protege a descrição já preenchida", () => {
+  const source = read("app.js");
+
+  assert.match(source, /function confirmRecordContextChange\(\)/);
+  assert.match(source, /Trocar o estudante ou o tipo de registro limpará a descrição atual/);
+  assert.match(source, /if \(!confirmRecordContextChange\(\)\)/);
+  assert.match(source, /state\.recordKind = event\.currentTarget\.value/);
+});
+
+test("textos prontos não substituem uma descrição editada sem confirmação", () => {
+  const source = read("app.js");
+
+  assert.match(source, /function confirmRecordTextReplacement\(\)/);
+  assert.match(source, /Substituir a descrição atual pelo novo texto/);
+  assert.equal((source.match(/if \(!confirmRecordTextReplacement\(\)\)/g) || []).length, 2);
+});
+
+test("cadastros não renderiza conteúdo sem permissão", () => {
+  const source = read("app.js");
+
+  assert.match(source, /function renderRegistrations\(\) \{\s+if \(!hasPermission\("registrations:view"\)\)/);
+  assert.match(source, /document\.querySelector\("#registration-table"\)\.replaceChildren\(\)/);
+});
+
+test("a introdução anuncia estados sem narrar cada caractere", () => {
+  const html = read("index.html");
+
+  assert.match(html, /id="journey-autoplay" role="status" aria-live="polite" aria-atomic="true"/);
+  assert.doesNotMatch(html, /class="journey-stage" aria-live=/);
+});
+
+test("a escala tipográfica aumenta sem ampliar o subtítulo da entrada", () => {
+  const css = read("styles.css");
+  assert.match(css, /html \{ font-size: 18px;/);
+  assert.match(css, /\.entry-content h1 \{[^}]*font-size: 42px/);
+  assert.match(css, /\.table-student strong \{ font-size: \.92rem/);
+  assert.match(css, /\.table-student span, \.table-muted, \.table-signals \{ font-size: \.82rem/);
+  assert.match(css, /\.data-form input\[type="date"\][^\n]*font-size: \.9rem/);
+  assert.match(css, /@media \(max-width: 620px\)[\s\S]*\.entry-content h1 \{[^}]*font-size: 30px/);
+});
+
 test("a escola oferece saída para o acesso institucional", () => {
   const html = read("index.html");
   const source = read("app.js");
 
   assert.match(html, /id="school-menu-button"/);
   assert.match(html, /id="school-logout"/);
-  assert.match(source, /showRoute\("jornada"\)/);
+  assert.match(source, /showRoute\("entrada"\)/);
+});
+
+test("a navegação remove redundâncias solicitadas", () => {
+  const html = read("index.html");
+  const source = read("app.js");
+  const recordsView = html.match(/<section class="view placeholder-view" data-view="registros"[\s\S]*?<\/section>/)?.[0] || "";
+
+  assert.doesNotMatch(html, /nav-priority-count|class="nav-count"/);
+  assert.match(html, /id="topbar-new-record"/);
+  assert.match(source, /#topbar-new-record"\)\.hidden = nextRoute !== "painel"/);
+  assert.doesNotMatch(recordsView, /data-back|>Voltar</);
 });
 
 test("os seletores reservam espaço para a seta", () => {
