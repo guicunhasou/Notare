@@ -31,7 +31,7 @@ O fluxo principal demonstra a jornada da contratação institucional ao acompanh
 8. definição de um plano de ação;
 9. confirmação e continuidade na agenda e no histórico.
 
-A introdução preenche os dados automaticamente e permite pausar ou pular a apresentação.
+A implantação é opcional, preenche os dados de cada etapa automaticamente e usa avanço manual por padrão. O usuário também pode ativar o modo automático, pausá-lo ou seguir diretamente para a visão geral.
 
 ---
 
@@ -47,9 +47,11 @@ A introdução preenche os dados automaticamente e permite pausar ou pular a apr
 - seleção da turma antes do estudante no novo registro;
 - autoria do registro vinculada ao perfil conectado;
 - sugestão simulada de texto produzida por regras locais;
+- textos pré-elaborados que acompanham o tipo de registro, permanecem editáveis e pedem confirmação antes de substituir uma descrição preenchida;
 - planos de ação com responsável, objetivo e prazo em dia útil;
-- central de notificações com avisos após 90 e 180 segundos;
+- central de notificações por perfil, com avisos após 2 e 5 minutos no painel;
 - consulta ao plano e ao escopo da contratação institucional;
+- consulta paginada de estudantes, funcionários e turmas para direção e secretaria;
 - navegação responsiva com suporte a teclado;
 - persistência de alterações no navegador.
 
@@ -66,6 +68,8 @@ A demonstração utiliza a **Escola Horizonte Vivo** e cinco perfis profissionai
 | Orientação educacional | Estudantes em acompanhamento, contatos e devolutivas |
 | Docência | Estudantes das turmas 8º A e 8º B |
 | Secretaria escolar | Cadastros e registros de frequência, sem ocorrências |
+
+A área de **Cadastros** é somente para consulta neste MVP e fica disponível para direção e secretaria. Inclusão e edição permanecem identificadas como funcionalidades futuras.
 
 A troca rápida de perfis é um recurso exclusivo do MVP. No produto real, cada funcionário utilizaria suas próprias credenciais e não poderia trocar de identidade dentro do sistema.
 
@@ -173,7 +177,7 @@ Com o Node.js instalado, execute:
 npm run check
 ```
 
-O comando verifica a sintaxe dos arquivos JavaScript e executa os testes de dados, datas, permissões, acessibilidade estrutural, persistência e contratos dos principais fluxos.
+O comando verifica a sintaxe dos arquivos JavaScript e executa 38 testes de dados, datas, permissões, acessibilidade estrutural, persistência e contratos dos principais fluxos.
 
 ---
 
