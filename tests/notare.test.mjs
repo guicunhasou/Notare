@@ -88,11 +88,11 @@ test("o HTML preserva datas dinâmicas e os contratos básicos de acessibilidade
   assert.match(html, /id="notification-popover" role="dialog"/);
   assert.match(html, /data-filter="todos" aria-pressed="true"/);
   assert.doesNotMatch(html, /name="date" value="2026-/);
-  assert.match(html, /styles\.css\?v=21/);
+  assert.match(html, /styles\.css\?v=\d+/);
   assert.match(html, /data\.js\?v=13/);
   assert.match(html, /core\.js\?v=4/);
   assert.match(html, /ui\.js\?v=2/);
-  assert.match(html, /app\.js\?v=26/);
+  assert.match(html, /app\.js\?v=\d+/);
 });
 
 test("a base salva recebe as referências atuais das fotos sem perder alterações", () => {

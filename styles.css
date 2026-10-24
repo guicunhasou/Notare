@@ -710,3 +710,27 @@ td { font-size: .84rem; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Comunidade integrada ao MVP: as mesmas cores, cartões e controles. */
+.ecosystem-view { max-width: 1280px; margin: 0 auto; }
+.mvp-simulation-note { padding: 14px 18px; border: 1px solid var(--line); border-left: 4px solid var(--green); border-radius: 12px; background: var(--primary-soft); font-size: .8rem; line-height: 1.6; margin: 0 0 24px; }
+.ecosystem-columns { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; align-items: start; }
+.ecosystem-card { padding: 26px; margin-bottom: 24px; min-width: 0; }
+.ecosystem-card h2 { font-size: 1.1rem; margin: 0 0 20px; }
+.ecosystem-card h3 { font-size: .95rem; margin: 0 0 10px; }
+.ecosystem-card p, .ecosystem-card blockquote { font-size: .85rem; line-height: 1.65; overflow-wrap: anywhere; white-space: pre-line; }
+.ecosystem-card small { display: block; color: var(--muted); font-size: .75rem; line-height: 1.5; }
+.ecosystem-card .data-form { padding: 0; box-shadow: none; border: 0; }
+.ecosystem-item { padding: 18px 0; border-top: 1px solid var(--line); }
+.ecosystem-item-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.ecosystem-item .button { margin: 12px 8px 8px 0; }
+.ecosystem-item blockquote { margin: 16px 0; padding: 14px; background: var(--primary-soft); border-left: 3px solid var(--green); border-radius: 8px; }
+.ecosystem-empty { padding: 20px 0; color: var(--muted); }
+.ecosystem-eyebrow { color: var(--green); font-weight: 700; }
+.ecosystem-value { font-size: 1.7rem !important; font-weight: 800; color: var(--primary); }
+.ecosystem-proposal { margin-top: 24px; padding: 18px; background: var(--amber-soft); border-radius: 12px; }
+.ecosystem-steps { font-size: .8rem; padding-left: 22px; line-height: 1.8; }
+.ecosystem-avatar { display: grid; place-items: center; width: 100%; height: 100%; color: var(--primary); background: var(--primary-soft); font-size: .85rem; font-weight: 800; }
+.ecosystem-intro { font-size: .85rem; line-height: 1.7; margin-bottom: 24px; }
+.role-list { max-height: 55vh; overflow-y: auto; }
+@media (max-width: 900px) { .ecosystem-columns { grid-template-columns: 1fr; } .ecosystem-card { padding: 20px; } }

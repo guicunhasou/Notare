@@ -10,11 +10,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=21" />
+    <link rel="stylesheet" href="styles.css?v=22" />
     <script src="data.js?v=13" defer></script>
     <script src="core.js?v=4" defer></script>
     <script src="ui.js?v=2" defer></script>
-    <script src="app.js?v=26" defer></script>
+    <script src="business.js?v=1" defer></script>
+    <script src="business-ui.js?v=1" defer></script>
+    <script src="app.js?v=27" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
@@ -56,12 +58,19 @@
         </div>
 
         <nav class="main-nav">
-          <p class="nav-label">Acompanhamento</p>
-          <a href="#painel" data-route="painel"><svg><use href="#i-grid"></use></svg><span>Visão geral</span></a>
+          <p class="nav-label" data-permission="dashboard:view">Acompanhamento</p>
+          <a href="#painel" data-route="painel" data-permission="dashboard:view"><svg><use href="#i-grid"></use></svg><span>Visão geral</span></a>
           <a href="#busca-ativa" data-route="busca-ativa" data-permission="followup:view"><svg><use href="#i-search"></use></svg><span>Acompanhamento</span></a>
-          <a href="#registros" data-route="registros"><svg><use href="#i-clipboard"></use></svg><span>Registros</span></a>
-          <a href="#estudantes" data-route="estudantes"><svg><use href="#i-users"></use></svg><span>Estudantes</span></a>
+          <a href="#registros" data-route="registros" data-permission="records:view"><svg><use href="#i-clipboard"></use></svg><span>Registros</span></a>
+          <a href="#estudantes" data-route="estudantes" data-permission="students:view"><svg><use href="#i-users"></use></svg><span>Estudantes</span></a>
           <a href="#cadastros" data-route="cadastros" data-permission="registrations:view"><svg><use href="#i-user-plus"></use></svg><span>Cadastros</span></a>
+          <p class="nav-label">Comunidade Notare</p>
+          <a href="#familias" data-route="familias" data-permission="families:manage"><svg><use href="#i-feedback"></use></svg><span>Famílias e retornos</span></a>
+          <a href="#familia" data-route="familia" data-permission="family:view"><svg><use href="#i-users"></use></svg><span>Minha família</span></a>
+          <a href="#clube" data-route="clube" data-permission="club:view"><svg><use href="#i-sparkles"></use></svg><span>Clube de Benefícios</span></a>
+          <a href="#parceiro" data-route="parceiro" data-permission="partner:manage"><svg><use href="#i-plan"></use></svg><span>Ofertas e conversões</span></a>
+          <a href="#assinatura" data-route="assinatura" data-permission="subscription:manage"><svg><use href="#i-shield"></use></svg><span>Plano e assinatura</span></a>
+          <a href="#parcerias" data-route="parcerias" data-permission="partners:review"><svg><use href="#i-check"></use></svg><span>Revisar parcerias</span></a>
         </nav>
 
         <div class="sidebar-footer">
@@ -83,7 +92,7 @@
           <div class="school-menu" id="school-menu">
             <button class="topbar-school" id="school-menu-button" type="button" aria-haspopup="menu" aria-controls="school-popover" aria-expanded="false">
               <span class="school-logo" aria-hidden="true"><img id="school-logo-image" src="assets/profiles/escola-logo.png" alt="" /></span>
-              <span class="topbar-context"><strong id="topbar-school-name">Escola Horizonte Vivo</strong><small>Conta institucional</small></span>
+              <span class="topbar-context"><strong id="topbar-school-name">Escola Horizonte Vivo</strong><small id="topbar-account-kind">Conta institucional</small></span>
               <svg aria-hidden="true"><use href="#i-arrow"></use></svg>
             </button>
             <div class="school-popover" id="school-popover" role="menu" hidden>
@@ -319,6 +328,18 @@
           <section class="view success-view" data-view="conclusao" aria-labelledby="success-title">
             <div class="success-card card"><span class="success-icon"><svg><use href="#i-check"></use></svg></span><h1 id="success-title">Plano criado com sucesso</h1><p>A equipe agora tem uma ação clara, uma pessoa responsável e um prazo para revisar a situação.</p><p id="success-next-step">O acompanhamento já tem um próximo passo definido.</p><dl class="success-summary"><div><dt>Estudante</dt><dd id="summary-student">Ana Souza</dd></div><div><dt>Ação</dt><dd id="summary-action">Conversa de acolhimento</dd></div><div><dt>Responsável</dt><dd id="summary-owner">Camila Duarte · Direção escolar</dd></div><div><dt>Prazo</dt><dd id="summary-date">29/09/2026</dd></div></dl><div class="success-actions"><button class="button button-primary" data-route="painel">Voltar à visão geral</button><button class="button button-secondary" data-route="estudante">Ver perfil atualizado</button></div><small>O plano foi salvo neste navegador e já está disponível no histórico da estudante.</small></div>
           </section>
+
+          <section class="view ecosystem-view" data-view="familias" aria-labelledby="familias-title"><div class="page-heading"><div><h1 id="familias-title">Famílias e retornos</h1><p>Conecte o contato com responsáveis ao acompanhamento escolar.</p></div></div><p class="mvp-simulation-note"><strong>Ambiente demonstrativo:</strong> dados fictícios salvos somente neste navegador. Sem envio externo, contrato, compra, cobrança ou repasse real.</p><div data-business-content="familias"></div></section>
+
+          <section class="view ecosystem-view" data-view="familia" aria-labelledby="familia-title"><div class="page-heading"><div><h1 id="familia-title">Minha família</h1><p>Converse com a escola e acompanhe os comunicados compartilhados.</p></div></div><p class="mvp-simulation-note"><strong>Ambiente demonstrativo:</strong> dados fictícios salvos somente neste navegador. Sem envio externo, contrato, compra, cobrança ou repasse real.</p><div data-business-content="familia"></div></section>
+
+          <section class="view ecosystem-view" data-view="clube" aria-labelledby="clube-title"><div class="page-heading"><div><h1 id="clube-title">Clube de Benefícios</h1><p>Encontre oportunidades opcionais para sua família.</p></div></div><p class="mvp-simulation-note"><strong>Ambiente demonstrativo:</strong> dados fictícios salvos somente neste navegador. Sem envio externo, contrato, compra, cobrança ou repasse real.</p><div data-business-content="clube"></div></section>
+
+          <section class="view ecosystem-view" data-view="parceiro" aria-labelledby="parceiro-title"><div class="page-heading"><div><h1 id="parceiro-title">Ofertas e conversões</h1><p>Gerencie benefícios e acompanhe apenas suas conversões.</p></div></div><p class="mvp-simulation-note"><strong>Ambiente demonstrativo:</strong> dados fictícios salvos somente neste navegador. Sem envio externo, contrato, compra, cobrança ou repasse real.</p><div data-business-content="parceiro"></div></section>
+
+          <section class="view ecosystem-view" data-view="assinatura" aria-labelledby="assinatura-title"><div class="page-heading"><div><h1 id="assinatura-title">Plano e assinatura</h1><p>Consulte o escopo institucional e experimente a adesão.</p></div></div><p class="mvp-simulation-note"><strong>Ambiente demonstrativo:</strong> dados fictícios salvos somente neste navegador. Sem envio externo, contrato, compra, cobrança ou repasse real.</p><div data-business-content="assinatura"></div></section>
+
+          <section class="view ecosystem-view" data-view="parcerias" aria-labelledby="parcerias-title"><div class="page-heading"><div><h1 id="parcerias-title">Revisar parcerias</h1><p>Avalie as ofertas antes de disponibilizá-las às famílias.</p></div></div><p class="mvp-simulation-note"><strong>Ambiente demonstrativo:</strong> dados fictícios salvos somente neste navegador. Sem envio externo, contrato, compra, cobrança ou repasse real.</p><div data-business-content="parcerias"></div></section>
         </main>
         <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
       </div>
@@ -326,7 +347,7 @@
 
     <dialog class="profile-dialog" id="profile-dialog" aria-labelledby="profile-dialog-title">
       <div class="dialog-heading"><div><h2 id="profile-dialog-title">Perfis de demonstração</h2><p>Compare permissões e experiências de acesso no protótipo.</p></div><button class="icon-button" id="profile-close" aria-label="Fechar">×</button></div>
-      <div class="mvp-profile-note"><strong>Recurso exclusivo do MVP</strong><p>No produto real, cada funcionário acessa sua própria conta e não pode trocar de usuário por este menu. A troca rápida existe apenas para demonstrar permissões.</p></div>
+      <div class="mvp-profile-note"><strong>Recurso exclusivo do MVP</strong><p>No produto real, cada funcionário acessa sua própria conta; responsáveis e parceiros também têm acessos próprios e não podem trocar de usuário por este menu. A troca rápida existe apenas para demonstrar permissões.</p></div>
       <div class="role-list" id="role-list"></div>
       <div class="dialog-footer"><button class="text-button danger-text" id="reset-demo">Restaurar base inicial</button><button class="button button-secondary" id="profile-done">Concluir</button></div>
     </dialog>
@@ -336,7 +357,7 @@
       <div class="institution-plan-content">
         <div class="institution-plan-status"><span>Plano ativo</span><strong>Notare Acompanhamento</strong><small>Escola Horizonte Vivo · Ensino Fundamental</small></div>
         <dl class="institution-plan-details"><div><dt>Turmas</dt><dd>8</dd></div><div><dt>Estudantes</dt><dd>96</dd></div><div><dt>Perfis profissionais</dt><dd>5</dd></div><div><dt>Ambiente</dt><dd>1 unidade</dd></div></dl>
-        <p>Esta área demonstra onde a escola consultaria condições, escopo e dados da contratação. O MVP não realiza cobrança, assinatura ou processamento comercial.</p>
+        <p>O MVP não realiza cobrança, assinatura ou processamento comercial. A jornada de adesão pode ser experimentada em Plano e assinatura.</p><button class="button button-secondary" id="manage-subscription" type="button" data-permission="subscription:manage">Gerenciar adesão simulada</button>
       </div>
       <div class="dialog-footer"><button class="button button-secondary" id="institution-plan-done">Concluir</button></div>
     </dialog>
