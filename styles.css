@@ -279,7 +279,7 @@ main { min-height: calc(100vh - 4.8rem); }
 .filter { min-height: 2.75rem; border: 0; border-radius: 8px; padding: .58rem .7rem; background: transparent; color: var(--muted); font-size: .68rem; font-weight: 720; }
 .filter.active { background: var(--primary-soft); color: var(--primary-dark); }
 .table-card { overflow: hidden; }
-.table-scroll { overflow-x: auto; }
+.table-scroll { position: relative; overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
 th { padding: 1rem 1.15rem; background: #faf9f5; color: var(--muted); font-size: .63rem; letter-spacing: .02em; text-align: left; }
 td { border-top: 1px solid var(--line); padding: 1.15rem; font-size: .73rem; }
@@ -657,7 +657,7 @@ td { font-size: .84rem; }
   .topbar-school .school-logo { width: 2.2rem; height: 2.2rem; flex-basis: 2.2rem; }
   .view { width: min(100% - 1.2rem, 1380px); padding-top: 1.35rem; }
   .page-heading, .compact-heading { align-items: flex-start; flex-direction: column; gap: 1rem; }
-  .mini-calendar { align-self: stretch; width: 100%; grid-template-columns: 4.25rem minmax(0,1fr); gap: .6rem; padding-inline: .65rem; }
+  .mini-calendar { flex-basis: auto; align-self: stretch; width: 100%; grid-template-columns: 4.25rem minmax(0,1fr); gap: .6rem; padding-inline: .65rem; }
   .mini-calendar-icon { width: 4.25rem; min-height: 5.15rem; }
   .metrics { grid-template-columns: 1fr 1fr; gap: .85rem; }
   .dashboard-chart { min-height: auto; }
@@ -734,3 +734,17 @@ td { font-size: .84rem; }
 .ecosystem-intro { font-size: .85rem; line-height: 1.7; margin-bottom: 24px; }
 .role-list { max-height: 55vh; overflow-y: auto; }
 @media (max-width: 900px) { .ecosystem-columns { grid-template-columns: 1fr; } .ecosystem-card { padding: 20px; } }
+
+/* Larguras estreitas: conteúdo mantém leitura sem alargar a página. */
+@media (max-width: 620px) {
+  .dashboard-grid > .card { min-width: 0; }
+  .student-row { grid-template-columns: auto minmax(0,1fr) auto auto; gap: .5rem; }
+  .student-identity { min-width: 0; overflow-wrap: anywhere; }
+  .card-heading .text-button { flex-shrink: 0; }
+  .school-menu { flex: 1 1 auto; min-width: 0; }
+  .topbar-school { width: 100%; min-width: 0; }
+  .topbar-context { min-width: 0; }
+  .topbar-context strong { overflow: hidden; text-overflow: ellipsis; }
+  .school-popover { position: fixed; top: 4.5rem; left: .6rem; right: .6rem; width: auto; }
+}
+@media (max-width: 380px) { .metrics { grid-template-columns: minmax(0,1fr); } }

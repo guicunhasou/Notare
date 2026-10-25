@@ -150,7 +150,13 @@
     return database;
   }
 
+  function createdPlanForScope(plans, createdId, studentIds) {
+    if (!createdId) return null;
+    return plans.find(plan => plan.id === createdId && plan.status !== "done" && studentIds.includes(plan.studentId)) || null;
+  }
+
   window.NOTARE_CORE = Object.freeze({
+    createdPlanForScope,
     addBusinessDays,
     addDays,
     assetSlug,

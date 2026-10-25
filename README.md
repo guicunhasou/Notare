@@ -180,7 +180,7 @@ Com o Node.js instalado, execute:
 npm run check
 ```
 
-O comando verifica a sintaxe dos arquivos JavaScript e executa 49 testes de dados, datas, permissões, acessibilidade estrutural, persistência e regras dos principais fluxos. A validação real de interface e seus limites estão no documento de conclusão local.
+O comando verifica a sintaxe dos arquivos JavaScript e executa 50 testes de dados, datas, permissões, acessibilidade estrutural, persistência e regras dos principais fluxos. A validação real de interface e seus limites estão no documento de conclusão local.
 
 ---
 
@@ -208,3 +208,6 @@ O comando verifica a sintaxe dos arquivos JavaScript e executa 49 testes de dado
   <strong>Notare</strong><br />
   Permanência escolar com acompanhamento humano e responsável.
 </div>
+
+
+Homologação de 25/10/2026: [percursos reais em desktop/mobile, correções e limitações](docs/homologacao-20261025.md).

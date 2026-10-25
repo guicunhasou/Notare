@@ -6,6 +6,7 @@ const {
   addDays,
   assetSlug,
   capitalize,
+  createdPlanForScope,
   dateKey,
   escapeHtml,
   formatDate,
@@ -844,8 +845,7 @@ function renderRecords() {
 }
 
 function renderPlanSuccess() {
-  const plan = db.plans.find((item) => item.id === state.lastPlanId)
-    || db.plans.find((item) => item.studentId === state.currentStudent);
+  const plan = createdPlanForScope(db.plans, state.lastPlanId, visibleStudents().map(student => student.id));
   if (!plan) return;
   const student = getStudent(plan.studentId);
   document.querySelector("#summary-student").textContent = student.name;
@@ -883,6 +883,7 @@ const routePermissions = {
   cadastros: "registrations:view",
   "novo-registro": "records:create",
   familias: "families:manage", familia: "family:view", clube: "club:view", parceiro: "partner:manage", assinatura: "subscription:manage", parcerias: "partners:review",
+  conclusao: "plans:create",
   plano: "plans:create"
 };
 
@@ -892,6 +893,11 @@ function showRoute(route, options = {}) {
   const permission = routePermissions[nextRoute];
   if (permission && !hasPermission(permission)) {
     showToast(`O perfil ${getProfile().role} não tem acesso a esta ação.`);
+    nextRoute = defaultRoute();
+  }
+
+  if (nextRoute === "conclusao" && !createdPlanForScope(db.plans, state.lastPlanId, visibleStudents().map(student => student.id))) {
+    showToast("Nenhum plano recém-criado disponível. Consulte o histórico do acompanhamento.");
     nextRoute = defaultRoute();
   }
 
@@ -1134,9 +1140,10 @@ function setJourneyMode(mode) {
 }
 
 function closeSchoolMenu({ restoreFocus = false } = {}) {
+  const wasOpen = !schoolPopover.hidden;
   schoolPopover.hidden = true;
   schoolMenuButton.setAttribute("aria-expanded", "false");
-  if (restoreFocus) schoolMenuButton.focus();
+  if (restoreFocus && wasOpen) schoolMenuButton.focus();
 }
 
 function toggleSchoolMenu() {
@@ -1183,14 +1190,20 @@ function toggleSidebar() {
 }
 
 function openProfileDialog() {
+  sidebarDrawer.close();
   renderProfileIdentity();
   if (typeof profileDialog.showModal === "function") profileDialog.showModal();
   else profileDialog.setAttribute("open", "");
 }
 
 function closeProfileDialog() {
+  const wasOpen = profileDialog.open;
   if (typeof profileDialog.close === "function" && profileDialog.open) profileDialog.close();
   else profileDialog.removeAttribute("open");
+  if (wasOpen) {
+    const menu = document.querySelector("#menu-button");
+    (menu.getClientRects().length ? menu : document.querySelector("#profile-button")).focus();
+  }
 }
 
 function openInstitutionPlanDialog() {
@@ -1545,6 +1558,7 @@ document.querySelector("#reset-demo").addEventListener("click", () => {
   showRoute("painel");
   showToast("Base inicial restaurada.");
 });
+profileDialog.addEventListener("cancel", (event) => { event.preventDefault(); closeProfileDialog(); });
 profileDialog.addEventListener("click", (event) => { if (event.target === profileDialog) closeProfileDialog(); });
 planDialog.addEventListener("click", (event) => { if (event.target === planDialog) closeInstitutionPlanDialog(); });
 document.addEventListener("keydown", (event) => {

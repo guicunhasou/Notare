@@ -10,13 +10,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=22" />
+    <link rel="stylesheet" href="styles.css?v=23" />
     <script src="data.js?v=13" defer></script>
-    <script src="core.js?v=4" defer></script>
+    <script src="core.js?v=5" defer></script>
     <script src="ui.js?v=2" defer></script>
     <script src="business.js?v=1" defer></script>
     <script src="business-ui.js?v=1" defer></script>
-    <script src="app.js?v=27" defer></script>
+    <script src="app.js?v=28" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
@@ -193,7 +193,7 @@
               </div>
             </div>
             <div class="table-card card">
-              <div class="table-scroll"><table><thead><tr><th>Estudante</th><th>Sinais observados</th><th>Último registro</th><th>Status</th><th><span class="sr-only">Abrir</span></th></tr></thead><tbody id="student-table"></tbody></table></div>
+              <div class="table-scroll" tabindex="0" role="region" aria-label="Tabela de acompanhamento, role horizontalmente para ver todas as colunas"><table><thead><tr><th>Estudante</th><th>Sinais observados</th><th>Último registro</th><th>Status</th><th><span class="sr-only">Abrir</span></th></tr></thead><tbody id="student-table"></tbody></table></div>
               <p class="empty-state" id="student-empty" hidden>Nenhum estudante encontrado com esses filtros.</p>
             </div>
           </section>

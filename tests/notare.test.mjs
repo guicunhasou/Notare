@@ -90,7 +90,7 @@ test("o HTML preserva datas dinâmicas e os contratos básicos de acessibilidade
   assert.doesNotMatch(html, /name="date" value="2026-/);
   assert.match(html, /styles\.css\?v=\d+/);
   assert.match(html, /data\.js\?v=13/);
-  assert.match(html, /core\.js\?v=4/);
+  assert.match(html, /core\.js\?v=\d+/);
   assert.match(html, /ui\.js\?v=2/);
   assert.match(html, /app\.js\?v=\d+/);
 });
@@ -477,4 +477,15 @@ test("a troca de perfis é identificada como recurso exclusivo do MVP", () => {
   const html = read("index.html");
   assert.match(html, /Perfis de demonstração/);
   assert.match(html, /No produto real, cada funcionário acessa sua própria conta/);
+});
+
+
+test("confirmação exige plano realmente criado, ativo e no escopo do perfil", () => {
+  const { createdPlanForScope } = loadDateApi();
+  const plans = [{id:"novo",studentId:"ana",status:"active"}, {id:"antigo",studentId:"lucas",status:"done"}];
+  assert.equal(createdPlanForScope(plans, null, ["ana"]), null);
+  assert.equal(createdPlanForScope(plans, "inexistente", ["ana"]), null);
+  assert.equal(createdPlanForScope(plans, "novo", ["lucas"]), null);
+  assert.equal(createdPlanForScope(plans, "antigo", ["lucas"]), null);
+  assert.equal(createdPlanForScope(plans, "novo", ["ana"]).id, "novo");
 });
