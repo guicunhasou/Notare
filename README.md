@@ -211,3 +211,6 @@ O comando verifica a sintaxe dos arquivos JavaScript e executa 50 testes de dado
 
 
 Homologação de 25/10/2026: [percursos reais em desktop/mobile, correções e limitações](docs/homologacao-20261025.md).
+
+
+Os limites de funcionamento, a transparência da interface e as regras de anulação de criações estão em [Limites do ambiente local](docs/limites-do-ambiente-local.md).

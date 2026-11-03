@@ -110,6 +110,7 @@
   }
 
   function planEffectiveStatus(plan, now = new Date()) {
+    if (plan.voidedAt) return "cancelled";
     if (plan.status === "done") return "done";
     const deadline = parseDisplayDate(plan.date);
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
@@ -152,7 +153,7 @@
 
   function createdPlanForScope(plans, createdId, studentIds) {
     if (!createdId) return null;
-    return plans.find(plan => plan.id === createdId && plan.status !== "done" && studentIds.includes(plan.studentId)) || null;
+    return plans.find(plan => plan.id === createdId && !plan.voidedAt && plan.status !== "done" && studentIds.includes(plan.studentId)) || null;
   }
 
   window.NOTARE_CORE = Object.freeze({

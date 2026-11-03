@@ -3,20 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="MVP navegável da Notare para acompanhamento e permanência escolar." />
+    <meta name="description" content="Notare: acompanhamento e permanência escolar com clareza." />
     <meta name="theme-color" content="#183B46" />
     <title>Notare — Permanência escolar</title>
     <link rel="icon" type="image/svg+xml" href="assets/brand/notare-favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20261103" />
+    <link rel="stylesheet" href="styles.css?v=2026110302" />
     <script src="data.js?v=13" defer></script>
-    <script src="core.js?v=5" defer></script>
-    <script src="ui.js?v=2" defer></script>
-    <script src="business.js?v=1" defer></script>
-    <script src="business-ui.js?v=1" defer></script>
-    <script src="app.js?v=20261103" defer></script>
+    <script src="core.js?v=6" defer></script>
+    <script src="ui.js?v=3" defer></script>
+    <script src="business.js?v=2" defer></script>
+    <script src="business-ui.js?v=2" defer></script>
+    <script src="operations.js?v=1" defer></script>
+    <script src="app.js?v=2026110302" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
@@ -77,7 +75,7 @@
         <div class="sidebar-footer">
           <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Recolher menu lateral" aria-expanded="true" title="Recolher menu"><svg><use href="#i-back"></use></svg><span>Recolher menu</span></button>
           <span class="sidebar-divider" aria-hidden="true"></span>
-          <button class="user-card" id="profile-button" type="button" aria-haspopup="dialog" aria-label="Simular perfil do MVP">
+          <button class="user-card" id="profile-button" type="button" aria-haspopup="dialog" aria-label="Alternar perfil">
             <span class="user-avatar" id="user-avatar"><img class="avatar-photo" src="assets/profiles/camila-duarte.png" alt="" /></span>
             <span><strong id="user-name">Camila Duarte</strong><small id="user-role">Direção escolar</small></span>
             <svg><use href="#i-arrow"></use></svg>
@@ -97,7 +95,7 @@
               <svg aria-hidden="true"><use href="#i-arrow"></use></svg>
             </button>
             <div class="school-popover" id="school-popover" role="menu" hidden>
-              <div><strong id="school-popover-name">Escola Horizonte Vivo</strong><small>Ambiente demonstrativo</small></div>
+              <div><strong id="school-popover-name">Escola Horizonte Vivo</strong><small>Conta institucional</small></div>
               <button class="school-plan-button" type="button" id="school-plan" role="menuitem" aria-haspopup="dialog"><svg><use href="#i-shield"></use></svg><span><strong>Plano e contratação</strong><small>Consultar o escopo institucional</small></span></button>
               <button type="button" id="school-logout" role="menuitem"><svg><use href="#i-logout"></use></svg><span><strong>Sair da escola</strong><small>Voltar ao acesso institucional</small></span></button>
             </div>
@@ -225,7 +223,7 @@
           <section class="view placeholder-view" data-view="registros" aria-labelledby="registros-title">
             <button class="back-button" id="records-back" type="button" hidden><svg><use href="#i-back"></use></svg>Voltar ao estudante</button>
             <div class="page-heading compact-heading"><div><h1 id="registros-title">Registros</h1><p>Acompanhe sinais, contatos, devolutivas e planos criados.</p></div><button class="button button-primary" data-route="novo-registro"><svg><use href="#i-plus"></use></svg>Novo registro</button></div>
-            <div class="class-toolbar card"><label>Turma<select id="records-class-filter"></select></label><p id="records-context" aria-live="polite"></p><button class="text-button" id="records-clear" type="button">Limpar filtros e ver todos</button></div>
+            <div class="class-toolbar card" id="records-filters"><label>Turma<select id="records-class-filter"></select></label><p id="records-context" aria-live="polite"></p><button class="text-button" id="records-clear" type="button">Limpar filtros e ver todos</button></div>
             <div class="card records-shell"><div class="record-tabs" role="group" aria-label="Filtrar registros"><button class="active" type="button" data-record-filter="todos" aria-pressed="true">Todos</button><button type="button" data-record-filter="Plano" aria-pressed="false">Planos de ação</button><button type="button" data-record-filter="Contato" aria-pressed="false">Contatos</button><button type="button" data-record-filter="Ocorrência" aria-pressed="false" data-permission="occurrences:view">Ocorrências</button></div><div id="records-list" class="records-list"></div><p class="empty-state" id="records-empty" hidden>Nenhum registro encontrado nesta categoria.</p></div>
           </section>
 
@@ -245,7 +243,7 @@
                 <button class="button button-primary registration-create" id="registration-create" type="button" disabled title="Cadastro disponível em uma versão futura"><svg><use href="#i-plus"></use></svg><span>Novo estudante</span></button>
               </div>
               <div class="registration-table-wrap" id="registration-table" role="tabpanel" aria-labelledby="registration-tab-students" tabindex="0"></div>
-              <div class="registration-footer"><span id="registration-summary"></span><div class="registration-pagination" aria-label="Paginação dos cadastros"><button class="icon-button" id="registration-previous" type="button" aria-label="Página anterior"><svg><use href="#i-back"></use></svg></button><span id="registration-page" aria-live="polite">Página 1 de 1</span><button class="icon-button" id="registration-next" type="button" aria-label="Próxima página"><svg><use href="#i-arrow"></use></svg></button></div><small>Consulta disponível neste MVP. Inclusão e edição ainda não foram implementadas.</small></div>
+              <div class="registration-footer"><span id="registration-summary"></span><div class="registration-pagination" aria-label="Paginação dos cadastros"><button class="icon-button" id="registration-previous" type="button" aria-label="Página anterior"><svg><use href="#i-back"></use></svg></button><span id="registration-page" aria-live="polite">Página 1 de 1</span><button class="icon-button" id="registration-next" type="button" aria-label="Próxima página"><svg><use href="#i-arrow"></use></svg></button></div><small>Consulta de cadastros. Inclusão e edição indisponíveis nesta versão.</small></div>
             </div>
           </section>
 
@@ -258,7 +256,7 @@
                 <fieldset><legend>Tipo de registro</legend><div class="choice-row"><label><input type="radio" name="kind" value="Ausência" checked><span>Ausência</span></label><label><input type="radio" name="kind" value="Contato"><span>Contato</span></label><label data-permission="occurrences:create"><input type="radio" name="kind" value="Ocorrência"><span>Ocorrência</span></label><label><input type="radio" name="kind" value="Devolutiva"><span>Devolutiva</span></label></div></fieldset>
                 <div class="two-fields"><label>Data<input type="date" name="date" required></label><label>Registrado por<span class="readonly-field" id="record-owner-display" aria-live="polite"></span></label></div>
                 <label class="record-template-field">Texto pré-elaborado<select id="record-template" name="template"><option value="">Selecione uma opção</option></select><small>As opções acompanham o tipo de registro. O texto inserido poderá ser editado livremente.</small></label>
-                <div class="description-field"><span class="field-heading"><label for="record-description">Descrição</label><button class="text-button ai-simulation-button" id="record-suggestion" type="button"><svg><use href="#i-sparkles"></use></svg>Gerar sugestão simulada</button></span><textarea id="record-description" name="description" rows="5" aria-describedby="record-suggestion-note" placeholder="Descreva objetivamente o que foi observado ou realizado..." required></textarea><small id="record-suggestion-note"><strong>Simulação do MVP:</strong> o texto é montado por regras locais e não usa inteligência artificial real. Revise antes de salvar e não inclua dados sensíveis.</small><p id="record-text-status" class="form-text-status" role="status" hidden></p></div>
+                <div class="description-field"><span class="field-heading"><label for="record-description">Descrição</label><button class="text-button ai-simulation-button" id="record-suggestion" type="button"><svg><use href="#i-sparkles"></use></svg>Gerar sugestão</button></span><textarea id="record-description" name="description" rows="5" aria-describedby="record-suggestion-note" placeholder="Descreva objetivamente o que foi observado ou realizado..." required></textarea><small id="record-suggestion-note">Texto preparado por regras locais, sem IA ou serviços externos. Revise antes de salvar e não inclua dados sensíveis.</small><p id="record-text-status" class="form-text-status" role="status" hidden></p></div>
                 <label class="check-field"><input type="checkbox" name="followup"><span>Este registro precisa de acompanhamento</span></label>
                 <div class="form-actions"><button type="button" class="button button-secondary" data-back data-cancel>Cancelar</button><button class="button button-primary" type="submit">Salvar registro</button></div>
               </form>
@@ -294,7 +292,7 @@
             </div>
             <div class="entry-content">
               <img class="entry-brand" src="assets/brand/notare-logo.svg" alt="Notare" />
-              <h1 id="entry-title">Acompanhamento escolar, com clareza.</h1>
+              <h1 id="entry-title"><span>Acompanhamento escolar</span> <span>com clareza.</span></h1>
               <div class="entry-actions">
                 <button class="button button-primary entry-primary" id="entry-dashboard" type="button">Acessar visão geral<svg><use href="#i-arrow"></use></svg></button>
                 <button class="button button-secondary entry-secondary" type="button" data-route="jornada">Conhecer a implantação do Notare</button>
@@ -304,29 +302,30 @@
 
           <section class="view journey-view" data-view="jornada" aria-labelledby="journey-title">
             <header class="journey-header">
-              <div><img class="journey-brand" src="assets/brand/notare-logo.svg" alt="Notare" /><span class="journey-kicker">Implantação demonstrativa</span><h1 id="journey-title">Como o Notare chega à escola</h1><p>O preenchimento é simulado. Avance por cada etapa quando estiver pronto.</p></div>
+              <div><img class="journey-brand" src="assets/brand/notare-logo.svg" alt="Notare" /><span class="journey-kicker">Implantação do Notare</span><h1 id="journey-title">Como o Notare chega à escola</h1><p>Conheça cada etapa da implantação. Avance no seu ritmo.</p></div>
               <div class="journey-header-actions"><div class="journey-mode-switch" role="group" aria-label="Ritmo da apresentação"><button class="active" type="button" data-journey-mode="manual" aria-pressed="true">Manual</button><button type="button" data-journey-mode="automatic" aria-pressed="false">Automática</button></div><button class="text-button" id="journey-skip" type="button">Ir à visão geral</button></div>
             </header>
             <div class="journey-progress" aria-label="Progresso da apresentação"><span id="journey-progress-bar"></span></div>
             <div class="journey-meta"><strong id="journey-step-label">Etapa 1 de 4</strong><div class="journey-step-actions"><button class="button button-secondary button-compact" id="journey-back" type="button" disabled>Voltar</button><button class="button button-secondary button-compact" id="journey-next" type="button">Avançar</button><button class="icon-button" id="journey-pause" type="button" aria-label="Pausar apresentação" aria-pressed="false"><svg><use href="#i-pause"></use></svg></button></div></div>
             <div class="journey-stage">
               <article class="journey-step" data-journey-step="0">
-                <div class="journey-copy"><span>1 · Acesso institucional</span><h2>A escola inicia com sua própria conta</h2><p>No produto real, a instituição entra em ambiente protegido; neste MVP, a validação usa apenas dados fictícios no navegador.</p></div>
-                <div class="journey-preview journey-school-access"><span class="school-logo journey-logo demo-reveal demo-identity-reveal" aria-hidden="true"><img src="assets/profiles/escola-logo.png" alt="" /></span><label class="demo-field"><span>Instituição</span><strong data-demo-text="Escola Horizonte Vivo"></strong></label><label class="demo-field"><span>Código INEP simulado</span><strong data-demo-text="26000000"></strong></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Instituição localizada e validada</span></div>
+                <div class="journey-copy"><span>1 · Acesso institucional</span><h2>A escola inicia com sua própria conta</h2><p>A identificação da instituição reúne os dados necessários para organizar o ambiente escolar.</p></div>
+                <div class="journey-preview journey-school-access"><span class="school-logo journey-logo demo-reveal demo-identity-reveal" aria-hidden="true"><img src="assets/profiles/escola-logo.png" alt="" /></span><label class="demo-field"><span>Instituição</span><strong data-demo-text="Escola Horizonte Vivo"></strong></label><label class="demo-field"><span>Código INEP</span><strong data-demo-text="26000000"></strong></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Identificação institucional</span></div>
               </article>
               <article class="journey-step" data-journey-step="1" hidden>
-                <div class="journey-copy"><span>2 · Contratação</span><h2>A instituição define o escopo do serviço</h2><p>A contratação define unidade, segmento e plano antes da configuração, sem cobrança ou assinatura real nesta demonstração.</p></div>
-                <div class="journey-preview journey-contract"><label class="demo-field"><span>Unidade contratada</span><strong class="demo-prefilled">Escola Horizonte Vivo<small><svg><use href="#i-check"></use></svg>Importado da validação anterior</small></strong></label><label class="demo-field"><span>Segmento</span><select data-demo-select="Ensino Fundamental" aria-label="Segmento educacional"><option value="">Selecione o segmento</option><option>Educação Infantil</option><option>Ensino Fundamental</option><option>Ensino Médio</option><option>Educação de Jovens e Adultos</option><option>Educação Profissional e Tecnológica</option></select></label><label class="demo-field"><span>Plano institucional <small>opções demonstrativas</small></span><select data-demo-select="Notare Acompanhamento" aria-label="Plano institucional"><option value="">Selecione o plano</option><option>Notare Essencial</option><option>Notare Acompanhamento</option><option>Notare Rede</option></select></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Proposta configurada</span></div>
+                <div class="journey-copy"><span>2 · Contratação</span><h2>A instituição define o escopo do serviço</h2><p>A instituição escolhe a unidade, o segmento e o plano antes de configurar a equipe.</p></div>
+                <div class="journey-preview journey-contract"><label class="demo-field"><span>Unidade contratada</span><strong class="demo-prefilled">Escola Horizonte Vivo<small><svg><use href="#i-check"></use></svg>Importado da validação anterior</small></strong></label><label class="demo-field"><span>Segmento</span><select data-demo-select="Ensino Fundamental" aria-label="Segmento educacional"><option value="">Selecione o segmento</option><option>Educação Infantil</option><option>Ensino Fundamental</option><option>Ensino Médio</option><option>Educação de Jovens e Adultos</option><option>Educação Profissional e Tecnológica</option></select></label><label class="demo-field"><span>Plano institucional <small>opções institucionais</small></span><select data-demo-select="Notare Acompanhamento" aria-label="Plano institucional"><option value="">Selecione o plano</option><option>Notare Essencial</option><option>Notare Acompanhamento</option><option>Notare Rede</option></select></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Proposta configurada</span></div>
               </article>
               <article class="journey-step" data-journey-step="2" hidden>
                 <div class="journey-copy"><span>3 · Configuração da equipe</span><h2>Turmas e funcionários entram no ambiente</h2><p>A direção importa turmas, estudantes e equipe para preparar o ambiente de acompanhamento.</p></div>
-                <div class="journey-preview journey-attachments"><div class="demo-attachment demo-reveal"><b class="demo-file-type">CSV</b><span><strong>turmas-e-estudantes.csv</strong><small>18 KB · 8 turmas · 96 estudantes fictícios</small></span><i><svg><use href="#i-check"></use></svg>Anexado</i></div><div class="demo-attachment demo-reveal"><b class="demo-file-type">CSV</b><span><strong>equipe-escolar.csv</strong><small>4 KB · 5 funcionários</small></span><i><svg><use href="#i-check"></use></svg>Anexado</i></div><div class="demo-photo-upload demo-reveal"><div class="demo-photos" aria-label="Fotos de perfil anexadas"><span class="demo-photo"><img src="assets/profiles/camila-duarte.png" alt="" /></span><span class="demo-photo"><img src="assets/profiles/rafael-nunes.png" alt="" /></span><span class="demo-photo"><img src="assets/profiles/livia-moura.png" alt="" /></span><span class="demo-photo demo-photo-more">+2</span></div><span><strong>fotos-de-perfil.zip</strong><small><svg><use href="#i-check"></use></svg>5 fotos vinculadas</small></span></div><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Importação concluída</span></div>
+                <div class="journey-preview journey-attachments"><div class="demo-attachment demo-reveal"><b class="demo-file-type">CSV</b><span><strong>turmas-e-estudantes.csv</strong><small>18 KB · 8 turmas · 96 estudantes</small></span><i><svg><use href="#i-check"></use></svg>Anexado</i></div><div class="demo-attachment demo-reveal"><b class="demo-file-type">CSV</b><span><strong>equipe-escolar.csv</strong><small>4 KB · 5 funcionários</small></span><i><svg><use href="#i-check"></use></svg>Anexado</i></div><div class="demo-photo-upload demo-reveal"><div class="demo-photos" aria-label="Fotos de perfil anexadas"><span class="demo-photo"><img src="assets/profiles/camila-duarte.png" alt="" /></span><span class="demo-photo"><img src="assets/profiles/rafael-nunes.png" alt="" /></span><span class="demo-photo"><img src="assets/profiles/livia-moura.png" alt="" /></span><span class="demo-photo demo-photo-more">+2</span></div><span><strong>fotos-de-perfil.zip</strong><small><svg><use href="#i-check"></use></svg>5 fotos vinculadas</small></span></div><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Importação concluída</span></div>
               </article>
               <article class="journey-step" data-journey-step="3" hidden>
-                <div class="journey-copy"><span>4 · Acesso do funcionário</span><h2>Camila entra na própria conta</h2><p>Cada funcionário usa credenciais próprias; a troca de perfis existe apenas para demonstrar permissões no MVP.</p></div>
+                <div class="journey-copy"><span>4 · Acesso do funcionário</span><h2>Camila entra na própria conta</h2><p>Os acessos da equipe são individuais e respeitam as responsabilidades de cada função.</p></div>
                 <div class="journey-preview journey-login"><span class="user-avatar demo-reveal demo-identity-reveal"><img class="avatar-photo" src="assets/profiles/camila-duarte.png" alt="" /></span><label class="demo-field"><span>E-mail profissional</span><strong data-demo-text="camila@horizontevivo.edu"></strong></label><label class="demo-field"><span>Senha</span><strong data-demo-text="••••••••••"></strong></label><span class="journey-status demo-reveal"><svg><use href="#i-check"></use></svg>Acesso individual confirmado</span></div>
               </article>
             </div>
+            <p class="journey-limits">As etapas são ilustrativas: não executam contratação, importação ou autenticação.</p>
             <p class="journey-autoplay" id="journey-autoplay" role="status" aria-live="polite" aria-atomic="true">O preenchimento é automático; você decide quando avançar.</p>
           </section>
 
@@ -334,35 +333,40 @@
             <div class="success-card card"><span class="success-icon"><svg><use href="#i-check"></use></svg></span><h1 id="success-title">Plano criado com sucesso</h1><p>A equipe agora tem uma ação clara, uma pessoa responsável e um prazo para revisar a situação.</p><p id="success-next-step">O acompanhamento já tem um próximo passo definido.</p><dl class="success-summary"><div><dt>Estudante</dt><dd id="summary-student">Ana Souza</dd></div><div><dt>Ação</dt><dd id="summary-action">Conversa de acolhimento</dd></div><div><dt>Responsável</dt><dd id="summary-owner">Camila Duarte · Direção escolar</dd></div><div><dt>Prazo</dt><dd id="summary-date">29/09/2026</dd></div></dl><div class="success-actions"><button class="button button-primary" data-route="painel">Voltar à visão geral</button><button class="button button-secondary" data-route="estudante">Ver perfil atualizado</button></div><small>O plano foi salvo neste navegador e já está disponível no histórico da estudante.</small></div>
           </section>
 
-          <section class="view ecosystem-view" data-view="familias" aria-labelledby="familias-title"><div class="page-heading"><div><h1 id="familias-title">Famílias e retornos</h1><p>Conecte o contato com responsáveis ao acompanhamento escolar.</p></div></div><p class="mvp-simulation-note"><strong>Ambiente demonstrativo:</strong> dados fictícios salvos somente neste navegador. Sem envio externo, contrato, compra, cobrança ou repasse real.</p><div data-business-content="familias"></div></section>
+          <section class="view ecosystem-view" data-view="familias" aria-labelledby="familias-title"><div class="page-heading"><div><h1 id="familias-title">Famílias e retornos</h1><p>Conecte o contato com responsáveis ao acompanhamento escolar.</p></div></div><p class="mvp-simulation-note">Dados de exemplo, armazenados neste navegador. As ações não enviam mensagens externas nem geram contratos, pagamentos ou repasses.</p><div data-business-content="familias"></div></section>
 
-          <section class="view ecosystem-view" data-view="familia" aria-labelledby="familia-title"><div class="page-heading"><div><h1 id="familia-title">Minha família</h1><p>Converse com a escola e acompanhe os comunicados compartilhados.</p></div></div><p class="mvp-simulation-note"><strong>Ambiente demonstrativo:</strong> dados fictícios salvos somente neste navegador. Sem envio externo, contrato, compra, cobrança ou repasse real.</p><div data-business-content="familia"></div></section>
+          <section class="view ecosystem-view" data-view="familia" aria-labelledby="familia-title"><div class="page-heading"><div><h1 id="familia-title">Minha família</h1><p>Converse com a escola e acompanhe os comunicados compartilhados.</p></div></div><p class="mvp-simulation-note">Dados de exemplo, armazenados neste navegador. As ações não enviam mensagens externas nem geram contratos, pagamentos ou repasses.</p><div data-business-content="familia"></div></section>
 
-          <section class="view ecosystem-view" data-view="clube" aria-labelledby="clube-title"><div class="page-heading"><div><h1 id="clube-title">Clube de Benefícios</h1><p>Encontre oportunidades opcionais para sua família.</p></div></div><p class="mvp-simulation-note"><strong>Ambiente demonstrativo:</strong> dados fictícios salvos somente neste navegador. Sem envio externo, contrato, compra, cobrança ou repasse real.</p><div data-business-content="clube"></div></section>
+          <section class="view ecosystem-view" data-view="clube" aria-labelledby="clube-title"><div class="page-heading"><div><h1 id="clube-title">Clube de Benefícios</h1><p>Encontre oportunidades opcionais para sua família.</p></div></div><p class="mvp-simulation-note">Dados de exemplo, armazenados neste navegador. As ações não enviam mensagens externas nem geram contratos, pagamentos ou repasses.</p><div data-business-content="clube"></div></section>
 
-          <section class="view ecosystem-view" data-view="parceiro" aria-labelledby="parceiro-title"><div class="page-heading"><div><h1 id="parceiro-title">Ofertas e conversões</h1><p>Gerencie benefícios e acompanhe apenas suas conversões.</p></div></div><p class="mvp-simulation-note"><strong>Ambiente demonstrativo:</strong> dados fictícios salvos somente neste navegador. Sem envio externo, contrato, compra, cobrança ou repasse real.</p><div data-business-content="parceiro"></div></section>
+          <section class="view ecosystem-view" data-view="parceiro" aria-labelledby="parceiro-title"><div class="page-heading"><div><h1 id="parceiro-title">Ofertas e conversões</h1><p>Gerencie benefícios e acompanhe apenas suas conversões.</p></div></div><p class="mvp-simulation-note">Dados de exemplo, armazenados neste navegador. As ações não enviam mensagens externas nem geram contratos, pagamentos ou repasses.</p><div data-business-content="parceiro"></div></section>
 
-          <section class="view ecosystem-view" data-view="assinatura" aria-labelledby="assinatura-title"><div class="page-heading"><div><h1 id="assinatura-title">Plano e assinatura</h1><p>Consulte o escopo institucional e experimente a adesão.</p></div></div><p class="mvp-simulation-note"><strong>Ambiente demonstrativo:</strong> dados fictícios salvos somente neste navegador. Sem envio externo, contrato, compra, cobrança ou repasse real.</p><div data-business-content="assinatura"></div></section>
+          <section class="view ecosystem-view" data-view="assinatura" aria-labelledby="assinatura-title"><div class="page-heading"><div><h1 id="assinatura-title">Plano e assinatura</h1><p>Consulte o escopo institucional e gerencie a adesão.</p></div></div><p class="mvp-simulation-note">Dados de exemplo, armazenados neste navegador. As ações não enviam mensagens externas nem geram contratos, pagamentos ou repasses.</p><div data-business-content="assinatura"></div></section>
 
-          <section class="view ecosystem-view" data-view="parcerias" aria-labelledby="parcerias-title"><div class="page-heading"><div><h1 id="parcerias-title">Revisar parcerias</h1><p>Avalie as ofertas antes de disponibilizá-las às famílias.</p></div></div><p class="mvp-simulation-note"><strong>Ambiente demonstrativo:</strong> dados fictícios salvos somente neste navegador. Sem envio externo, contrato, compra, cobrança ou repasse real.</p><div data-business-content="parcerias"></div></section>
+          <section class="view ecosystem-view" data-view="parcerias" aria-labelledby="parcerias-title"><div class="page-heading"><div><h1 id="parcerias-title">Revisar parcerias</h1><p>Avalie as ofertas antes de disponibilizá-las às famílias.</p></div></div><p class="mvp-simulation-note">Dados de exemplo, armazenados neste navegador. As ações não enviam mensagens externas nem geram contratos, pagamentos ou repasses.</p><div data-business-content="parcerias"></div></section>
         </main>
+        <aside id="creation-notice" class="creation-notice" aria-label="Criação recente" hidden>
+          <div><p data-undo-message role="status" aria-live="polite"></p><small data-undo-time id="undo-time" aria-live="off"></small></div>
+          <button class="button button-secondary" type="button" data-undo-action aria-describedby="undo-time">Desfazer</button>
+          <button class="icon-button" type="button" data-undo-close aria-label="Fechar aviso de criação">×</button>
+        </aside>
         <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
       </div>
     </div>
 
     <dialog class="profile-dialog" id="profile-dialog" aria-labelledby="profile-dialog-title">
-      <div class="dialog-heading"><div><h2 id="profile-dialog-title">Perfis de demonstração</h2><p>Compare permissões e experiências de acesso no protótipo.</p></div><button class="icon-button" id="profile-close" aria-label="Fechar">×</button></div>
-      <div class="mvp-profile-note"><strong>Recurso exclusivo do MVP</strong><p>No produto real, cada funcionário acessa sua própria conta; responsáveis e parceiros também têm acessos próprios e não podem trocar de usuário por este menu. A troca rápida existe apenas para demonstrar permissões.</p></div>
+      <div class="dialog-heading"><div><h2 id="profile-dialog-title">Alternar perfil</h2><p>Escolha o perfil e consulte suas áreas de acesso.</p></div><button class="icon-button" id="profile-close" aria-label="Fechar">×</button></div>
+      <div class="mvp-profile-note"><strong>Acesso local</strong><p>Esta versão acadêmica permite alternar entre equipe, familiares e parceiros para avaliar permissões. Não há autenticação real. Use somente dados de exemplo.</p></div>
       <div class="role-list" id="role-list"></div>
       <div class="dialog-footer"><button class="text-button danger-text" id="reset-demo">Restaurar base inicial</button><button class="button button-secondary" id="profile-done">Concluir</button></div>
     </dialog>
 
     <dialog class="profile-dialog institution-plan-dialog" id="institution-plan-dialog" aria-labelledby="institution-plan-title">
-      <div class="dialog-heading"><div><span class="dialog-kicker">Conta institucional</span><h2 id="institution-plan-title">Plano e contratação</h2><p>Resumo do escopo representado nesta demonstração.</p></div><button class="icon-button" id="institution-plan-close" aria-label="Fechar">×</button></div>
+      <div class="dialog-heading"><div><span class="dialog-kicker">Conta institucional</span><h2 id="institution-plan-title">Plano e contratação</h2><p>Resumo do escopo institucional.</p></div><button class="icon-button" id="institution-plan-close" aria-label="Fechar">×</button></div>
       <div class="institution-plan-content">
         <div class="institution-plan-status"><span>Plano ativo</span><strong>Notare Acompanhamento</strong><small>Escola Horizonte Vivo · Ensino Fundamental</small></div>
         <dl class="institution-plan-details"><div><dt>Turmas</dt><dd>8</dd></div><div><dt>Estudantes</dt><dd>96</dd></div><div><dt>Perfis profissionais</dt><dd>5</dd></div><div><dt>Ambiente</dt><dd>1 unidade</dd></div></dl>
-        <p>O MVP não realiza cobrança, assinatura ou processamento comercial. A jornada de adesão pode ser experimentada em Plano e assinatura.</p><button class="button button-secondary" id="manage-subscription" type="button" data-permission="subscription:manage">Gerenciar adesão simulada</button>
+        <p>As alterações são locais: não geram contrato, cobrança ou processamento comercial. Consulte as condições em Plano e assinatura.</p><button class="button button-secondary" id="manage-subscription" type="button" data-permission="subscription:manage">Gerenciar adesão</button>
       </div>
       <div class="dialog-footer"><button class="button button-secondary" id="institution-plan-done">Concluir</button></div>
     </dialog>

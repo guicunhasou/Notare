@@ -19,15 +19,15 @@
     return result;
   }
   function initialize(db) {
-    if (db.business?.version > 1) throw new Error('Esta versão não pode alterar uma base de demonstração mais recente.');
+    if (db.business?.version > 1) throw new Error('Esta versão não pode alterar uma base local mais recente.');
     if (!db.business) db.business = {
       version: 1,
       subscription: { plan: 'acompanhamento', segment: 'Ensino Fundamental', status: 'active', club: true, revision: 0, activatedAt: stamp() },
       families: [{ id: 'familia-ana', name: 'Marina Souza', students: ['ana'] }, { id: 'familia-lucas', name: 'Paulo Lima', students: ['lucas'] }],
       partners: [{ id: 'papelaria', name: 'Papelaria Horizonte', actor: 'parceiro-papelaria' }, { id: 'cultura', name: 'Espaço Cultura', actor: 'parceiro-cultura' }],
       offers: [
-        { id: 'oferta-material', partnerId: 'papelaria', title: 'Kit de materiais com benefício', description: 'Condição demonstrativa para material escolar. Atendimento fictício no parceiro.', price: 8000, commissionRate: 500, stock: 20, expires: '2027-12-31', status: 'approved' },
-        { id: 'oferta-leitura', partnerId: 'cultura', title: 'Oficina de leitura em família', description: 'Participação fictícia em uma oficina de leitura. Não gera inscrição externa.', price: 5000, commissionRate: 500, stock: 15, expires: '2027-12-31', status: 'approved' }
+        { id: 'oferta-material', partnerId: 'papelaria', title: 'Kit de materiais com benefício', description: 'Condição para material escolar, com valores de exemplo. Não gera atendimento externo.', price: 8000, commissionRate: 500, stock: 20, expires: '2027-12-31', status: 'approved' },
+        { id: 'oferta-leitura', partnerId: 'cultura', title: 'Oficina de leitura em família', description: 'Oficina de leitura com valores de exemplo. Não gera inscrição externa.', price: 5000, commissionRate: 500, stock: 15, expires: '2027-12-31', status: 'approved' }
       ], redemptions: [], messages: [], history: [], pendingSubscription: null
     };
     return db;
@@ -66,15 +66,15 @@
   function sendMessage(db, actor, studentId, body) {
     const student = requireStudent(db, actor, studentId);
     const family = db.business.families.find(f => f.students.includes(studentId));
-    if (!family) throw new Error('Não há responsável configurado para este estudante na demonstração.');
+    if (!family) throw new Error('Não há responsável configurado para este estudante.');
     const message = { id: id(), studentId, familyId: family.id, senderId: actor.id, body: text(body, 5, 600), at: stamp(), readAt: null, reply: null, repliedAt: null };
     db.business.messages.unshift(message);
-    student.timeline.unshift([date(), 'Comunicado compartilhado com a família no ambiente demonstrativo.']);
+    student.timeline.unshift([date(), 'Comunicado compartilhado com a família no acesso local.']);
     event(db, actor, 'Comunicado destinado ao responsável.');
     return message;
   }
   function communicationStatus(db, studentId) {
-    const messages = db.business.messages.filter(m => m.studentId === studentId);
+    const messages = db.business.messages.filter(m => m.studentId === studentId && !m.cancelledAt);
     const latest = messages[0];
     if (!latest) return null;
     return { count: messages.length, at: latest.repliedAt || latest.readAt || latest.at,
@@ -87,7 +87,7 @@
   function respondMessage(db, actor, messageId, reply = null) {
     requireActor(db, actor, 'family:view');
     const message = db.business.messages.find(m => m.id === messageId && m.familyId === actor.id);
-    if (!message) throw new Error('Comunicado não disponível para este responsável.');
+    if (!message || message.cancelledAt) throw new Error('Comunicado não disponível para resposta.');
     if (reply !== null && message.reply) throw new Error('Este comunicado já recebeu uma resposta.');
     const response = reply === null ? null : text(reply, 5, 600);
     if (!message.readAt) message.readAt = stamp();
@@ -111,13 +111,13 @@
   function activateSubscription(db, actor, proposalId, accepted) {
     requireActor(db, actor, 'subscription:manage');
     const proposal = db.business.pendingSubscription;
-    if (!accepted || !proposal || proposal.id !== proposalId) throw new Error('Revise e confirme a proposta demonstrativa antes de continuar.');
+    if (!accepted || !proposal || proposal.id !== proposalId) throw new Error('Revise e confirme a proposta antes de continuar.');
     Object.assign(db.business.subscription, { plan: proposal.plan, segment: proposal.segment, status: 'active', revision: db.business.subscription.revision + 1, activatedAt: stamp() });
     db.business.pendingSubscription = null;
-    event(db, actor, `Adesão simulada: ${PLANS[proposal.plan].name}; mensalidade ${money(proposal.monthly)}; implantação ${money(proposal.setup)}. Nenhuma cobrança.`);
+    event(db, actor, `Adesão registrada localmente: ${PLANS[proposal.plan].name}; mensalidade ${money(proposal.monthly)}; implantação ${money(proposal.setup)}. Nenhuma cobrança.`);
   }
   function cancelProposal(db, actor) { requireActor(db, actor, 'subscription:manage'); db.business.pendingSubscription = null; }
-  function setClub(db, actor, enabled) { requireActor(db, actor, 'subscription:manage'); db.business.subscription.club = Boolean(enabled); event(db, actor, enabled ? 'Clube habilitado na demonstração.' : 'Clube desabilitado para novos resgates.'); }
+  function setClub(db, actor, enabled) { requireActor(db, actor, 'subscription:manage'); db.business.subscription.club = Boolean(enabled); event(db, actor, enabled ? 'Clube habilitado neste navegador.' : 'Clube desabilitado para novos resgates.'); }
   function createOffer(db, actor, data) {
     const profile = requireActor(db, actor, 'partner:manage');
     const expires = String(data.expires || '');
@@ -152,7 +152,7 @@
     if (db.business.redemptions.some(r => r.familyId === actor.id && r.offerId === offerId && r.status !== 'cancelled')) throw new Error('Sua família já possui um resgate desta oferta.');
     const offer = db.business.offers.find(o => o.id === offerId);
     const redemption = { id: id(), code: 'NT-' + id().replace(/[^a-z0-9]/gi, '').slice(-10).toUpperCase(), offerId, familyId: actor.id, partnerId: offer.partnerId, title: offer.title, price: offer.price, rate: offer.commissionRate, expires: offer.expires, status: 'issued', issuedAt: stamp(), commission: 0 };
-    db.business.redemptions.unshift(redemption); offer.stock -= 1; event(db, actor, 'Voucher demonstrativo emitido; nenhuma compra ou comissão realizada.'); return redemption;
+    db.business.redemptions.unshift(redemption); offer.stock -= 1; event(db, actor, 'Voucher emitido neste navegador; nenhuma compra ou comissão realizada.'); return redemption;
   }
   function cancelRedemption(db, actor, redemptionId) {
     requireActor(db, actor, 'club:view');
@@ -170,19 +170,19 @@
     const r = db.business.redemptions.find(x => x.id === redemptionId && x.partnerId === p.scope.slice(8));
     if (r?.status !== 'issued' || new Date(r.expires + 'T23:59:59') < new Date()) throw new Error('Voucher inválido, cancelado, expirado ou já utilizado.');
     r.status = 'confirmed'; r.confirmedAt = stamp(); r.commission = Math.round(r.price * r.rate / 10000);
-    event(db, actor, 'Conversão simulada confirmada uma única vez; sem transação financeira.'); return r;
+    event(db, actor, 'Conversão registrada uma única vez neste navegador; sem transação financeira.'); return r;
   }
   function completePlan(db, actor, planId, conclusion) {
     requireActor(db, actor, 'plans:create');
     const plan = db.plans.find(p => p.id === planId);
-    if (!plan || plan.status === 'done') throw new Error('Este plano não está disponível para conclusão.');
+    if (!plan || plan.voidedAt || plan.status === 'done') throw new Error('Este plano não está disponível para conclusão.');
     requireStudent(db, actor, plan.studentId);
     const body = text(conclusion, 10, 600);
     plan.status = 'done'; plan.completedAt = stamp(); plan.conclusion = body;
     db.agenda.filter(a => a.sourcePlanId === planId).forEach(a => { a.status = 'done'; });
     const student = db.students.find(s => s.id === plan.studentId);
     student.timeline.unshift([date(), `Plano concluído por ${actor.name}: ${body}`]);
-    db.records.unshift({ id: id(), studentId: student.id, kind: 'Devolutiva', description: `Conclusão do plano ${plan.type}: ${body}`, date: date(), time: new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date()), ownerId: actor.id, followup: false });
+    db.records.unshift({ id: id(), studentId: student.id, kind: 'Devolutiva', sourcePlanId: plan.id, description: `Conclusão do plano ${plan.type}: ${body}`, date: date(), time: new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date()), ownerId: actor.id, followup: false });
     event(db, actor, 'Acompanhamento concluído com registro e histórico preservados.');
   }
   window.NOTARE_BUSINESS = Object.freeze({ PLANS, initialize, profiles, scopedStudents, sendMessage, communicationStatus, familyMessages, respondMessage, proposeSubscription, activateSubscription, cancelProposal, setClub, createOffer, reviewOffer, toggleOffer, availableOffers, reserve, cancelRedemption, partnerStatement, confirmConversion, completePlan });

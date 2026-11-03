@@ -200,5 +200,77 @@
     });
   }
 
-  window.NOTARE_UI = Object.freeze({ createModalDrawer, createNotificationCenter });
+  function createUndoNotice({ root, undo, notify, clock = () => Date.now() }) {
+    const message = root.querySelector('[data-undo-message]');
+    const time = root.querySelector('[data-undo-time]');
+    const action = root.querySelector('[data-undo-action]');
+    const close = root.querySelector('[data-undo-close]');
+    const pauses = new Set();
+    let operation = null;
+    let timer = null;
+    let pausedAt = null;
+    function clear() {
+      window.clearInterval(timer);
+      timer = null;
+      operation = null;
+      pausedAt = null;
+      pauses.clear();
+      root.hidden = true;
+    }
+    function tick() {
+      if (!operation) return;
+      const remaining = Math.max(0, operation.expiresAt - (pausedAt ?? clock()));
+      time.textContent = pauses.size ? 'Tempo pausado enquanto você interage com este aviso.' : `Desfazer disponível por mais ${Math.ceil(remaining / 1000)} segundos.`;
+      if (!remaining) {
+        clear();
+        notify('O prazo para desfazer terminou. A criação foi mantida.');
+      }
+    }
+    function pause(reason, active) {
+      if (!operation) return;
+      if (active) {
+        if (!pauses.size) {
+          if (clock() >= operation.expiresAt) return tick();
+          pausedAt = clock();
+        }
+        pauses.add(reason);
+      } else {
+        pauses.delete(reason);
+        if (!pauses.size && pausedAt !== null) {
+          operation.expiresAt += clock() - pausedAt;
+          pausedAt = null;
+        }
+      }
+      tick();
+    }
+    function show(text, nextOperation) {
+      clear();
+      operation = nextOperation;
+      root.hidden = false;
+      message.textContent = text;
+      if (document.hidden) pause('hidden', true);
+      tick();
+      timer = window.setInterval(tick, 250);
+    }
+    action.addEventListener('click', () => {
+      if (!operation) return;
+      if (!pauses.size && clock() >= operation.expiresAt) return tick();
+      // Foco/hover suspendem o prazo, inclusive entre dois ticks.
+      const effectiveOperation = { ...operation, expiresAt: operation.expiresAt + (pausedAt === null ? 0 : clock() - pausedAt) };
+      try {
+        undo(effectiveOperation);
+        clear();
+        notify('Criação desfeita. O conteúdo original permanece no histórico como anulado.');
+      } catch (error) { notify(error.message); }
+    });
+    close.addEventListener('click', () => { clear(); document.querySelector('#main-content')?.focus({ preventScroll: true }); notify('Aviso fechado. A criação foi mantida.'); });
+    root.addEventListener('pointerenter', () => pause('pointer', true));
+    root.addEventListener('pointerleave', () => pause('pointer', false));
+    root.addEventListener('focusin', () => pause('focus', true));
+    root.addEventListener('focusout', event => { if (!root.contains(event.relatedTarget)) pause('focus', false); });
+    document.addEventListener('visibilitychange', () => pause('hidden', document.hidden));
+    return Object.freeze({ show, clear });
+  }
+
+  window.NOTARE_UI = Object.freeze({ createModalDrawer, createNotificationCenter, createUndoNotice });
 })();

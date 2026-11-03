@@ -131,7 +131,7 @@ svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-wi
 
 main { min-height: calc(100vh - 4.8rem); }
 .view { display: none; width: min(1380px, calc(100% - clamp(2rem, 6.5vw, 5rem))); margin: 0 auto; padding: clamp(2.25rem, 4.5vw, 3.7rem) 0 5rem; }
-.view.active { display: block; animation: view-in .22s ease-out; }
+.view.active { display: block; }
 [data-view="painel"].active { display: flex; flex-direction: column; gap: clamp(1.5rem, 2.4vw, 2rem); }
 [data-view="painel"] > .page-heading { order: 1; margin-bottom: 0; }
 [data-view="painel"] > .metrics { order: 2; }
@@ -445,17 +445,17 @@ td { border-top: 1px solid var(--line); padding: 1.15rem; font-size: .73rem; }
 .journey-mode main { min-height: 100vh; border-top: 6px solid var(--amber-accent); background: #f2f5f2; }
 .entry-view { position: relative; width: 100%; min-height: calc(100vh - 6px); padding: 2rem; overflow: hidden; }
 .entry-view.active { display: grid; place-items: center; }
-.entry-opening { position: absolute; z-index: 3; inset: 0; display: grid; place-items: center; background: #f2f5f2; animation: entry-opening-out .32s ease 1.5s forwards; }
-.entry-content { display: grid; width: min(46rem,100%); justify-items: center; gap: 0; text-align: center; animation: entry-content-in .45s ease 1.62s both; }
+.entry-opening { position: absolute; z-index: 3; inset: 0; display: grid; place-items: center; background: #f2f5f2; animation: entry-opening-out .45s ease 2.6s forwards; pointer-events: none; }
+.entry-content { display: grid; width: min(46rem,100%); justify-items: center; gap: 0; text-align: center; animation: none; }
 .entry-brand { width: min(27rem,72vw); height: auto; }
-.entry-content h1 { margin: 2.4rem 0 2.8rem; color: var(--ink-strong); font-size: 42px; line-height: 1.15; font-weight: 500; }
+.entry-content h1 { max-width: 30ch; margin: 2rem 0 2.4rem; color: var(--ink-strong); font-size: clamp(2rem, 3.4vw, 2.6rem); line-height: 1.18; font-weight: 450; }
 .entry-actions { display: grid; width: min(32rem,100%); gap: .8rem; }
-.entry-actions .button { min-height: 3.5rem; justify-content: center; font-size: .82rem; }
+.entry-actions .button { min-height: 3.5rem; justify-content: center; font-size: .9rem; }
 .entry-primary svg { width: 1.15rem; height: 1.15rem; }
 .entry-secondary { border-color: rgba(85,116,99,.58); }
 .journey-view { position: relative; width: min(1180px, calc(100% - 2rem)); min-height: 100vh; padding: clamp(2rem,5vw,4rem) 0; }
 .journey-view.active { display: flex; flex-direction: column; }
-.journey-opening-logo { width: min(19rem,60vw); height: auto; overflow: visible; }
+.journey-opening-logo { position: absolute; left: var(--brand-left, 50%); top: var(--brand-top, 30%); width: var(--brand-width, min(27rem,72vw)); height: auto; overflow: visible; }
 .journey-opening-logo .opening-amber, .journey-opening-logo .opening-green, .journey-opening-logo .opening-blue { transform-box: fill-box; }
 .journey-opening-logo .opening-amber { transform-origin: center bottom; animation: opening-amber-in .42s cubic-bezier(.22,.8,.32,1) both; }
 .journey-opening-logo .opening-green { transform-origin: left bottom; animation: opening-green-in .52s cubic-bezier(.22,.8,.32,1) .12s both; }
@@ -482,7 +482,7 @@ td { border-top: 1px solid var(--line); padding: 1.15rem; font-size: .73rem; }
 .journey-meta strong { color: var(--muted); font-size: .66rem; }
 .journey-step-actions { display: flex; align-items: center; gap: .55rem; }
 .journey-stage { flex: 1; display: grid; align-items: center; }
-.journey-step.active { display: grid; grid-template-columns: minmax(0,1.05fr) minmax(330px,.75fr); gap: clamp(2rem,7vw,6rem); align-items: center; animation: view-in .28s ease-out; }
+.journey-step.active { display: grid; grid-template-columns: minmax(0,1.05fr) minmax(330px,.75fr); gap: clamp(2rem,7vw,6rem); align-items: start; }
 .journey-copy > span { color: var(--primary); font-size: .68rem; font-weight: 800; text-transform: uppercase; }
 .journey-copy h2 { max-width: 16ch; margin: .65rem 0 1rem; color: var(--ink-strong); font-size: clamp(2rem,4vw,3.4rem); line-height: 1.02; }
 .journey-copy > p { max-width: 58ch; margin: 0; color: var(--muted); font-size: .86rem; line-height: 1.7; }
@@ -691,7 +691,7 @@ td { font-size: .84rem; }
   .form-actions, .success-actions { align-items: stretch; flex-direction: column-reverse; }
   .success-actions { flex-direction: column; }
   .entry-view { padding: 1.2rem; }
-  .entry-content h1 { margin: 1.8rem 0 2.2rem; font-size: 30px; }
+  .entry-content h1 { margin: 1.7rem 0 2rem; font-size: clamp(1.65rem, 7.4vw, 2rem); }
   .journey-header { flex-direction: column; gap: 1rem; }
   .journey-header-actions { width: 100%; justify-items: start; }
   .journey-copy h2 { font-size: 2rem; }
@@ -775,3 +775,63 @@ td { font-size: .84rem; }
 @media (max-width: 380px) { .demo-photo-upload { flex-wrap: wrap; } }
 
 @media (max-width: 320px) { body { min-width: 0; } }
+
+/* Pacote 02 — hierarquia tipográfica, ritmo e controles de operação. */
+@font-face { font-family: "Manrope"; src: url("assets/fonts/manrope-variable.ttf") format("truetype"); font-style: normal; font-weight: 200 800; font-display: swap; }
+@font-face { font-family: "DM Sans"; src: url("assets/fonts/dm-sans-variable.ttf") format("truetype"); font-style: normal; font-weight: 100 1000; font-display: swap; }
+:root { --font-interface: "Manrope", sans-serif; --font-heading: "DM Sans", "Manrope", sans-serif; }
+body { font-family: var(--font-interface); line-height: 1.55; }
+h1, h2, h3 { font-family: var(--font-heading); font-optical-sizing: auto; font-weight: 500; line-height: 1.2; letter-spacing: -.025em; text-wrap: balance; overflow-wrap: break-word; }
+.page-heading h1, .profile-title h1, .form-intro h1, .success-card h1, .journey-header h1 { font-weight: 500; letter-spacing: -.035em; }
+.journey-copy h2 { font-weight: 450; line-height: 1.12; }
+.card-heading h2, .ecosystem-card h2, .profile-side h2, .dialog-heading h2 { font-weight: 550; }
+button, .button, .text-button, .back-button, .main-nav a { font-weight: 650; }
+.data-form label, .data-form legend, .scope-filter { font-weight: 600; }
+.metric strong, .ecosystem-value { font-family: var(--font-heading); font-weight: 550; }
+.main-nav a { grid-template-columns: 1.2rem minmax(0,1fr); gap: .55rem; padding-inline: .6rem; font-size: .84rem; }
+.main-nav a > span { white-space: nowrap; }
+.main-nav .nav-label:not(:first-child) { margin-top: 1.5rem; }
+.registration-toolbar { align-items: end; }
+.registration-toolbar .registration-tabs, .registration-search, .registration-create, .registration-toolbar select { min-height: 3rem; }
+.registration-toolbar .registration-create { height: 3rem; }
+.registration-toolbar .scope-filter { gap: .35rem; }
+.journey-stage { align-items: start; }
+.journey-preview { align-self: start; }
+.demo-identity-reveal { max-height: 6.5rem; visibility: hidden; margin-bottom: .4rem !important; transition: opacity .45s ease, transform .6s ease; }
+.demo-identity-reveal.is-visible { visibility: visible; }
+.journey-school-access .demo-identity-reveal { min-height: 5.7rem; margin-bottom: .75rem !important; }
+.journey-login .demo-identity-reveal { min-height: 4.4rem; }
+.demo-field strong[data-demo-text] { min-height: 4rem; }
+.journey-limits { margin: 1.2rem 0 0; color: var(--muted); font-size: .72rem; }
+.journey-autoplay { margin-top: .5rem; }
+.enter-item { animation: element-in .42s cubic-bezier(.2,.65,.3,1) var(--enter-delay,0ms) both; }
+@keyframes element-in { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+.entry-content h1 { animation: element-in .5s ease 2.75s both; }
+.entry-actions .button { animation: element-in .5s ease 2.9s both; }
+.entry-actions .button + .button { animation-delay: 3.02s; }
+.entry-actions:focus-within .button { animation: none; }
+.record-audit { display: block; margin-top: .35rem; color: var(--muted); font-size: .72rem; }
+.record-state-cancelled { background: var(--surface); color: var(--muted); }
+.creation-notice { position: fixed; z-index: 95; bottom: 1.2rem; right: 1.2rem; display: grid; grid-template-columns: minmax(0,1fr) auto auto; align-items: center; gap: .8rem; width: min(540px,calc(100% - 2.4rem)); border: 1px solid var(--line); border-left: 4px solid var(--green); border-radius: 14px; padding: 1rem; background: var(--paper); color: var(--ink); box-shadow: 0 10px 40px rgba(24,59,70,.16); }
+.creation-notice p { margin: 0; font-size: .86rem; font-weight: 650; }
+.creation-notice small { display: block; margin-top: .3rem; font-size: .72rem; color: var(--muted); }
+.creation-notice .button { min-height: 2.6rem; }
+.creation-notice .icon-button { width: 1.8rem; height: 1.8rem; }
+.toast { bottom: 8.5rem; }
+@media (max-width: 620px) {
+  .registration-toolbar { gap: 1rem; }
+  .creation-notice { right: .6rem; bottom: .6rem; width: calc(100% - 1.2rem); grid-template-columns: minmax(0,1fr) auto; gap: .6rem; padding: .85rem; }
+  .creation-notice > div { grid-column: 1; }
+  .creation-notice .button { grid-column: 1; justify-self: start; }
+  .creation-notice .icon-button { grid-column: 2; grid-row: 1; }
+  .toast { right: .6rem; left: .6rem; bottom: 11rem; max-width: none; }
+  .page-heading h1, .form-intro h1 { font-size: clamp(1.7rem,7.8vw,2.1rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .enter-item, .entry-content h1, .entry-actions .button, .journey-opening-logo * { animation: none !important; opacity: 1; transform: none; }
+  .entry-opening { display: none; }
+}
+
+.registration-toolbar .registration-tabs button { min-height: calc(3rem - 2px); }
+
+.entry-content h1 > span { display: block; }
