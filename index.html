@@ -10,13 +10,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=23" />
+    <link rel="stylesheet" href="styles.css?v=20261103" />
     <script src="data.js?v=13" defer></script>
     <script src="core.js?v=5" defer></script>
     <script src="ui.js?v=2" defer></script>
     <script src="business.js?v=1" defer></script>
     <script src="business-ui.js?v=1" defer></script>
-    <script src="app.js?v=28" defer></script>
+    <script src="app.js?v=20261103" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
@@ -60,6 +60,7 @@
         <nav class="main-nav">
           <p class="nav-label" data-permission="dashboard:view">Acompanhamento</p>
           <a href="#painel" data-route="painel" data-permission="dashboard:view"><svg><use href="#i-grid"></use></svg><span>Visão geral</span></a>
+          <a href="#novo-registro" data-route="novo-registro" data-permission="records:create" aria-label="Novo registro" title="Novo registro"><svg><use href="#i-plus"></use></svg><span>Novo registro</span></a>
           <a href="#busca-ativa" data-route="busca-ativa" data-permission="followup:view"><svg><use href="#i-search"></use></svg><span>Acompanhamento</span></a>
           <a href="#registros" data-route="registros" data-permission="records:view"><svg><use href="#i-clipboard"></use></svg><span>Registros</span></a>
           <a href="#estudantes" data-route="estudantes" data-permission="students:view"><svg><use href="#i-users"></use></svg><span>Estudantes</span></a>
@@ -188,6 +189,7 @@
             </div>
             <div class="toolbar card">
               <label class="search-field"><span class="sr-only">Buscar estudante</span><svg><use href="#i-search"></use></svg><input id="student-search" type="search" placeholder="Buscar por nome ou turma" /></label>
+              <label class="scope-filter">Turma<select id="followup-class-filter"></select></label>
               <div class="filter-group" role="group" aria-label="Filtrar prioridade">
                 <button class="filter active" type="button" data-filter="todos" aria-pressed="true">Todos</button><button class="filter" type="button" data-filter="alta" aria-pressed="false">Alta</button><button class="filter" type="button" data-filter="media" aria-pressed="false">Acompanhar</button><button class="filter" type="button" data-filter="evolucao" aria-pressed="false">Em evolução</button><button class="filter" type="button" data-filter="estavel" aria-pressed="false">Sem alertas</button>
               </div>
@@ -199,7 +201,7 @@
           </section>
 
           <section class="view" data-view="estudante" aria-labelledby="student-name">
-            <button class="back-button" data-route="busca-ativa"><svg><use href="#i-back"></use></svg>Voltar ao acompanhamento</button>
+            <button class="back-button" id="student-back" type="button"><svg><use href="#i-back"></use></svg><span>Voltar ao acompanhamento</span></button>
             <div class="profile-hero">
               <div class="profile-avatar" id="student-initials"></div>
               <div class="profile-title"><span class="status-badge status-high" id="student-status">Atenção alta</span><span class="status-badge status-plan" id="student-plan-status" hidden>Plano em acompanhamento</span><h1 id="student-name">Ana Souza</h1><p id="student-meta">8º B · cadastro EST-014</p></div>
@@ -208,10 +210,10 @@
 
             <div class="profile-grid">
               <section class="card profile-main" aria-labelledby="signals-title">
-                <div class="card-heading"><div><h2 id="signals-title">Sinais que pedem atenção</h2></div><span class="explain-chip">Sem pontuação oculta</span></div>
+                <div class="card-heading"><div><h2 id="signals-title">Sinais que pedem atenção</h2></div></div>
                 <div class="signal-grid" id="signal-grid"></div>
                 <div class="callout"><strong>Por que este caso aparece como prioridade?</strong><p id="priority-reason">A frequência caiu, há faltas consecutivas e o primeiro contato ainda não teve retorno. A classificação apenas organiza os sinais; a decisão continua com a equipe.</p></div>
-                <div class="timeline"><div class="card-heading"><h3>Histórico recente</h3><button class="text-button" data-route="registros">Ver todos</button></div><div id="student-timeline"></div></div>
+                <div class="timeline"><div class="card-heading"><h3>Histórico recente</h3><button class="text-button" id="student-history" type="button">Ver todos</button></div><div id="student-timeline"></div></div>
               </section>
               <aside class="profile-side">
                 <section class="card next-step"><h2>Próximo passo sugerido</h2><p>Acolher, entender e combinar retorno. Converse com a estudante, valide o contexto com a família e registre uma ação com responsável e prazo.</p><button class="button button-soft button-block" data-route="plano" data-permission="plans:create">Criar acompanhamento</button></section>
@@ -221,7 +223,9 @@
           </section>
 
           <section class="view placeholder-view" data-view="registros" aria-labelledby="registros-title">
+            <button class="back-button" id="records-back" type="button" hidden><svg><use href="#i-back"></use></svg>Voltar ao estudante</button>
             <div class="page-heading compact-heading"><div><h1 id="registros-title">Registros</h1><p>Acompanhe sinais, contatos, devolutivas e planos criados.</p></div><button class="button button-primary" data-route="novo-registro"><svg><use href="#i-plus"></use></svg>Novo registro</button></div>
+            <div class="class-toolbar card"><label>Turma<select id="records-class-filter"></select></label><p id="records-context" aria-live="polite"></p><button class="text-button" id="records-clear" type="button">Limpar filtros e ver todos</button></div>
             <div class="card records-shell"><div class="record-tabs" role="group" aria-label="Filtrar registros"><button class="active" type="button" data-record-filter="todos" aria-pressed="true">Todos</button><button type="button" data-record-filter="Plano" aria-pressed="false">Planos de ação</button><button type="button" data-record-filter="Contato" aria-pressed="false">Contatos</button><button type="button" data-record-filter="Ocorrência" aria-pressed="false" data-permission="occurrences:view">Ocorrências</button></div><div id="records-list" class="records-list"></div><p class="empty-state" id="records-empty" hidden>Nenhum registro encontrado nesta categoria.</p></div>
           </section>
 
@@ -236,6 +240,7 @@
             <div class="registration-shell">
               <div class="registration-toolbar">
                 <div class="registration-tabs" role="tablist" aria-label="Tipo de cadastro"><button class="active" id="registration-tab-students" type="button" role="tab" data-registration-tab="students" aria-controls="registration-table" aria-selected="true" tabindex="0">Estudantes</button><button id="registration-tab-staff" type="button" role="tab" data-registration-tab="staff" aria-controls="registration-table" aria-selected="false" tabindex="-1">Funcionários</button><button id="registration-tab-classes" type="button" role="tab" data-registration-tab="classes" aria-controls="registration-table" aria-selected="false" tabindex="-1">Turmas</button></div>
+                <label class="scope-filter" id="registration-class-field">Turma<select id="registration-class-filter"></select></label>
                 <label class="registration-search"><svg aria-hidden="true"><use href="#i-search"></use></svg><span class="sr-only">Buscar no cadastro atual</span><input id="registration-search" type="search" placeholder="Buscar estudante" autocomplete="off" /></label>
                 <button class="button button-primary registration-create" id="registration-create" type="button" disabled title="Cadastro disponível em uma versão futura"><svg><use href="#i-plus"></use></svg><span>Novo estudante</span></button>
               </div>
@@ -253,9 +258,9 @@
                 <fieldset><legend>Tipo de registro</legend><div class="choice-row"><label><input type="radio" name="kind" value="Ausência" checked><span>Ausência</span></label><label><input type="radio" name="kind" value="Contato"><span>Contato</span></label><label data-permission="occurrences:create"><input type="radio" name="kind" value="Ocorrência"><span>Ocorrência</span></label><label><input type="radio" name="kind" value="Devolutiva"><span>Devolutiva</span></label></div></fieldset>
                 <div class="two-fields"><label>Data<input type="date" name="date" required></label><label>Registrado por<span class="readonly-field" id="record-owner-display" aria-live="polite"></span></label></div>
                 <label class="record-template-field">Texto pré-elaborado<select id="record-template" name="template"><option value="">Selecione uma opção</option></select><small>As opções acompanham o tipo de registro. O texto inserido poderá ser editado livremente.</small></label>
-                <label class="description-field"><span class="field-heading"><span>Descrição</span><button class="text-button ai-simulation-button" id="record-suggestion" type="button"><svg><use href="#i-sparkles"></use></svg>Gerar sugestão simulada</button></span><textarea name="description" rows="5" placeholder="Descreva objetivamente o que foi observado ou realizado..." required></textarea><small><strong>Simulação do MVP:</strong> o texto é montado por regras locais e não usa inteligência artificial real. Revise antes de salvar e não inclua dados sensíveis.</small></label>
+                <div class="description-field"><span class="field-heading"><label for="record-description">Descrição</label><button class="text-button ai-simulation-button" id="record-suggestion" type="button"><svg><use href="#i-sparkles"></use></svg>Gerar sugestão simulada</button></span><textarea id="record-description" name="description" rows="5" aria-describedby="record-suggestion-note" placeholder="Descreva objetivamente o que foi observado ou realizado..." required></textarea><small id="record-suggestion-note"><strong>Simulação do MVP:</strong> o texto é montado por regras locais e não usa inteligência artificial real. Revise antes de salvar e não inclua dados sensíveis.</small><p id="record-text-status" class="form-text-status" role="status" hidden></p></div>
                 <label class="check-field"><input type="checkbox" name="followup"><span>Este registro precisa de acompanhamento</span></label>
-                <div class="form-actions"><button type="button" class="button button-secondary" data-back>Cancelar</button><button class="button button-primary" type="submit">Salvar registro</button></div>
+                <div class="form-actions"><button type="button" class="button button-secondary" data-back data-cancel>Cancelar</button><button class="button button-primary" type="submit">Salvar registro</button></div>
               </form>
             </div>
           </section>
@@ -269,7 +274,7 @@
                 <div class="two-fields"><label>Responsável pela ação<select name="owner" id="plan-owner"></select></label><label>Prazo<input type="date" name="date" required></label></div>
                 <label>Objetivo e observações<textarea name="notes" rows="4" required>Compreender o motivo das ausências e combinar um retorno acompanhado, preservando a privacidade da estudante.</textarea></label>
                 <label class="check-field"><input type="checkbox" name="family" checked><span>Incluir contato com a família no acompanhamento</span></label>
-                <div class="form-actions"><button type="button" class="button button-secondary" data-route="estudante">Cancelar</button><button class="button button-primary" type="submit">Salvar plano de ação</button></div>
+                <div class="form-actions"><button type="button" class="button button-secondary" data-route="estudante" data-cancel>Cancelar</button><button class="button button-primary" type="submit">Salvar plano de ação</button></div>
               </form>
             </div>
           </section>
@@ -303,7 +308,7 @@
               <div class="journey-header-actions"><div class="journey-mode-switch" role="group" aria-label="Ritmo da apresentação"><button class="active" type="button" data-journey-mode="manual" aria-pressed="true">Manual</button><button type="button" data-journey-mode="automatic" aria-pressed="false">Automática</button></div><button class="text-button" id="journey-skip" type="button">Ir à visão geral</button></div>
             </header>
             <div class="journey-progress" aria-label="Progresso da apresentação"><span id="journey-progress-bar"></span></div>
-            <div class="journey-meta"><strong id="journey-step-label">Etapa 1 de 4</strong><div class="journey-step-actions"><button class="button button-secondary button-compact" id="journey-next" type="button" hidden disabled>Continuar</button><button class="icon-button" id="journey-pause" type="button" aria-label="Pausar apresentação" aria-pressed="false"><svg><use href="#i-pause"></use></svg></button></div></div>
+            <div class="journey-meta"><strong id="journey-step-label">Etapa 1 de 4</strong><div class="journey-step-actions"><button class="button button-secondary button-compact" id="journey-back" type="button" disabled>Voltar</button><button class="button button-secondary button-compact" id="journey-next" type="button">Avançar</button><button class="icon-button" id="journey-pause" type="button" aria-label="Pausar apresentação" aria-pressed="false"><svg><use href="#i-pause"></use></svg></button></div></div>
             <div class="journey-stage">
               <article class="journey-step" data-journey-step="0">
                 <div class="journey-copy"><span>1 · Acesso institucional</span><h2>A escola inicia com sua própria conta</h2><p>No produto real, a instituição entra em ambiente protegido; neste MVP, a validação usa apenas dados fictícios no navegador.</p></div>

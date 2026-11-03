@@ -748,3 +748,30 @@ td { font-size: .84rem; }
   .school-popover { position: fixed; top: 4.5rem; left: .6rem; right: .6rem; width: auto; }
 }
 @media (max-width: 380px) { .metrics { grid-template-columns: minmax(0,1fr); } }
+
+/* Pacote 01: controles de contexto e filtros, sem alterar a identidade visual. */
+.scope-filter { display: grid; gap: .4rem; color: var(--muted); font-size: .78rem; font-weight: 720; }
+.scope-filter select { min-width: 0; width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: .65rem .8rem; background: #faf9f5; color: var(--ink); }
+.toolbar { flex-wrap: wrap; }
+.registration-toolbar { grid-template-columns: minmax(0,1fr) minmax(7rem,.5fr) minmax(0,.8fr) auto; }
+.description-field { display: grid; gap: .65rem; }
+.description-field > small { color: var(--muted); font-size: .75rem; font-weight: 500; }
+.form-text-status { margin: 0; color: var(--primary-dark); font-size: .8rem; }
+.record-heading .text-button { text-align: left; }
+@media (max-width: 1100px) { .registration-toolbar { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 800px) { .registration-toolbar { grid-template-columns: minmax(0,1fr); } }
+@media (max-width: 620px) {
+  .journey-meta { flex-wrap: wrap; gap: .6rem; padding-block: .6rem; }
+  .journey-step-actions { flex-wrap: wrap; }
+  .field-heading { flex-wrap: wrap; gap: .5rem; }
+}
+
+@media (max-width: 800px) {
+  .journey-stage, .journey-step.active, .journey-copy, .journey-preview { min-width: 0; max-width: 100%; }
+  .journey-step.active { grid-template-columns: minmax(0,1fr); }
+  .demo-field, .journey-preview > * { min-width: 0; }
+  .demo-field strong { overflow-wrap: anywhere; }
+}
+@media (max-width: 380px) { .demo-photo-upload { flex-wrap: wrap; } }
+
+@media (max-width: 320px) { body { min-width: 0; } }

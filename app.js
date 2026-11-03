@@ -62,6 +62,12 @@ const state = {
   studentSort: "name",
   recordClass: "8º B",
   recordFilter: "todos",
+  recordsStudentId: null,
+  followupClassFilter: "todas",
+  recordsClassFilter: "todas",
+  registrationClassFilter: "todas",
+  studentReturnContext: null,
+  formReturnContext: null,
   registrationTab: "students",
   registrationQuery: "",
   registrationPage: 1,
@@ -87,6 +93,7 @@ const requestedJourneyStep = Number.parseInt(new URLSearchParams(location.search
 let journeyStep = Number.isInteger(requestedJourneyStep) ? Math.min(Math.max(requestedJourneyStep, 0), 3) : 0;
 let journeyPaused = false;
 let journeyTimer = null;
+let journeyWaitResolve = null;
 let journeyRunId = 0;
 let journeyMode = "manual";
 let journeyRunning = false;
@@ -397,14 +404,12 @@ function latestStudentActivityDate(student) {
 function studentUpdatedLabel(student, now = new Date()) {
   const date = latestStudentActivityDate(student);
   if (!date) return normalizeSeedRelativeLabel(student.updated, now);
-  const time = String(student.updated || "").match(/\b\d{2}:\d{2}\b/)?.[0];
-  const label = capitalize(relativeDateLabel(date, now));
-  return time ? `${label}, ${time}` : label;
+  return formatDate(dateKey(date));
 }
 
 function studentContactLabel(student, now = new Date()) {
   const communication = window.NOTARE_BUSINESS.communicationStatus(db, student.id);
-  if (communication) return `${relativeDateLabel(new Date(communication.at), now)} · ${communication.label}`;
+  if (communication) return `${formatDate(dateKey(new Date(communication.at)))} · ${communication.label}`;
   const contact = db.records
     .filter((record) => record.studentId === student.id && record.kind === "Contato")
     .map((record) => ({ ...record, parsedDate: parseDisplayDate(record.date) }))
@@ -412,7 +417,7 @@ function studentContactLabel(student, now = new Date()) {
     .sort((a, b) => b.parsedDate - a.parsedDate)[0];
   if (!contact) return student.contact;
   const state = String(student.contact || "").split("·").slice(1).join("·").trim();
-  const label = relativeDateLabel(contact.parsedDate, now);
+  const label = formatDate(dateKey(contact.parsedDate));
   return state ? `${label} · ${state}` : label;
 }
 
@@ -422,7 +427,8 @@ function normalizeTemporalText(value, now = new Date()) {
     [/\bhoje\b/gi, relativeDateLabel(reference, now)],
     [/\bamanhã\b/gi, relativeDateLabel(addDays(reference, 1), now)]
   ];
-  return replacements.reduce((text, [pattern, replacement]) => text.replace(pattern, replacement), String(value));
+  return replacements.reduce((text, [pattern, replacement]) => text.replace(pattern, replacement), String(value))
+    .replace(/\b(\d{2}\/\d{2})(?![\/\d])/g, "$1/2026");
 }
 
 function normalizeSeedRelativeLabel(value, now = new Date()) {
@@ -431,7 +437,7 @@ function normalizeSeedRelativeLabel(value, now = new Date()) {
   if (!match) return text;
   const reference = new Date(2026, 8, 25, 12);
   const offset = /^ontem$/i.test(match[1]) ? 1 : Number(match[2] || 0);
-  const label = capitalize(relativeDateLabel(addDays(reference, -offset), now));
+  const label = formatDate(dateKey(addDays(reference, -offset)));
   return match[3] ? `${label}, ${match[3]}` : label;
 }
 
@@ -593,7 +599,16 @@ function renderDashboard(now = new Date()) {
   renderChart();
 }
 
+function renderClassFilter(selector, key) {
+  const select = document.querySelector(selector);
+  const classes = [...new Set(visibleStudents().map(student => student.className))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  if (!classes.includes(state[key])) state[key] = "todas";
+  select.innerHTML = `<option value="todas">Todas as turmas</option>${classes.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("")}`;
+  select.value = state[key];
+}
+
 function renderStudents() {
+  renderClassFilter("#followup-class-filter", "followupClassFilter");
   const scopedStudents = sortStudentsByName(visibleStudents());
   const classNames = [...new Set(scopedStudents.map((student) => student.className))].sort((a, b) => a.localeCompare(b, "pt-BR"));
   const classSelect = document.querySelector("#class-filter");
@@ -606,7 +621,7 @@ function renderStudents() {
   const visible = sortStudents(scopedStudents.filter((student) => {
     const matchesFilter = state.filter === "todos" || student.priority === state.filter;
     const haystack = `${student.name} ${student.className} ${student.code}`.toLocaleLowerCase("pt-BR");
-    return matchesFilter && haystack.includes(state.query.toLocaleLowerCase("pt-BR"));
+    return matchesFilter && (state.followupClassFilter === "todas" || student.className === state.followupClassFilter) && haystack.includes(state.query.toLocaleLowerCase("pt-BR"));
   }), "priority");
 
   document.querySelector("#student-table").innerHTML = visible.map((student) => `
@@ -649,6 +664,8 @@ function renderRegistrations() {
     return;
   }
 
+  renderClassFilter("#registration-class-filter", "registrationClassFilter");
+  document.querySelector("#registration-class-field").hidden = state.registrationTab !== "students";
   const pageSize = 8;
   const query = state.registrationQuery.trim().toLocaleLowerCase("pt-BR");
   const table = document.querySelector("#registration-table");
@@ -681,7 +698,7 @@ function renderRegistrations() {
     createLabel.textContent = "Nova turma";
   } else {
     columns = ["Nome", "Turma", "Código", "Situação"];
-    records = sortStudentsByName(visibleStudents()).filter((student) => `${student.name} ${student.className} ${student.code}`.toLocaleLowerCase("pt-BR").includes(query));
+    records = sortStudentsByName(visibleStudents()).filter((student) => (state.registrationClassFilter === "todas" || student.className === state.registrationClassFilter) && `${student.name} ${student.className} ${student.code}`.toLocaleLowerCase("pt-BR").includes(query));
     renderRow = (student) => `<tr><td><span class="registration-identity">${personPhoto(student)}<strong>${escapeHtml(student.name)}</strong></span></td><td>${escapeHtml(student.className)}</td><td>${escapeHtml(student.code)}</td><td><span class="status-badge ${statusClass(student.priority)}">${escapeHtml(student.status)}</span></td></tr>`;
     search.placeholder = "Buscar estudante";
     createLabel.textContent = "Novo estudante";
@@ -753,7 +770,7 @@ function renderStudentProfile() {
     ? [String(communication.count), "comunicados compartilhados", communication.label] : metric);
   document.querySelector("#signal-grid").innerHTML = metrics.map(([value, label, note]) => `<article class="signal-tile"><strong>${escapeHtml(value)}</strong><span>${escapeHtml(label)}</span><small>${escapeHtml(normalizeTemporalText(note))}</small></article>`).join("");
 
-  const planEntries = db.plans
+  const planEntries = visiblePlans()
     .filter((plan) => plan.studentId === student.id)
     .map((plan) => {
       const status = planStatusLabel(planEffectiveStatus(plan));
@@ -762,10 +779,17 @@ function renderStudentProfile() {
         `${status}: ${plan.type}. Responsável: ${plan.owner}. Prazo: ${formatDate(plan.date)}.`
       ];
     });
-  const timelineEntries = [...planEntries, ...student.timeline]
-    .map(([date, copy]) => ({ date, copy, parsedDate: parseDisplayDate(date) }))
+  const recordEntries = visibleRecords().filter(record => record.studentId === student.id)
+    .map(record => [record.date, record.description]);
+  // Datas sem ano pertencem à base demonstrativa de 2026.
+  const savedEntries = [...recordEntries, ...planEntries];
+  // Evita repetir um evento da base, preservando registros salvos distintos, mesmo com texto igual.
+  const seedEntries = student.timeline.filter(([date, copy]) => !savedEntries.some(([savedDate, savedCopy]) =>
+    savedCopy === copy && parseDisplayDate(savedDate, 2026)?.getTime() === parseDisplayDate(date, 2026)?.getTime()));
+  const timelineEntries = [...savedEntries, ...seedEntries]
+    .map(([date, copy]) => ({ date, copy, parsedDate: parseDisplayDate(date, 2026) }))
     .sort((a, b) => (b.parsedDate?.getTime() || 0) - (a.parsedDate?.getTime() || 0));
-  document.querySelector("#student-timeline").innerHTML = timelineEntries.map(({ date, copy, parsedDate }) => `<div class="timeline-entry"><span class="timeline-dot"></span><time${parsedDate ? ` datetime="${dateKey(parsedDate)}"` : ""}>${escapeHtml(date)}</time><p>${escapeHtml(copy)}</p></div>`).join("");
+  document.querySelector("#student-timeline").innerHTML = timelineEntries.map(({ date, copy, parsedDate }) => `<div class="timeline-entry"><span class="timeline-dot"></span><time${parsedDate ? ` datetime="${dateKey(parsedDate)}"` : ""}>${escapeHtml(parsedDate ? formatDate(dateKey(parsedDate)) : date)}</time><p>${escapeHtml(copy)}</p></div>`).join("");
   document.querySelector("#plan-student-caption").textContent = `${student.name} · ${student.className}`;
   syncRecordDate();
   syncPlanDeadline();
@@ -822,12 +846,23 @@ function insertRecordText(text, announcementText) {
   const description = document.querySelector('#record-form textarea[name="description"]');
   description.value = text;
   description.focus();
+  const status = document.querySelector("#record-text-status");
+  status.hidden = false;
+  status.textContent = announcementText;
   announcement.textContent = announcementText;
 }
 
 function renderRecords() {
+  renderClassFilter("#records-class-filter", "recordsClassFilter");
+  if (!visibleStudents().some(student => student.id === state.recordsStudentId)) state.recordsStudentId = null;
+  const scopedStudent = state.recordsStudentId ? getStudent(state.recordsStudentId) : null;
+  document.querySelector("#registros-title").textContent = scopedStudent ? `Registros de ${scopedStudent.name}` : "Registros";
+  document.querySelector("#records-back").hidden = !scopedStudent;
+  document.querySelector("#records-context").textContent = scopedStudent ? `${scopedStudent.name} · ${scopedStudent.className}` : "Consulta geral";
   const plans = visiblePlans().map((plan) => ({ id: plan.id, kind: "Plano", studentId: plan.studentId, description: `${plan.type} · ${plan.owner} · prazo ${formatDate(plan.date)}`, date: plan.created, time: plan.createdTime, status: planEffectiveStatus(plan) }));
   const items = [...visibleRecords(), ...plans]
+    .filter((record) => (!state.recordsStudentId || record.studentId === state.recordsStudentId) &&
+      (state.recordsClassFilter === "todas" || getStudent(record.studentId).className === state.recordsClassFilter))
     .filter((record) => state.recordFilter === "todos" || record.kind === state.recordFilter)
     .sort((a, b) => `${b.date.split("/").reverse().join("")} ${b.time || "00:00"}`.localeCompare(`${a.date.split("/").reverse().join("")} ${a.time || "00:00"}`));
 
@@ -839,7 +874,7 @@ function renderRecords() {
     const dateTime = recordDate ? `${dateKey(recordDate)}${record.time ? `T${record.time}` : ""}` : "";
     const state = record.kind === "Plano" ? planStatusLabel(record.status) : "";
     const presentation = recordKindPresentation(record.kind);
-    return `<article class="record-item"><span class="record-kind record-kind-${presentation.tone}"><svg aria-hidden="true"><use href="#${presentation.icon}"></use></svg><span>${escapeHtml(presentation.label || record.kind)}</span></span><div class="record-copy"><div class="record-heading"><strong>${escapeHtml(student.name)} <em>(${escapeHtml(student.className)})</em></strong>${state ? `<span class="record-state record-state-${escapeHtml(record.status)}">${escapeHtml(state)}</span>` : ""}</div><p>${escapeHtml(record.description)}${escapeHtml(ownerLabel)}</p></div><time${dateTime ? ` datetime="${dateTime}"` : ""}><span>${escapeHtml(record.date)}</span><small>${escapeHtml(record.time || "Horário não informado")}</small></time></article>`;
+    return `<article class="record-item"><span class="record-kind record-kind-${presentation.tone}"><svg aria-hidden="true"><use href="#${presentation.icon}"></use></svg><span>${escapeHtml(presentation.label || record.kind)}</span></span><div class="record-copy"><div class="record-heading"><strong><button class="text-button" data-student="${escapeHtml(student.id)}">${escapeHtml(student.name)}</button> <em>(${escapeHtml(student.className)})</em></strong>${state ? `<span class="record-state record-state-${escapeHtml(record.status)}">${escapeHtml(state)}</span>` : ""}</div><p>${escapeHtml(record.description)}${escapeHtml(ownerLabel)}</p></div><time${dateTime ? ` datetime="${dateTime}"` : ""}><span>${escapeHtml(record.date)}</span><small>${escapeHtml(record.time || "Horário não informado")}</small></time></article>`;
   }).join("");
   document.querySelector("#records-empty").hidden = items.length > 0;
 }
@@ -887,7 +922,70 @@ const routePermissions = {
   plano: "plans:create"
 };
 
+const navigationKeys = ["currentStudent", "filter", "classFilter", "studentSort", "recordFilter", "recordsStudentId", "followupClassFilter", "recordsClassFilter", "registrationClassFilter", "query", "studentReturnContext"];
+const formBaselines = new Map();
+function navigationContext() {
+  return Object.fromEntries([ ["route", state.currentRoute], ...navigationKeys.map(key => [key, state[key]]) ]);
+}
+function routeHash(route = state.currentRoute) {
+  const studentId = route === "estudante" ? state.currentStudent : route === "registros" ? state.recordsStudentId : null;
+  return `#${route}${studentId ? `?estudante=${encodeURIComponent(studentId)}` : ""}`;
+}
+function formSnapshot(form) { return JSON.stringify([...new FormData(form)]); }
+function activeForm() {
+  return document.querySelector(state.currentRoute === "novo-registro" ? "#record-form" : state.currentRoute === "plano" ? "#plan-form" : "#no-active-form");
+}
+function hasUnsavedForm() {
+  const form = activeForm();
+  return form && formBaselines.has(form.id) && formSnapshot(form) !== formBaselines.get(form.id);
+}
+function confirmFormExit() {
+  if (!hasUnsavedForm()) {
+    const form = activeForm();
+    if (form) formBaselines.delete(form.id);
+    return true;
+  }
+  if (!window.confirm("Sair sem salvar? As alterações deste formulário serão descartadas.")) return false;
+  const form = activeForm();
+  form.reset();
+  formBaselines.delete(form.id);
+  state.recordKind = "Ausência";
+  document.querySelector("#record-text-status").hidden = true;
+  showToast("Operação cancelada. Nenhuma alteração foi salva.");
+  return true;
+}
+function returnToContext(context, fallback = "painel") {
+  return showRoute(context?.route || fallback, { context });
+}
+function syncNavigationControls() {
+  const returnLabels = { "busca-ativa": "Voltar ao acompanhamento", estudantes: "Voltar aos estudantes", registros: "Voltar aos registros", painel: "Voltar à visão geral" };
+  document.querySelector("#student-back span").textContent = returnLabels[state.studentReturnContext?.route] || "Voltar ao acompanhamento";
+  document.querySelector("#student-search").value = state.query;
+  document.querySelectorAll("[data-filter], [data-record-filter]").forEach(button => {
+    const active = button.dataset.filter ? button.dataset.filter === state.filter : button.dataset.recordFilter === state.recordFilter;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+}
+
 function showRoute(route, options = {}) {
+  const [routeName, query = ""] = route.split("?");
+  const studentId = options.studentId || new URLSearchParams(query).get("estudante");
+  route = routeName;
+  if (state.currentRoute !== route && !confirmFormExit()) {
+    if (options.skipHistory) history.replaceState(navigationContext(), "", routeHash());
+    return false;
+  }
+  if (!options.skipHistory) history.replaceState(navigationContext(), "", routeHash());
+  const origin = navigationContext();
+  if (options.context) navigationKeys.forEach(key => { if (key in options.context) state[key] = options.context[key]; });
+  if (studentId && visibleStudents().some(student => student.id === studentId)) state.currentStudent = studentId;
+  // O histórico do navegador pode pertencer a um perfil demonstrativo anterior.
+  const scopedStudents = visibleStudents();
+  if (!scopedStudents.some(student => student.id === state.currentStudent)) state.currentStudent = scopedStudents[0]?.id;
+  if (route === "registros" && !options.context) state.recordsStudentId = studentId || null;
+  if (["novo-registro", "plano"].includes(route) && state.currentRoute !== route) state.formReturnContext = origin;
+
   const exists = views.some((view) => view.dataset.view === route);
   let nextRoute = exists ? route : "entrada";
   const permission = routePermissions[nextRoute];
@@ -908,7 +1006,15 @@ function showRoute(route, options = {}) {
   if (nextRoute === "jornada") startJourney({ reset: !options.skipHistory });
   else stopJourney();
   if (nextRoute === "estudante" || nextRoute === "plano" || nextRoute === "novo-registro") renderStudentProfile();
+  syncNavigationControls();
+  if (["busca-ativa", "estudantes"].includes(nextRoute)) renderStudents();
   if (nextRoute === "registros") renderRecords();
+  if (["novo-registro", "plano"].includes(nextRoute)) {
+    if (nextRoute === "novo-registro") renderRecordTemplates();
+    const form = activeForm();
+    if (!formBaselines.has(form.id)) formBaselines.set(form.id, formSnapshot(form));
+    document.querySelector("#record-text-status").hidden = !form.elements.description?.value;
+  }
   if (nextRoute === "painel") {
     renderDashboard();
     startProfileNotifications();
@@ -921,39 +1027,45 @@ function showRoute(route, options = {}) {
     view.setAttribute("aria-hidden", String(!active));
   });
   document.querySelectorAll(".main-nav a").forEach((link) => {
-    const active = link.dataset.route === nextRoute || (nextRoute === "estudante" && link.dataset.route === "busca-ativa");
+    const active = link.dataset.route === nextRoute || (nextRoute === "estudante" && link.dataset.route === (state.studentReturnContext?.route || "busca-ativa"));
     link.classList.toggle("active", active);
     if (active) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
   });
-  const nextHash = `#${nextRoute}`;
+  const nextHash = routeHash(nextRoute);
   if (options.skipHistory && location.hash !== nextHash) {
-    history.replaceState({ route: nextRoute }, "", nextHash);
+    history.replaceState(navigationContext(), "", nextHash);
   } else if (!options.skipHistory) {
-    if (location.hash === nextHash) history.replaceState({ route: nextRoute }, "", nextHash);
-    else history.pushState({ route: nextRoute }, "", nextHash);
+    if (location.hash === nextHash) history.replaceState(navigationContext(), "", nextHash);
+    else history.pushState(navigationContext(), "", nextHash);
   }
   document.title = `${routeTitle(nextRoute)} — Notare`;
   announcement.textContent = `Tela ${routeTitle(nextRoute)}`;
   document.querySelector("#main-content").focus({ preventScroll: true });
   window.scrollTo({ top: 0, behavior: "smooth" });
   sidebarDrawer.close();
+  return true;
 }
 
 function stopJourney() {
   window.clearTimeout(journeyTimer);
   journeyTimer = null;
+  journeyWaitResolve?.(false);
+  journeyWaitResolve = null;
+  document.querySelectorAll(".is-typing").forEach(element => element.classList.remove("is-typing"));
   journeyRunId += 1;
   journeyRunning = false;
 }
 
 function journeyWait(milliseconds, runId = journeyRunId) {
   return new Promise((resolve) => {
+    const settle = value => { if (journeyWaitResolve === settle) journeyWaitResolve = null; resolve(value); };
+    journeyWaitResolve = settle;
     let remaining = milliseconds;
     let previousTick = Date.now();
     const tick = () => {
       if (runId !== journeyRunId || state.currentRoute !== "jornada") {
-        resolve(false);
+        settle(false);
         return;
       }
       const currentTick = Date.now();
@@ -961,7 +1073,7 @@ function journeyWait(milliseconds, runId = journeyRunId) {
       previousTick = currentTick;
       if (remaining <= 0) {
         journeyTimer = null;
-        resolve(true);
+        settle(true);
         return;
       }
       journeyTimer = window.setTimeout(tick, Math.min(remaining, 100));
@@ -1032,6 +1144,7 @@ async function scheduleJourneyAdvance() {
   journeyRunning = true;
   const runId = journeyRunId;
   const completed = await journeyWait(3500, runId);
+  if (runId !== journeyRunId) return;
   journeyRunning = false;
   if (completed && journeyMode === "automatic" && journeyStepComplete) advanceJourney();
 }
@@ -1110,9 +1223,12 @@ function renderJourney() {
   pauseButton.setAttribute("aria-label", journeyPaused ? "Retomar apresentação" : "Pausar apresentação");
   pauseButton.querySelector("use").setAttribute("href", journeyPaused ? "#i-play" : "#i-pause");
   const nextButton = document.querySelector("#journey-next");
-  nextButton.hidden = journeyMode !== "manual" || journeyCaptureMode;
-  nextButton.disabled = !journeyStepComplete;
-  nextButton.textContent = journeyStep === 3 ? "Ir ao painel" : "Continuar";
+  nextButton.hidden = journeyCaptureMode;
+  nextButton.disabled = false;
+  nextButton.textContent = journeyStep === 3 ? "Ir ao painel" : "Avançar";
+  const backButton = document.querySelector("#journey-back");
+  backButton.hidden = journeyCaptureMode;
+  backButton.disabled = journeyStep === 0;
 }
 
 function startJourney({ reset = true } = {}) {
@@ -1132,6 +1248,7 @@ function toggleJourneyPause() {
 
 function setJourneyMode(mode) {
   if (!["automatic", "manual"].includes(mode) || journeyMode === mode) return;
+  if (journeyStepComplete && journeyRunning) stopJourney();
   journeyMode = mode;
   journeyPaused = false;
   renderJourney();
@@ -1159,9 +1276,8 @@ function openStudent(id) {
     showToast("Este estudante está fora do escopo do perfil selecionado.");
     return;
   }
-  state.currentStudent = id;
-  renderStudentProfile();
-  showRoute("estudante");
+  if (state.currentRoute !== "estudante") state.studentReturnContext = { ...navigationContext(), studentReturnContext: null };
+  showRoute("estudante", { studentId: id });
 }
 
 function showToast(message) {
@@ -1220,6 +1336,13 @@ function closeInstitutionPlanDialog() {
 
 function switchProfile(profileId, { announce = true } = {}) {
   if (!allProfiles().some((profile) => profile.id === profileId)) return;
+  if (!confirmFormExit()) return;
+  formBaselines.clear();
+  state.recordsStudentId = null;
+  state.followupClassFilter = "todas";
+  state.recordsClassFilter = "todas";
+  state.registrationClassFilter = "todas";
+  state.studentReturnContext = null;
   resetProfileNotifications();
   document.querySelector("#record-form").reset();
   state.recordKind = "Ausência";
@@ -1256,7 +1379,8 @@ document.addEventListener("click", (event) => {
   const routeControl = event.target.closest("[data-route]");
   if (routeControl) {
     event.preventDefault();
-    showRoute(routeControl.dataset.route);
+    const navigated = showRoute(routeControl.dataset.route);
+    if (navigated && routeControl.hasAttribute("data-cancel")) showToast("Operação cancelada. Nenhuma alteração foi salva.");
     return;
   }
   const studentControl = event.target.closest("[data-student]");
@@ -1270,12 +1394,34 @@ document.addEventListener("click", (event) => {
     return;
   }
   const backControl = event.target.closest("[data-back]");
-  if (backControl) showRoute(state.previousRoute || "painel");
+  if (backControl && returnToContext(state.formReturnContext) && backControl.hasAttribute("data-cancel")) showToast("Operação cancelada. Nenhuma alteração foi salva.");
 });
 
 document.querySelector("#entry-dashboard").addEventListener("click", () => {
   switchProfile("direcao", { announce: false });
   showRoute("painel");
+});
+
+document.querySelector("#student-back").addEventListener("click", () => returnToContext(state.studentReturnContext, "busca-ativa"));
+document.querySelector("#student-history").addEventListener("click", () => {
+  state.recordFilter = "todos";
+  state.recordsClassFilter = "todas";
+  showRoute(`registros?estudante=${encodeURIComponent(state.currentStudent)}`);
+});
+document.querySelector("#records-back").addEventListener("click", () => showRoute("estudante", { studentId: state.recordsStudentId }));
+document.querySelector("#records-clear").addEventListener("click", () => {
+  state.recordFilter = "todos";
+  state.recordsClassFilter = "todas";
+  showRoute("registros");
+});
+for (const [selector, key, render] of [
+  ["#followup-class-filter", "followupClassFilter", renderStudents],
+  ["#records-class-filter", "recordsClassFilter", renderRecords],
+  ["#registration-class-filter", "registrationClassFilter", renderRegistrations]
+]) document.querySelector(selector).addEventListener("change", event => {
+  state[key] = event.currentTarget.value;
+  if (key === "registrationClassFilter") state.registrationPage = 1;
+  render();
 });
 
 document.querySelector("#student-search").addEventListener("input", (event) => {
@@ -1349,6 +1495,7 @@ function confirmRecordContextChange() {
   }
   if (!window.confirm("Trocar o estudante ou o tipo de registro limpará a descrição atual. Deseja continuar?")) return false;
   description.value = "";
+  document.querySelector("#record-text-status").hidden = true;
   form.elements.template.value = "";
   return true;
 }
@@ -1444,6 +1591,9 @@ document.querySelector("#plan-form").addEventListener("submit", (event) => {
     deadlineInput.focus();
     return showToast("Escolha um dia útil para o prazo do acompanhamento.");
   }
+  if (data.get("family") === "on" && !window.confirm("Salvar o plano e incluir um comunicado no acesso demonstrativo da família? Revise as informações antes de confirmar.")) return showToast("Salvamento cancelado. Você pode revisar o plano.");
+  const databaseBeforeSave = JSON.parse(JSON.stringify(db));
+  const previousPlanId = state.lastPlanId;
   const student = getStudent();
   const owner = getProfile(data.get("owner"));
   const plan = {
@@ -1472,7 +1622,12 @@ document.querySelector("#plan-form").addEventListener("submit", (event) => {
     ownerId: owner.id,
     sourcePlanId: plan.id
   });
-  saveDatabase();
+  try { saveDatabase(); } catch (error) {
+    db = databaseBeforeSave;
+    state.lastPlanId = previousPlanId;
+    return showToast("Não foi possível salvar neste navegador. O formulário foi preservado; revise o armazenamento e tente novamente.");
+  }
+  formBaselines.delete(event.currentTarget.id);
   renderPlanSuccess();
   event.currentTarget.reset();
   renderAll();
@@ -1484,24 +1639,36 @@ document.querySelector("#record-form").addEventListener("submit", (event) => {
   if (!hasPermission("records:create")) return showToast("Este perfil não pode criar registros.");
   const data = new FormData(event.currentTarget);
   if (data.get("kind") === "Ocorrência" && !hasPermission("occurrences:create")) return showToast("Este perfil não pode criar registros de ocorrência.");
+  const description = String(data.get("description") || "").trim();
+  if (!description) {
+    event.currentTarget.elements.description.focus();
+    return showToast("Preencha ou revise a descrição antes de salvar.");
+  }
   const student = getStudent(data.get("student"));
   db.records.unshift({
     id: `rec-${Date.now()}`,
     kind: data.get("kind"),
     studentId: student.id,
-    description: data.get("description"),
+    description,
     date: formatDate(data.get("date")),
     time: currentTimeLabel(),
     ownerId: state.profileId,
     followup: data.get("followup") === "on"
   });
-  saveDatabase();
+  try { saveDatabase(); } catch (error) {
+    db.records.shift();
+    return showToast("Não foi possível salvar neste navegador. A descrição foi preservada; revise o armazenamento e tente novamente.");
+  }
+  formBaselines.delete(event.currentTarget.id);
   event.currentTarget.reset();
   state.recordKind = "Ausência";
   renderRecordTemplates();
   renderAll();
+  state.recordFilter = "todos";
+  state.recordsClassFilter = "todas";
+  const contextual = ["estudante", "plano"].includes(state.formReturnContext?.route) || state.formReturnContext?.recordsStudentId;
+  showRoute(contextual ? `registros?estudante=${encodeURIComponent(student.id)}` : "registros");
   showToast("Registro salvo no histórico.");
-  showRoute("registros");
 });
 
 document.querySelector("#menu-button").addEventListener("click", sidebarDrawer.open);
@@ -1528,7 +1695,7 @@ document.querySelector("#school-logout").addEventListener("click", () => {
   closeProfileDialog();
   resetProfileNotifications();
   journeyStep = 0;
-  showRoute("entrada");
+  if (!showRoute("entrada")) return;
   announcement.textContent = "Sessão demonstrativa encerrada. Retorno ao acesso institucional.";
 });
 document.addEventListener("click", (event) => {
@@ -1537,7 +1704,15 @@ document.addEventListener("click", (event) => {
 document.querySelector("#journey-skip").addEventListener("click", finishJourney);
 document.querySelector("#journey-pause").addEventListener("click", toggleJourneyPause);
 document.querySelector("#journey-next").addEventListener("click", () => {
-  if (journeyMode === "manual" && journeyStepComplete) advanceJourney();
+  advanceJourney();
+});
+document.querySelector("#journey-back").addEventListener("click", () => {
+  if (journeyStep === 0) return;
+  stopJourney();
+  journeyStep -= 1;
+  journeyStepComplete = false;
+  renderJourney();
+  scheduleJourney();
 });
 document.querySelectorAll("[data-journey-mode]").forEach((button) => button.addEventListener("click", () => setJourneyMode(button.dataset.journeyMode)));
 document.querySelector("#profile-button").addEventListener("click", openProfileDialog);
@@ -1546,9 +1721,15 @@ document.querySelector("#profile-done").addEventListener("click", closeProfileDi
 document.querySelector("#institution-plan-close").addEventListener("click", closeInstitutionPlanDialog);
 document.querySelector("#institution-plan-done").addEventListener("click", closeInstitutionPlanDialog);
 document.querySelector("#reset-demo").addEventListener("click", () => {
-  if (!window.confirm("Restaurar a base inicial e apagar os registros adicionados neste navegador?")) return;
+  if (!window.confirm("Restaurar a base inicial e apagar os registros adicionados neste navegador?")) return showToast("Restauração cancelada. Os dados foram mantidos.");
+  if (!confirmFormExit()) return;
+  const databaseBeforeReset = db;
   db = cloneSeed();
-  saveDatabase();
+  try { saveDatabase(); } catch (error) {
+    db = databaseBeforeReset;
+    return showToast("Não foi possível restaurar a base. Os dados atuais foram mantidos.");
+  }
+  formBaselines.clear();
   resetProfileNotifications();
   state.profileId = "direcao";
   state.currentStudent = "ana";
@@ -1568,7 +1749,12 @@ document.addEventListener("keydown", (event) => {
   notificationCenter.close({ restoreFocus: true });
   closeSchoolMenu({ restoreFocus: true });
 });
-window.addEventListener("popstate", () => showRoute(location.hash.slice(1) || "entrada", { skipHistory: true }));
+window.addEventListener("popstate", event => showRoute(location.hash.slice(1) || "entrada", { skipHistory: true, context: event.state }));
+window.addEventListener("beforeunload", event => {
+  if (!hasUnsavedForm()) return;
+  event.preventDefault();
+  event.returnValue = "";
+});
 
 const businessUI = window.NOTARE_BUSINESS_UI.create({
   database: () => db, actor: () => getProfile(), save: saveDatabase,
@@ -1580,7 +1766,8 @@ if (!allProfiles().some((profile) => profile.id === state.profileId)) state.prof
 renderAll();
 applySidebarState(localStorage.getItem(SIDEBAR_KEY) === "true");
 const initialRoute = location.hash.slice(1) || "entrada";
-history.replaceState({ route: initialRoute }, "", `#${initialRoute}`);
-showRoute(initialRoute, { skipHistory: true });
+const initialContext = history.state?.route === initialRoute.split("?")[0] ? history.state : null;
+showRoute(initialRoute, { skipHistory: true, context: initialContext });
+history.replaceState(navigationContext(), "", routeHash());
 notificationCenter.render();
 window.setInterval(renderTemporalContext, 60000);
