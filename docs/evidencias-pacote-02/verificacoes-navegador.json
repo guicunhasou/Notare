@@ -1,0 +1,1615 @@
+{
+  "date": "2026-11-03",
+  "browser": "Navegador integrado do Codex",
+  "checks": [
+    {
+      "name": "Aviso de sucesso com Desfazer",
+      "pass": true
+    },
+    {
+      "name": "Registro anulado visível",
+      "pass": true
+    },
+    {
+      "name": "Anulação persiste após recarregar",
+      "pass": true
+    },
+    {
+      "name": "Histórico contextual oculta container completo",
+      "pass": true
+    },
+    {
+      "name": "Histórico exclusivo preservado",
+      "pass": true
+    },
+    {
+      "name": "Plano criado com Desfazer disponível",
+      "pass": true
+    },
+    {
+      "name": "Plano anulado com retorno ao histórico",
+      "pass": true
+    },
+    {
+      "name": "Plano anulado persiste após recarregar",
+      "pass": true
+    },
+    {
+      "name": "Consulta global preserva filtros",
+      "pass": true
+    },
+    {
+      "name": "Movimento reduzido real conclui preenchimento sem digitação",
+      "pass": true
+    },
+    {
+      "name": "Topo alinhado etapa 0",
+      "pass": true,
+      "detail": {
+        "cardHeight": 451.3671875,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "0",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Avanço imediato durante animação",
+      "pass": true
+    },
+    {
+      "name": "Topo alinhado etapa 1",
+      "pass": true,
+      "detail": {
+        "cardHeight": 383.859375,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "1",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Topo alinhado etapa 1",
+      "pass": true,
+      "detail": {
+        "cardHeight": 383.859375,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "1",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Topo alinhado etapa 2",
+      "pass": true,
+      "detail": {
+        "cardHeight": 375.640625,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "2",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Voltar cancela preenchimento pendente",
+      "pass": true
+    },
+    {
+      "name": "Topo alinhado etapa 2",
+      "pass": true,
+      "detail": {
+        "cardHeight": 375.640625,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "2",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Topo alinhado etapa 2",
+      "pass": true,
+      "detail": {
+        "cardHeight": 375.640625,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "2",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Topo alinhado etapa 3",
+      "pass": true,
+      "detail": {
+        "cardHeight": 436.0625,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "3",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Topo alinhado etapa 3",
+      "pass": true,
+      "detail": {
+        "cardHeight": 436.0625,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "3",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Ir ao painel permanece imediato",
+      "pass": true
+    },
+    {
+      "name": "Movimento por elemento sem animação da página inteira",
+      "pass": true
+    },
+    {
+      "name": "Dashboard usa títulos complementares",
+      "pass": true
+    },
+    {
+      "name": "Dashboard sem linguagem artificial desnecessária",
+      "pass": true
+    },
+    {
+      "name": "Novo registro usa títulos complementares",
+      "pass": true
+    },
+    {
+      "name": "Novo registro sem linguagem artificial desnecessária",
+      "pass": true
+    },
+    {
+      "name": "Acompanhamento usa títulos complementares",
+      "pass": true
+    },
+    {
+      "name": "Acompanhamento sem linguagem artificial desnecessária",
+      "pass": true
+    },
+    {
+      "name": "Registros usa títulos complementares",
+      "pass": true
+    },
+    {
+      "name": "Registros sem linguagem artificial desnecessária",
+      "pass": true
+    },
+    {
+      "name": "Estudantes usa títulos complementares",
+      "pass": true
+    },
+    {
+      "name": "Estudantes sem linguagem artificial desnecessária",
+      "pass": true
+    },
+    {
+      "name": "Cadastros usa títulos complementares",
+      "pass": true
+    },
+    {
+      "name": "Cadastros sem linguagem artificial desnecessária",
+      "pass": true
+    },
+    {
+      "name": "Famílias e retornos usa títulos complementares",
+      "pass": true
+    },
+    {
+      "name": "Famílias e retornos sem linguagem artificial desnecessária",
+      "pass": true
+    },
+    {
+      "name": "Plano e assinatura usa títulos complementares",
+      "pass": true
+    },
+    {
+      "name": "Plano e assinatura sem linguagem artificial desnecessária",
+      "pass": true
+    },
+    {
+      "name": "Revisar parcerias usa títulos complementares",
+      "pass": true
+    },
+    {
+      "name": "Revisar parcerias sem linguagem artificial desnecessária",
+      "pass": true
+    },
+    {
+      "name": "390 Visão geral cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 375,
+        "viewport": 390,
+        "width": 375
+      }
+    },
+    {
+      "name": "390 Novo registro cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 375,
+        "viewport": 390,
+        "width": 375
+      }
+    },
+    {
+      "name": "390 Acompanhamento cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 375,
+        "viewport": 390,
+        "width": 375
+      }
+    },
+    {
+      "name": "390 Registros cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 375,
+        "viewport": 390,
+        "width": 375
+      }
+    },
+    {
+      "name": "390 Estudantes cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 375,
+        "viewport": 390,
+        "width": 375
+      }
+    },
+    {
+      "name": "390 Cadastros cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 375,
+        "viewport": 390,
+        "width": 375
+      }
+    },
+    {
+      "name": "390 Famílias e retornos cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 375,
+        "viewport": 390,
+        "width": 375
+      }
+    },
+    {
+      "name": "390 Plano e assinatura cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 375,
+        "viewport": 390,
+        "width": 375
+      }
+    },
+    {
+      "name": "390 Revisar parcerias cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 375,
+        "viewport": 390,
+        "width": 375
+      }
+    },
+    {
+      "name": "320 Visão geral cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Novo registro cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Acompanhamento cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Registros cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Estudantes cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Cadastros cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Famílias e retornos cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Plano e assinatura cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Revisar parcerias cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Aviso Desfazer cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "Filtro não reinicia animação da tela",
+      "pass": true
+    },
+    {
+      "name": "320 Perfil cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "Perfil móvel abre por teclado",
+      "pass": true
+    },
+    {
+      "name": "320 Perfil cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Histórico contextual cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "Histórico contextual móvel sem filtros",
+      "pass": true
+    },
+    {
+      "name": "Aviso expira no navegador após tempo ativo",
+      "pass": true
+    },
+    {
+      "name": "Modal informa ausência de autenticação real",
+      "pass": true
+    },
+    {
+      "name": "Minha família usa títulos complementares",
+      "pass": true
+    },
+    {
+      "name": "Minha família sem linguagem artificial desnecessária",
+      "pass": true
+    },
+    {
+      "name": "320 Minha família cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "Clube de Benefícios usa títulos complementares",
+      "pass": true
+    },
+    {
+      "name": "Clube de Benefícios sem linguagem artificial desnecessária",
+      "pass": true
+    },
+    {
+      "name": "320 Clube cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "Parceiro usa títulos complementares",
+      "pass": true
+    },
+    {
+      "name": "Parceiro sem linguagem artificial desnecessária",
+      "pass": true
+    },
+    {
+      "name": "320 Parceiro cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Onboarding 1 cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Onboarding 2 cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Onboarding 3 cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "320 Onboarding 4 cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 305,
+        "viewport": 320,
+        "width": 305
+      }
+    },
+    {
+      "name": "390 Onboarding 1 cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 375,
+        "viewport": 390,
+        "width": 375
+      }
+    },
+    {
+      "name": "390 Onboarding 2 cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 375,
+        "viewport": 390,
+        "width": 375
+      }
+    },
+    {
+      "name": "390 Onboarding 3 cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 375,
+        "viewport": 390,
+        "width": 375
+      }
+    },
+    {
+      "name": "390 Onboarding 4 cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 375,
+        "viewport": 390,
+        "width": 375
+      }
+    },
+    {
+      "name": "Voltar móvel durante animação",
+      "pass": true
+    },
+    {
+      "name": "Ir ao painel móvel durante animação",
+      "pass": true
+    },
+    {
+      "name": "Splash e tela inicial têm marca com mesmo tamanho e posição",
+      "pass": true,
+      "detail": {
+        "delay": "2.6s",
+        "duration": "0.45s",
+        "logo": [
+          {
+            "left": 54.59375,
+            "top": 242.2265625,
+            "width": 280.796875
+          },
+          {
+            "left": 54.59375,
+            "top": 242.2265625,
+            "width": 280.796875
+          }
+        ],
+        "slogan": "\"DM Sans\", Manrope, sans-serif"
+      }
+    },
+    {
+      "name": "Topo alinhado etapa 0",
+      "pass": true,
+      "detail": {
+        "cardHeight": 451.3671875,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "0",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Topo alinhado etapa 1",
+      "pass": true,
+      "detail": {
+        "cardHeight": 383.859375,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "1",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Topo alinhado etapa 1",
+      "pass": true,
+      "detail": {
+        "cardHeight": 383.859375,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "1",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Topo alinhado etapa 2",
+      "pass": true,
+      "detail": {
+        "cardHeight": 375.640625,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "2",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Topo alinhado etapa 2",
+      "pass": true,
+      "detail": {
+        "cardHeight": 375.640625,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "2",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Topo alinhado etapa 3",
+      "pass": true,
+      "detail": {
+        "cardHeight": 436.0625,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "3",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "Topo alinhado etapa 3",
+      "pass": true,
+      "detail": {
+        "cardHeight": 436.0625,
+        "cardTop": 396.265625,
+        "scroll": 1425,
+        "stage": "3",
+        "textTop": 396.265625,
+        "width": 1425
+      }
+    },
+    {
+      "name": "1280 Cadastros cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 1265,
+        "viewport": 1280,
+        "width": 1265
+      }
+    },
+    {
+      "name": "Cadastros alinha controles na mesma base",
+      "pass": true,
+      "detail": {
+        "bottoms": [
+          368.6346435546875,
+          368.6346435546875,
+          368.6346435546875,
+          368.6346435546875
+        ],
+        "menuLabel": {
+          "height": 23.4296875,
+          "lineHeight": "23.436px",
+          "whiteSpace": "nowrap"
+        }
+      }
+    },
+    {
+      "name": "Famílias e retornos em uma linha",
+      "pass": true,
+      "detail": {
+        "height": 23.4296875,
+        "lineHeight": "23.436px",
+        "whiteSpace": "nowrap"
+      }
+    },
+    {
+      "name": "Novo registro acessível no menu recolhido",
+      "pass": true
+    },
+    {
+      "name": "Desfazer recebe foco visível por Tab",
+      "pass": true,
+      "detail": {
+        "focused": "Desfazer",
+        "outline": "solid",
+        "time": "Tempo pausado enquanto você interage com este aviso.",
+        "width": "3px"
+      }
+    },
+    {
+      "name": "Desfazer final atualiza histórico",
+      "pass": true
+    },
+    {
+      "name": "Anulação final persiste após recarregar",
+      "pass": true
+    },
+    {
+      "name": "Filtro de turma preservado em Cadastros",
+      "pass": true
+    },
+    {
+      "name": "Funcionários continuam sem filtro de turma",
+      "pass": true
+    },
+    {
+      "name": "320 Entrada final cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 320,
+        "viewport": 320,
+        "width": 320
+      }
+    },
+    {
+      "name": "390 Entrada final cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 390,
+        "viewport": 390,
+        "width": 390
+      }
+    },
+    {
+      "name": "1280 Entrada final cabe na largura",
+      "pass": true,
+      "detail": {
+        "scroll": 1280,
+        "viewport": 1280,
+        "width": 1280
+      }
+    },
+    {
+      "name": "Card estável entre início e fim da etapa 1",
+      "pass": true,
+      "detail": [
+        {
+          "tag": "inicio",
+          "cardHeight": 451.3671875,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "0",
+          "textTop": 396.265625,
+          "width": 1425
+        },
+        {
+          "tag": "final-versao-atual",
+          "cardHeight": 451.3671875,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "0",
+          "textTop": 396.265625,
+          "width": 1425
+        }
+      ]
+    },
+    {
+      "name": "Card estável entre início e fim da etapa 2",
+      "pass": true,
+      "detail": [
+        {
+          "tag": "inicio",
+          "cardHeight": 383.859375,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "1",
+          "textTop": 396.265625,
+          "width": 1425
+        },
+        {
+          "tag": "final",
+          "cardHeight": 383.859375,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "1",
+          "textTop": 396.265625,
+          "width": 1425
+        },
+        {
+          "tag": "inicio-versao-atual",
+          "cardHeight": 383.859375,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "1",
+          "textTop": 396.265625,
+          "width": 1425
+        },
+        {
+          "tag": "final-versao-atual",
+          "cardHeight": 383.859375,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "1",
+          "textTop": 396.265625,
+          "width": 1425
+        }
+      ]
+    },
+    {
+      "name": "Card estável entre início e fim da etapa 3",
+      "pass": true,
+      "detail": [
+        {
+          "tag": "inicio",
+          "cardHeight": 375.640625,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "2",
+          "textTop": 396.265625,
+          "width": 1425
+        },
+        {
+          "tag": "reinicio",
+          "cardHeight": 375.640625,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "2",
+          "textTop": 396.265625,
+          "width": 1425
+        },
+        {
+          "tag": "final",
+          "cardHeight": 375.640625,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "2",
+          "textTop": 396.265625,
+          "width": 1425
+        },
+        {
+          "tag": "inicio-versao-atual",
+          "cardHeight": 375.640625,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "2",
+          "textTop": 396.265625,
+          "width": 1425
+        },
+        {
+          "tag": "final-versao-atual",
+          "cardHeight": 375.640625,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "2",
+          "textTop": 396.265625,
+          "width": 1425
+        }
+      ]
+    },
+    {
+      "name": "Card estável entre início e fim da etapa 4",
+      "pass": true,
+      "detail": [
+        {
+          "tag": "inicio",
+          "cardHeight": 436.0625,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "3",
+          "textTop": 396.265625,
+          "width": 1425
+        },
+        {
+          "tag": "final",
+          "cardHeight": 436.0625,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "3",
+          "textTop": 396.265625,
+          "width": 1425
+        },
+        {
+          "tag": "inicio-versao-atual",
+          "cardHeight": 436.0625,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "3",
+          "textTop": 396.265625,
+          "width": 1425
+        },
+        {
+          "tag": "final-versao-atual",
+          "cardHeight": 436.0625,
+          "cardTop": 396.265625,
+          "scroll": 1425,
+          "stage": "3",
+          "textTop": 396.265625,
+          "width": 1425
+        }
+      ]
+    }
+  ],
+  "responsive": [
+    {
+      "name": "390 Visão geral",
+      "scroll": 375,
+      "viewport": 390,
+      "width": 375
+    },
+    {
+      "name": "390 Novo registro",
+      "scroll": 375,
+      "viewport": 390,
+      "width": 375
+    },
+    {
+      "name": "390 Acompanhamento",
+      "scroll": 375,
+      "viewport": 390,
+      "width": 375
+    },
+    {
+      "name": "390 Registros",
+      "scroll": 375,
+      "viewport": 390,
+      "width": 375
+    },
+    {
+      "name": "390 Estudantes",
+      "scroll": 375,
+      "viewport": 390,
+      "width": 375
+    },
+    {
+      "name": "390 Cadastros",
+      "scroll": 375,
+      "viewport": 390,
+      "width": 375
+    },
+    {
+      "name": "390 Famílias e retornos",
+      "scroll": 375,
+      "viewport": 390,
+      "width": 375
+    },
+    {
+      "name": "390 Plano e assinatura",
+      "scroll": 375,
+      "viewport": 390,
+      "width": 375
+    },
+    {
+      "name": "390 Revisar parcerias",
+      "scroll": 375,
+      "viewport": 390,
+      "width": 375
+    },
+    {
+      "name": "320 Visão geral",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Novo registro",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Acompanhamento",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Registros",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Estudantes",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Cadastros",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Famílias e retornos",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Plano e assinatura",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Revisar parcerias",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Aviso Desfazer",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Perfil",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Perfil",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Histórico contextual",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Minha família",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Clube",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Parceiro",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Onboarding 1",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Onboarding 2",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Onboarding 3",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "320 Onboarding 4",
+      "scroll": 305,
+      "viewport": 320,
+      "width": 305
+    },
+    {
+      "name": "390 Onboarding 1",
+      "scroll": 375,
+      "viewport": 390,
+      "width": 375
+    },
+    {
+      "name": "390 Onboarding 2",
+      "scroll": 375,
+      "viewport": 390,
+      "width": 375
+    },
+    {
+      "name": "390 Onboarding 3",
+      "scroll": 375,
+      "viewport": 390,
+      "width": 375
+    },
+    {
+      "name": "390 Onboarding 4",
+      "scroll": 375,
+      "viewport": 390,
+      "width": 375
+    },
+    {
+      "name": "1280 Cadastros",
+      "scroll": 1265,
+      "viewport": 1280,
+      "width": 1265
+    },
+    {
+      "name": "320 Entrada final",
+      "scroll": 320,
+      "viewport": 320,
+      "width": 320
+    },
+    {
+      "name": "390 Entrada final",
+      "scroll": 390,
+      "viewport": 390,
+      "width": 390
+    },
+    {
+      "name": "1280 Entrada final",
+      "scroll": 1280,
+      "viewport": 1280,
+      "width": 1280
+    }
+  ],
+  "typography": [
+    {
+      "name": "Dashboard",
+      "heading": [
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Boa noite, Camila",
+          "weight": "500"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Evolução da frequência",
+          "weight": "500"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Prioridades de hoje",
+          "weight": "550"
+        }
+      ],
+      "language": false,
+      "scroll": 1425,
+      "width": 1425
+    },
+    {
+      "name": "Novo registro",
+      "heading": [
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Acrescente um sinal ao histórico",
+          "weight": "500"
+        }
+      ],
+      "language": false,
+      "scroll": 1425,
+      "width": 1425
+    },
+    {
+      "name": "Acompanhamento",
+      "heading": [
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Fila de acompanhamento",
+          "weight": "500"
+        }
+      ],
+      "language": false,
+      "scroll": 1425,
+      "width": 1425
+    },
+    {
+      "name": "Registros",
+      "heading": [
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Registros",
+          "weight": "500"
+        }
+      ],
+      "language": false,
+      "scroll": 1425,
+      "width": 1425
+    },
+    {
+      "name": "Estudantes",
+      "heading": [
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Estudantes",
+          "weight": "500"
+        }
+      ],
+      "language": false,
+      "scroll": 1425,
+      "width": 1425
+    },
+    {
+      "name": "Cadastros",
+      "heading": [
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Cadastros",
+          "weight": "500"
+        }
+      ],
+      "language": false,
+      "scroll": 1425,
+      "width": 1425
+    },
+    {
+      "name": "Famílias e retornos",
+      "heading": [
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Famílias e retornos",
+          "weight": "500"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Novo contato com a família",
+          "weight": "550"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Comunicados e retornos",
+          "weight": "550"
+        }
+      ],
+      "language": false,
+      "scroll": 1425,
+      "width": 1425
+    },
+    {
+      "name": "Plano e assinatura",
+      "heading": [
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Plano e assinatura",
+          "weight": "500"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Plano institucional",
+          "weight": "550"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Adesão e mudança de plano",
+          "weight": "550"
+        }
+      ],
+      "language": false,
+      "scroll": 1425,
+      "width": 1425
+    },
+    {
+      "name": "Revisar parcerias",
+      "heading": [
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Revisar parcerias",
+          "weight": "500"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Ofertas para revisão",
+          "weight": "550"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Parceiros cadastrados",
+          "weight": "550"
+        }
+      ],
+      "language": false,
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "name": "Minha família",
+      "heading": [
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Minha família",
+          "weight": "500"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Seu vínculo com a escola",
+          "weight": "550"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Comunicados da escola",
+          "weight": "550"
+        }
+      ],
+      "language": false,
+      "scroll": 305,
+      "width": 305
+    },
+    {
+      "name": "Clube de Benefícios",
+      "heading": [
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Clube de Benefícios",
+          "weight": "500"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Kit de materiais com benefício",
+          "weight": "550"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Oficina de leitura em família",
+          "weight": "550"
+        }
+      ],
+      "language": false,
+      "scroll": 305,
+      "width": 305
+    },
+    {
+      "name": "Parceiro",
+      "heading": [
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Ofertas e conversões",
+          "weight": "500"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Nova oferta",
+          "weight": "550"
+        },
+        {
+          "font": "\"DM Sans\", Manrope, sans-serif",
+          "text": "Minhas ofertas",
+          "weight": "550"
+        }
+      ],
+      "language": false,
+      "scroll": 305,
+      "width": 305
+    }
+  ],
+  "stageMetrics": [
+    {
+      "tag": "inicio",
+      "cardHeight": 451.3671875,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "0",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "inicio",
+      "cardHeight": 383.859375,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "1",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "final",
+      "cardHeight": 383.859375,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "1",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "inicio",
+      "cardHeight": 375.640625,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "2",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "reinicio",
+      "cardHeight": 375.640625,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "2",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "final",
+      "cardHeight": 375.640625,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "2",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "inicio",
+      "cardHeight": 436.0625,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "3",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "final",
+      "cardHeight": 436.0625,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "3",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "final-versao-atual",
+      "cardHeight": 451.3671875,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "0",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "inicio-versao-atual",
+      "cardHeight": 383.859375,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "1",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "final-versao-atual",
+      "cardHeight": 383.859375,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "1",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "inicio-versao-atual",
+      "cardHeight": 375.640625,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "2",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "final-versao-atual",
+      "cardHeight": 375.640625,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "2",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "inicio-versao-atual",
+      "cardHeight": 436.0625,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "3",
+      "textTop": 396.265625,
+      "width": 1425
+    },
+    {
+      "tag": "final-versao-atual",
+      "cardHeight": 436.0625,
+      "cardTop": 396.265625,
+      "scroll": 1425,
+      "stage": "3",
+      "textTop": 396.265625,
+      "width": 1425
+    }
+  ],
+  "splash": {
+    "delay": "2.6s",
+    "duration": "0.45s",
+    "logo": [
+      {
+        "left": 54.59375,
+        "top": 242.2265625,
+        "width": 280.796875
+      },
+      {
+        "left": 54.59375,
+        "top": 242.2265625,
+        "width": 280.796875
+      }
+    ],
+    "slogan": "\"DM Sans\", Manrope, sans-serif"
+  },
+  "registrationAlignment": {
+    "bottoms": [
+      368.6346435546875,
+      368.6346435546875,
+      368.6346435546875,
+      368.6346435546875
+    ],
+    "menuLabel": {
+      "height": 23.4296875,
+      "lineHeight": "23.436px",
+      "whiteSpace": "nowrap"
+    }
+  },
+  "keyboardFocus": {
+    "focused": "Desfazer",
+    "outline": "solid",
+    "time": "Tempo pausado enquanto você interage com este aviso.",
+    "width": "3px"
+  },
+  "routeMotion": {
+    "items": [
+      {
+        "animation": "element-in",
+        "cls": "page-heading enter-item",
+        "delay": "0s"
+      },
+      {
+        "animation": "element-in",
+        "cls": "card dashboard-chart enter-item",
+        "delay": "0.035s"
+      },
+      {
+        "animation": "element-in",
+        "cls": "metric metric-priority enter-item",
+        "delay": "0.07s"
+      },
+      {
+        "animation": "element-in",
+        "cls": "metric enter-item",
+        "delay": "0.105s"
+      },
+      {
+        "animation": "element-in",
+        "cls": "metric enter-item",
+        "delay": "0.14s"
+      },
+      {
+        "animation": "element-in",
+        "cls": "metric enter-item",
+        "delay": "0.175s"
+      },
+      {
+        "animation": "element-in",
+        "cls": "card priority-card enter-item",
+        "delay": "0.21s"
+      },
+      {
+        "animation": "element-in",
+        "cls": "card agenda-card enter-item",
+        "delay": "0.21s"
+      }
+    ],
+    "view": "none"
+  },
+  "console": [],
+  "reducedMotion": {
+    "testedVia": "Preferência real do sistema",
+    "restored": true
+  },
+  "limitations": [
+    "Larguras móveis verificadas em navegador desktop, sem aparelho físico.",
+    "Sem homologação em Safari, Firefox ou leitor de tela.",
+    "Plano no fluxo visual de Desfazer foi criado sem comunicado familiar; vínculos e bloqueios de continuidade foram cobertos por testes automatizados."
+  ]
+}

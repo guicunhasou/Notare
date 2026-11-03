@@ -91,7 +91,7 @@ test("o HTML preserva datas dinâmicas e os contratos básicos de acessibilidade
   assert.match(html, /styles\.css\?v=\d+/);
   assert.match(html, /data\.js\?v=13/);
   assert.match(html, /core\.js\?v=\d+/);
-  assert.match(html, /ui\.js\?v=2/);
+  assert.match(html, /ui\.js\?v=\d+/);
   assert.match(html, /app\.js\?v=\d+/);
 });
 
@@ -178,13 +178,13 @@ test("a entrada destaca o painel e mantém a implantação como jornada opcional
   assert.match(html, /Ir à visão geral/);
   assert.match(html, /assets\/brand\/notare-logo\.svg/);
   assert.match(html, /assets\/brand\/notare-favicon\.svg/);
-  assert.match(html, /neste MVP, a validação usa apenas dados fictícios no navegador/);
-  assert.match(html, /sem cobrança ou assinatura real nesta demonstração/);
+  assert.match(html, /As etapas são ilustrativas: não executam contratação, importação ou autenticação/);
+  assert.match(html, /nem geram contratos, pagamentos ou repasses/);
   assert.match(html, /data-demo-text="Escola Horizonte Vivo"/);
   assert.match(html, /Importação concluída/);
   assert.match(source, /async function typeJourneyText/);
   assert.match(source, /async function playJourneyStep/);
-  assert.match(source, /character === " " \? 48 : 58/);
+  assert.match(source, /character === " " \? 75 : 92/);
   assert.doesNotMatch(source, /}, 6000\)/);
   assert.match(source, /location\.hash\.slice\(1\) \|\| "entrada"/);
 });
@@ -193,7 +193,7 @@ test("as quatro etapas simulam validação, contratação, anexos e acesso", () 
   const html = read("index.html");
   const source = read("app.js");
 
-  assert.match(html, /Código INEP simulado/);
+  assert.match(html, /Código INEP/);
   assert.match(html, /data-demo-text="26000000"/);
   assert.match(html, /Importado da validação anterior/);
   assert.match(html, /data-demo-select="Ensino Fundamental"/);
@@ -278,14 +278,14 @@ test("a entrada abre com a marca e a implantação usa avanço manual por padrã
   assert.match(html, /data-journey-mode="automatic"/);
   assert.match(html, /class="active" type="button" data-journey-mode="manual" aria-pressed="true"/);
   assert.match(html, /id="journey-next"/);
-  assert.match(source, /journeyWait\(1500, runId\)/);
-  assert.match(source, /journeyWait\(3500, runId\)/);
+  assert.match(source, /journeyWait\(2000, runId\)/);
+  assert.match(source, /journeyWait\(5000, runId\)/);
   assert.match(source, /let journeyMode = "manual"/);
   assert.match(source, /function setJourneyMode/);
   assert.match(source, /function finishJourney\(\) \{[\s\S]*switchProfile\("direcao", \{ announce: false \}\)/);
   assert.match(source, /#journey-skip"\)\.addEventListener\("click", finishJourney\)/);
   assert.equal((html.match(/demo-identity-reveal/g) || []).length, 2);
-  assert.match(css, /\.demo-identity-reveal \{[^}]*max-height: 0/);
+  assert.match(css, /\.demo-identity-reveal \{[^}]*max-height: 6\.5rem/);
   assert.match(css, /\.demo-identity-reveal\.is-visible \{[^}]*max-height: 6\.5rem/);
   assert.match(css, /@keyframes opening-amber-in/);
   assert.match(css, /@keyframes opening-lettering-in/);
@@ -334,8 +334,8 @@ test("a sugestão de texto declara e implementa uma simulação local", () => {
   const html = read("index.html");
   const source = read("app.js");
 
-  assert.match(html, /Gerar sugestão simulada/);
-  assert.match(html, /não usa inteligência artificial real/);
+  assert.match(html, /Gerar sugestão/);
+  assert.match(html, /sem IA ou serviços externos/);
   assert.match(source, /const suggestions = \{/);
   assert.doesNotMatch(source, /\bfetch\s*\(/);
   assert.match(read("styles.css"), /\.ai-simulation-button \{[^}]*background: var\(--amber-soft\)/);
@@ -437,14 +437,14 @@ test("a introdução anuncia estados sem narrar cada caractere", () => {
   assert.doesNotMatch(html, /class="journey-stage" aria-live=/);
 });
 
-test("a escala tipográfica aumenta sem ampliar o subtítulo da entrada", () => {
+test("a hierarquia tipográfica preserva a leitura e adapta a entrada", () => {
   const css = read("styles.css");
   assert.match(css, /html \{ font-size: 18px;/);
-  assert.match(css, /\.entry-content h1 \{[^}]*font-size: 42px/);
+  assert.match(css, /font-family: var\(--font-heading\)/);
   assert.match(css, /\.table-student strong \{ font-size: \.92rem/);
   assert.match(css, /\.table-student span, \.table-muted, \.table-signals \{ font-size: \.82rem/);
   assert.match(css, /\.data-form input\[type="date"\][^\n]*font-size: \.9rem/);
-  assert.match(css, /@media \(max-width: 620px\)[\s\S]*\.entry-content h1 \{[^}]*font-size: 30px/);
+  assert.match(css, /\.entry-content h1 \{[^}]*font-size: clamp/);
 });
 
 test("a escola oferece saída para o acesso institucional", () => {
@@ -473,10 +473,10 @@ test("os seletores reservam espaço para a seta", () => {
   assert.match(css, /background-position: right \.9rem center/);
 });
 
-test("a troca de perfis é identificada como recurso exclusivo do MVP", () => {
+test("a troca de perfis informa o limite acadêmico e a ausência de autenticação", () => {
   const html = read("index.html");
-  assert.match(html, /Perfis de demonstração/);
-  assert.match(html, /No produto real, cada funcionário acessa sua própria conta/);
+  assert.match(html, /Alternar perfil/);
+  assert.match(html, /Não há autenticação real/);
 });
 
 
