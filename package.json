@@ -2,7 +2,7 @@
   "name": "notare-mvp",
   "private": true,
   "scripts": {
-    "check": "node --check core.js && node --check ui.js && node --check operations.js && node --check app.js && node --check data.js && node --check business.js && node --check business-ui.js && node --test tests/*.test.mjs",
+    "check": "node --check core.js && node --check ui.js && node --check community-media.js && node --check operations.js && node --check app.js && node --check data.js && node --check business.js && node --check business-ui.js && node --test tests/*.test.mjs",
     "test": "node --test tests/*.test.mjs"
   }
 }

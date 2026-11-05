@@ -39,7 +39,7 @@ export function runtime() {
     NOTARE_UI: { createModalDrawer: () => ({close:noOp}), createNotificationCenter: () => ({}), createUndoNotice: options => { context.window.undoOptions = options; return {clear:noOp, show:(text,operation)=>{context.window.lastUndo=operation;}}; } }
   }});
   const read = file => fs.readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
-  for (const file of ['core.js', 'data.js', 'business.js', 'operations.js']) vm.runInContext(read(file), context);
+  for (const file of ['core.js', 'data.js', 'community-media.js', 'business.js', 'operations.js']) vm.runInContext(read(file), context);
   vm.runInContext(read('app.js').split('const businessUI =')[0], context);
   const run = code => vm.runInContext(code, context);
   function setForm(selector, values) {

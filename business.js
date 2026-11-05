@@ -18,6 +18,27 @@
     if (!Number.isInteger(result) || result < min || result > max) throw new Error('Informe um valor válido dentro dos limites do formulário.');
     return result;
   }
+  const EXTRA_PARTNERS = [
+    { id: 'vagalume', name: 'Oficina Vagalume de Papel', actor: 'parceiro-vagalume' },
+    { id: 'trilha', name: 'Estúdio Trilha do Movimento', actor: 'parceiro-trilha' },
+    { id: 'pontes', name: 'Casa Pontes da Leitura', actor: 'parceiro-pontes' }
+  ];
+  const EXTRA_OFFERS = [
+    { id: 'oferta-criatividade', partnerId: 'vagalume', title: 'Encontro de criatividade em papel', category: 'Arte e aprendizagem', description: 'Encontro de 90 minutos para estudantes e um responsável, com materiais incluídos. Valor por dupla; reserva sujeita à disponibilidade. Dados de exemplo, sem inscrição externa.', conditions: 'Uma participação por família; acompanhamento de um responsável; materiais incluídos.', price: 6500, commissionRate: 500, stock: 12, expires: '2027-12-31', status: 'pending' },
+    { id: 'oferta-movimento', partnerId: 'trilha', title: 'Vivência de movimento em família', category: 'Esporte e bem-estar', description: 'Atividade recreativa de 60 minutos para um estudante e um responsável. Sem avaliação ou tratamento de saúde. Dados de exemplo, sem agendamento externo.', conditions: 'Uma vivência por família; traje confortável; participação acompanhada de responsável.', price: 5000, commissionRate: 500, stock: 16, expires: '2027-12-31', status: 'pending' },
+    { id: 'oferta-leitura-pontes', partnerId: 'pontes', title: 'Roda de leitura e criação de histórias', category: 'Cultura e leitura', description: 'Encontro de leitura de 75 minutos para estudantes e responsáveis, com um caderno de atividades incluído. Dados de exemplo, sem inscrição externa.', conditions: 'Um encontro por família; um estudante e um responsável; caderno incluído.', price: 4500, commissionRate: 500, stock: 14, expires: '2027-12-31', status: 'pending' }
+  ];
+  function addCommunityExamples(business) {
+    if (business.exampleRevision >= 1) return;
+    // IDs fixos e marcador único: decisões e valores existentes nunca são substituídos.
+    EXTRA_PARTNERS.forEach(partner => {
+      if (!business.partners.some(existing => existing.id === partner.id || existing.actor === partner.actor)) business.partners.push({ ...partner });
+    });
+    EXTRA_OFFERS.forEach(offer => {
+      if (business.partners.some(partner => partner.id === offer.partnerId) && !business.offers.some(existing => existing.id === offer.id)) business.offers.push({ ...offer });
+    });
+    business.exampleRevision = 1;
+  }
   function initialize(db) {
     if (db.business?.version > 1) throw new Error('Esta versão não pode alterar uma base local mais recente.');
     if (!db.business) db.business = {
@@ -30,6 +51,7 @@
         { id: 'oferta-leitura', partnerId: 'cultura', title: 'Oficina de leitura em família', description: 'Oficina de leitura com valores de exemplo. Não gera inscrição externa.', price: 5000, commissionRate: 500, stock: 15, expires: '2027-12-31', status: 'approved' }
       ], redemptions: [], messages: [], history: [], pendingSubscription: null
     };
+    addCommunityExamples(db.business);
     return db;
   }
   function profiles(db) {

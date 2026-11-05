@@ -220,7 +220,7 @@
     function tick() {
       if (!operation) return;
       const remaining = Math.max(0, operation.expiresAt - (pausedAt ?? clock()));
-      time.textContent = pauses.size ? 'Tempo pausado enquanto você interage com este aviso.' : `Desfazer disponível por mais ${Math.ceil(remaining / 1000)} segundos.`;
+      time.textContent = pauses.size ? 'Você ainda pode desfazer esta ação.' : `Desfazer disponível por mais ${Math.ceil(remaining / 1000)} segundos.`;
       if (!remaining) {
         clear();
         notify('O prazo para desfazer terminou. A criação foi mantida.');

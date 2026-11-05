@@ -835,3 +835,79 @@ button, .button, .text-button, .back-button, .main-nav a { font-weight: 650; }
 .registration-toolbar .registration-tabs button { min-height: calc(3rem - 2px); }
 
 .entry-content h1 > span { display: block; }
+/* Pacotes 03 e 04: informação progressiva e consulta estável. */
+.dashboard-grid, .metrics { align-items: start; }
+.metric { min-height: 0; overflow: visible; padding: 1.1rem; }
+.metric .metric-trend { position: static; display: inline-block; max-width: 100%; margin-top: .65rem; }
+.metric:first-child .metric-trend { display: none; }
+.metric .dashboard-toggle, .metric .metric-action { display: flex; width: fit-content; margin-top: .55rem; }
+.metric > .dashboard-reveal { display: grid; gap: 0; }
+.dashboard-panel .card-heading { gap: .8rem; align-items: flex-start; margin-bottom: .6rem; }
+.dashboard-panel .card-heading h2 { margin-top: 0; margin-bottom: .4rem; }
+.dashboard-panel .dashboard-toggle { flex-shrink: 0; }
+.dashboard-toggle { min-height: 2.2rem; font-size: .72rem; white-space: nowrap; }
+.dashboard-toggle svg { width: .85rem; transform: rotate(90deg); transition: transform .2s ease; }
+.dashboard-toggle[aria-expanded="true"] svg { transform: rotate(-90deg); }
+.dashboard-summary { margin: .3rem 0 .6rem; color: var(--muted); font-size: .8rem; line-height: 1.55; }
+.dashboard-note { margin: .7rem 0; color: var(--muted); font-size: .76rem; line-height: 1.6; }
+.dashboard-reveal { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .22s ease, visibility .22s; }
+.dashboard-reveal.is-expanded { grid-template-rows: 1fr; visibility: visible; }
+.dashboard-reveal-inner { min-height: 0; overflow: hidden; }
+.dashboard-preview { display: block; }
+.dashboard-panel.is-expanded > .dashboard-preview { display: none; }
+.dashboard-stat-list { display: grid; gap: .6rem; margin: .85rem 0; padding: 0; list-style: none; font-size: .76rem; }
+.dashboard-stat-list li { display: flex; align-items: start; justify-content: space-between; gap: .8rem; border-top: 1px solid var(--line); padding-top: .5rem; }
+.dashboard-stat-list small { display: block; margin-top: .2rem; line-height: 1.45; }
+.dashboard-stat-list strong { font-size: .95rem; letter-spacing: 0; }
+.dashboard-chart.dashboard-panel { display: block; min-height: 0; padding: clamp(1.1rem,2vw,1.75rem); }
+.dashboard-chart .chart-copy { padding: 0; }
+.dashboard-chart .chart-canvas { padding: 0; }
+.agenda-context { margin-top: .3rem; padding-left: 0; font-size: .72rem; text-align: left; }
+.agenda-card .today-pill { display: inline-block; margin-bottom: .5rem; white-space: normal; }
+.calendar-navigation { display: grid; grid-template-columns: 2rem minmax(0,1fr) 2rem; align-items: center; gap: .2rem; margin-bottom: .4rem; }
+.calendar-navigation .icon-button { width: 2rem; height: 2rem; }
+#calendar-range { color: var(--muted); font-size: .58rem; line-height: 1.35; text-align: center; overflow-wrap: normal; }
+.calendar-day { min-height: 2rem; min-width: 0; width: 100%; padding: .15rem 0; border: 1px solid transparent; background: transparent; font: inherit; }
+.calendar-day strong { font-size: .68rem; }
+.calendar-day.is-today { background: var(--amber-soft); border-color: var(--amber-accent); }
+.calendar-day.is-selected { background: var(--primary); color: white; border-color: var(--primary); }
+.calendar-day.is-selected .event-dots i { background: white; }
+.calendar-day:focus-visible { outline-offset: 1px; }
+.registration-shell { display: grid; gap: 1.2rem; overflow: visible; border: 0; background: transparent; box-shadow: none; }
+.registration-toolbar { display: grid; grid-template-columns: minmax(0,1fr) 14rem; grid-template-areas: "tabs create" "search class"; gap: .9rem 1.2rem; align-items: end; padding: 1.15rem; }
+.registration-tabs { grid-area: tabs; width: 100%; max-width: 28rem; min-width: 0; }
+.registration-toolbar .registration-tabs button, .registration-toolbar .registration-tabs button.active { min-width: 0; height: 3rem; min-height: 3rem; padding-inline: .6rem; font-size: .8rem; font-weight: 650; white-space: nowrap; }
+.registration-create { grid-area: create; justify-self: stretch; width: 14rem; min-width: 14rem; height: 3rem; white-space: nowrap; }
+.registration-query-field { grid-area: search; display: grid; min-width: 0; gap: .35rem; color: var(--muted); font-size: .78rem; font-weight: 600; }
+.registration-search { min-width: 0; min-height: 3rem; }
+#registration-class-field { grid-area: class; min-width: 0; width: 14rem; }
+#registration-class-filter { width: 100%; min-width: 0; min-height: 3rem; font-size: .82rem; }
+.registration-results { min-width: 0; overflow: hidden; }
+.registration-results .registration-table-wrap { border-top: 0; }
+.partner-identity { display: inline-flex; align-items: center; gap: .65rem; }
+.partner-logo { width: 2.5rem; height: 2.5rem; object-fit: contain; border-radius: 50%; background: var(--paper); }
+.community-photo { object-position: center; }
+@media (max-width: 1100px) {
+  .registration-toolbar { grid-template-columns: minmax(0,1fr) 14rem; grid-template-areas: "tabs tabs" "search class" "create create"; }
+  .registration-create { justify-self: end; }
+}
+@media (max-width: 620px) {
+  [data-view="painel"].active { gap: 1.1rem; }
+  .dashboard-panel .card-heading { flex-wrap: wrap; }
+  .mini-calendar { display: grid; grid-template-columns: minmax(0,1fr); gap: .6rem; width: 100%; }
+  .mini-calendar-icon { display: flex; align-items: center; justify-content: center; gap: .4rem; width: 100%; min-height: 2.5rem; border-width: 1px; }
+  .mini-calendar-icon::before, .mini-calendar-icon > i { display: none; }
+  .mini-calendar-icon strong, .mini-calendar-icon span { margin: 0; font-size: .92rem; }
+  .calendar-day { min-height: 2.45rem; }
+  .calendar-navigation .icon-button { width: 2.2rem; height: 2.2rem; }
+  .calendar-navigation { grid-template-columns: 2.2rem minmax(0,1fr) 2.2rem; }
+  #calendar-range { font-size: .65rem; }
+  .registration-toolbar { grid-template-columns: minmax(0,1fr); grid-template-areas: "tabs" "search" "class" "create"; padding: 1rem; }
+  .registration-tabs { max-width: none; grid-template-columns: minmax(0,1fr); }
+  .registration-tabs button { min-height: 3rem; }
+  .registration-create, #registration-class-field { width: 100%; min-width: 0; justify-self: stretch; }
+  .registration-footer { padding: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-reveal, .dashboard-toggle svg { transition: none; }
+}

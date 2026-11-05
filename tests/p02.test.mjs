@@ -130,7 +130,7 @@ test('P02 A2: foco pausa o prazo e permite desfazer sem limite de leitura', () =
   const n=notice();n.ui.show('Registro salvo',{expiresAt:60000});
   n.advance(55000);n.root.listeners.focusin();n.advance(120000);
   assert.equal(n.root.hidden,false);
-  assert.match(n.node('[data-undo-time]').textContent,/pausado/);
+  assert.match(n.node('[data-undo-time]').textContent,/pode desfazer/);
   n.node('[data-undo-action]').listeners.click();
   assert.equal(n.calls[0].expiresAt,180000);
   assert.equal(n.root.hidden,true);

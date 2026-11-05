@@ -37,12 +37,22 @@ function reconcileRecordTimes(database, seed) {
   };
 }
 
-function loadDatabase() {
+function loadDatabase({ persistMigration = true } = {}) {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const saved = JSON.parse(raw || "null");
     if (saved?.schemaVersion === window.NOTARE_SEED.schemaVersion) {
       const reconciled = reconcileProfileConfiguration(reconcileStudentMedia(saved, window.NOTARE_SEED), window.NOTARE_SEED);
-      return window.NOTARE_BUSINESS.initialize(reconcileRecordTimes(reconciled, window.NOTARE_SEED));
+      const previousExampleRevision = saved.business?.exampleRevision || 0;
+      const database = window.NOTARE_BUSINESS.initialize(reconcileRecordTimes(reconciled, window.NOTARE_SEED));
+      if (persistMigration && previousExampleRevision < (database.business.exampleRevision || 0)) {
+        // Persistência aditiva; uma falha de armazenamento não restaura nem apaga a base em uso.
+        try {
+          if (localStorage.getItem(STORAGE_KEY) !== raw) return loadDatabase({ persistMigration: false });
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(database));
+        } catch (error) { console.warn("Os novos exemplos estão disponíveis nesta sessão; a base anterior foi mantida no armazenamento.", error); }
+      }
+      return database;
     }
   } catch (error) {
     console.warn("A base local não pôde ser carregada; usando a base inicial.", error);
@@ -73,8 +83,84 @@ const state = {
   registrationPage: 1,
   recordKind: "Ausência",
   query: "",
+  calendarDate: null,
+  calendarWeekOffset: 0,
+  dashboardProfileId: null,
+  dashboardExpansion: {},
   lastPlanId: null
 };
+
+const DASHBOARD_PANELS = ['priority', 'followup', 'actions', 'attendance', 'agenda', 'evolution', 'overview'];
+const DASHBOARD_KEY = 'notare-dashboard-v1:';
+function readDashboardPreferences(profileId) {
+  try {
+    const preferences = JSON.parse(localStorage.getItem(DASHBOARD_KEY + profileId) || '{}');
+    return Object.fromEntries(DASHBOARD_PANELS.map(key => [key, preferences?.[key] === true]));
+  } catch { return {}; }
+}
+function ensureDashboardPreferences() {
+  if (state.dashboardProfileId === state.profileId) return;
+  state.dashboardProfileId = state.profileId;
+  state.dashboardExpansion = readDashboardPreferences(state.profileId);
+  state.calendarDate = null;
+  state.calendarWeekOffset = 0;
+}
+function saveDashboardPreferences() {
+  try { localStorage.setItem(DASHBOARD_KEY + state.profileId, JSON.stringify(state.dashboardExpansion)); }
+  catch { showToast('Sua escolha será mantida nesta sessão. Não foi possível salvar a preferência neste navegador.'); }
+}
+function applyDashboardPanels() {
+  DASHBOARD_PANELS.forEach(key => {
+    const expanded = state.dashboardExpansion[key] === true;
+    const button = document.querySelector(`[data-dashboard-toggle="${key}"]`);
+    const details = document.querySelector(`#dashboard-${key}-details`);
+    button.setAttribute('aria-expanded', String(expanded));
+    const title = document.querySelector(`[data-dashboard-panel="${key}"] h2`)?.textContent || ({followup:'Em acompanhamento',actions:'Ações agendadas',attendance:'Frequência média'})[key];
+    button.setAttribute('aria-label', `${expanded ? 'Recolher' : 'Expandir'} ${title}`);
+    button.querySelector('span').textContent = expanded ? 'Recolher' : 'Expandir';
+    details.classList.toggle('is-expanded', expanded);
+    details.inert = !expanded;
+    details.setAttribute('aria-hidden', String(!expanded));
+    document.querySelector(`[data-dashboard-panel="${key}"]`).classList.toggle('is-expanded', expanded);
+  });
+}
+function toggleDashboardPanel(key) {
+  if (!DASHBOARD_PANELS.includes(key)) return;
+  ensureDashboardPreferences();
+  state.dashboardExpansion[key] = !state.dashboardExpansion[key];
+  saveDashboardPreferences();
+  applyDashboardPanels();
+}
+function activeAgenda(now = new Date()) {
+  const ids = new Set(visibleStudents().map(student => student.id));
+  return db.agenda.filter(item => !item.voidedAt && item.status !== 'done' && item.status !== 'cancelled' && ids.has(item.studentId) && item.ownerId === state.profileId)
+    .map(item => ({...item, scheduledDate: agendaDate(item, now), agendaState: agendaState(item, now)}))
+    .sort((a,b) => a.scheduledDate - b.scheduledDate || (a.time || '23:59').localeCompare(b.time || '23:59'));
+}
+function selectCalendarDate(value, {focus = true} = {}) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !parseDisplayDate(value)) return;
+  ensureDashboardPreferences();
+  state.calendarDate = value;
+  state.dashboardExpansion.agenda = true;
+  saveDashboardPreferences();
+  renderDashboard();
+  if (focus) document.querySelector(`[data-calendar-date="${value}"]`)?.focus({preventScroll:true});
+}
+function openDashboardIndicator(action) {
+  if (action === 'priorities') {
+    state.filter = 'alta'; state.followupClassFilter = 'todas'; state.query = '';
+    showRoute('busca-ativa');
+  } else if (action === 'plans') {
+    state.recordFilter = 'Plano'; state.recordsClassFilter = 'todas';
+    showRoute('registros');
+  } else if (action === 'students') {
+    state.classFilter = 'todas';
+    showRoute('estudantes');
+  } else if (action === 'calendar') {
+    state.calendarWeekOffset = 0;
+    selectCalendarDate(dateKey(new Date()));
+  }
+}
 
 const views = [...document.querySelectorAll("[data-view]")];
 const announcement = document.querySelector("#announcement");
@@ -115,7 +201,10 @@ const notificationCenter = window.NOTARE_UI.createNotificationCenter({
 });
 
 function personPhoto(person) {
-  if (person.scope?.startsWith("family:") || person.scope?.startsWith("partner:")) return `<span class="ecosystem-avatar">${escapeHtml(person.initials)}</span>`;
+  if (person.scope?.startsWith("family:") || person.scope?.startsWith("partner:")) {
+    const media = window.NOTARE_COMMUNITY_MEDIA?.[person.id];
+    return media?.src ? `<img class="avatar-photo community-photo" src="${escapeHtml(media.src)}" alt="${escapeHtml(media.alt)}" loading="lazy" />` : `<span class="ecosystem-avatar">${escapeHtml(person.initials)}</span>`;
+  }
   if (person.photoSheet && Number.isInteger(person.photoIndex)) {
     const column = person.photoIndex % 6;
     const row = Math.floor(person.photoIndex / 6);
@@ -191,40 +280,35 @@ function syncPlanDeadline(now = new Date()) {
 
 function calendarEventCounts(now) {
   const counts = new Map();
-  const visibleIds = new Set(visibleStudents().map((student) => student.id));
-  const addEvent = (date) => {
-    if (!date || Number.isNaN(date.getTime())) return;
-    const key = dateKey(date);
+  activeAgenda(now).forEach(item => {
+    const key = dateKey(item.scheduledDate);
     counts.set(key, (counts.get(key) || 0) + 1);
-  };
-
-  db.agenda
-    .filter((item) => !item.voidedAt && item.status !== "done" && visibleIds.has(item.studentId) && item.ownerId === state.profileId)
-    .forEach((item) => addEvent(agendaDate(item, now)));
+  });
   return counts;
 }
-
 function renderMiniCalendar(now) {
-  const calendar = document.querySelector("#calendar-days");
+  const calendar = document.querySelector('#calendar-days');
   if (!calendar) return;
+  const focusedDate = document.activeElement?.dataset?.calendarDate;
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
-  const start = startOfCurrentWeek(today);
+  const start = addDays(startOfCurrentWeek(today), state.calendarWeekOffset * 7);
+  const end = addDays(start,20);
   const counts = calendarEventCounts(today);
-  const fullDate = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "numeric", month: "long" });
-  const month = new Intl.DateTimeFormat("pt-BR", { month: "short" }).format(today).replace(".", "").toUpperCase();
-
-  document.querySelector("#mini-calendar-day").textContent = today.getDate();
-  document.querySelector("#mini-calendar-month").textContent = month;
-  document.querySelector("#mini-calendar").setAttribute("aria-label", `Calendário a partir de ${fullDate.format(start)}, com o dia atual em ${fullDate.format(today)}`);
-  calendar.innerHTML = Array.from({ length: 21 }, (_, index) => {
-    const date = addDays(start, index);
-    const key = dateKey(date);
-    const eventCount = counts.get(key) || 0;
-    const isToday = key === dateKey(today);
-    const eventLabel = eventCount ? `, ${eventCount} ${eventCount === 1 ? "evento" : "eventos"}` : ", sem eventos";
-    const dots = Array.from({ length: Math.min(eventCount, 4) }, () => "<i></i>").join("");
-    return `<span class="calendar-day ${isToday ? "is-today" : ""} ${date.getMonth() !== today.getMonth() ? "other-month" : ""}" ${isToday ? 'aria-current="date"' : ""} aria-label="${escapeHtml(fullDate.format(date))}${eventLabel}"><strong>${date.getDate()}</strong><span class="event-dots" aria-hidden="true">${dots}</span></span>`;
-  }).join("");
+  const fullDate = new Intl.DateTimeFormat('pt-BR', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const month = new Intl.DateTimeFormat('pt-BR', {month:'short'}).format(today).replace('.','').toUpperCase();
+  document.querySelector('#mini-calendar-day').textContent = today.getDate();
+  document.querySelector('#mini-calendar-month').textContent = month;
+  document.querySelector('#calendar-today').setAttribute('aria-label', `Selecionar hoje, ${fullDate.format(today)}`);
+  document.querySelector('#mini-calendar').setAttribute('aria-label', `Calendário de ${formatDate(dateKey(start))} a ${formatDate(dateKey(end))}`);
+  document.querySelector('#calendar-range').textContent = `${formatDate(dateKey(start))}–${formatDate(dateKey(end))}`;
+  const target = state.calendarDate && parseDisplayDate(state.calendarDate) >= start && parseDisplayDate(state.calendarDate) <= end ? state.calendarDate : today >= start && today <= end ? dateKey(today) : dateKey(start);
+  calendar.innerHTML = Array.from({length:21}, (_,index) => {
+    const date = addDays(start,index), key = dateKey(date), count = counts.get(key) || 0;
+    const isToday = key === dateKey(today), selected = key === state.calendarDate;
+    const label = `${fullDate.format(date)}, ${count ? `${count} ${count === 1 ? 'compromisso' : 'compromissos'}` : 'sem compromissos'}`;
+    return `<button class="calendar-day ${isToday ? 'is-today' : ''} ${selected ? 'is-selected' : ''}" type="button" data-calendar-date="${key}" tabindex="${key === target ? 0 : -1}" aria-pressed="${selected}" ${isToday ? 'aria-current="date"' : ''} aria-label="${escapeHtml(label)}"><strong>${date.getDate()}</strong><span class="event-dots" aria-hidden="true">${Array.from({length:Math.min(count,4)},()=>'<i></i>').join('')}</span></button>`;
+  }).join('');
+  if (focusedDate) document.querySelector(`[data-calendar-date="${focusedDate}"]`)?.focus({preventScroll:true});
 }
 
 function renderTemporalContext(now = new Date()) {
@@ -461,13 +545,18 @@ function renderSchool() {
   document.querySelector("#school-logo-image").src = "assets/profiles/escola-logo.png";
 }
 
-function renderChart() {
+function attendanceSeries() {
   const profile = getProfile();
   const labels = db.analytics.labels;
   const classSeries = profileClassNames(profile).map((className) => db.analytics.byClass[className]).filter(Boolean);
-  const attendance = classSeries.length
+  return classSeries.length
     ? labels.map((_, index) => Math.round(classSeries.reduce((total, values) => total + values[index], 0) / classSeries.length))
     : db.analytics.attendance;
+}
+
+function renderChart() {
+  const labels = db.analytics.labels;
+  const attendance = attendanceSeries();
   const width = 760;
   const height = 250;
   const left = 42;
@@ -496,7 +585,7 @@ function renderChart() {
       return `<g class="chart-point" tabindex="0" role="img" aria-label="${escapeHtml(labels[index])}: ${value}% de frequência"><circle class="chart-point-hit" cx="${x(index)}" cy="${y(value)}" r="15"/><circle class="chart-point-dot" cx="${x(index)}" cy="${y(value)}" r="5"/><g class="chart-tooltip"><rect x="${tooltipX}" y="${tooltipY}" width="90" height="30" rx="7"/><text x="${tooltipX + 45}" y="${tooltipY + 19}" text-anchor="middle">${escapeHtml(label)}</text></g></g>`;
     }).join("")}
     ${labels.map((label, index) => `<text x="${x(index)}" y="${height - 12}" fill="#768184" font-family="Manrope, system-ui, sans-serif" font-size="10" font-weight="500" text-anchor="middle">${escapeHtml(label)}</text>`).join("")}`;
-  svg.setAttribute("aria-label", `Frequência de ${attendance.at(-1)} por cento na semana atual`);
+  svg.setAttribute("aria-label", `Frequência de ${attendance.at(-1)} por cento em ${labels.at(-1)}`);
 }
 
 function renderProfileIdentity() {
@@ -542,19 +631,9 @@ function renderDashboard(now = new Date()) {
   const students = visibleStudents();
   const priorities = students.filter((student) => student.priority === "alta");
   const plans = visiblePlans();
-  const visibleIds = new Set(students.map((student) => student.id));
-  const agenda = db.agenda
-    .filter((item) => !item.voidedAt && item.status !== "done" && visibleIds.has(item.studentId) && item.ownerId === state.profileId)
-    .map((item) => ({ ...item, scheduledDate: agendaDate(item, now), agendaState: agendaState(item, now) }))
-    .sort((a, b) => a.scheduledDate - b.scheduledDate || (a.time || "23:59").localeCompare(b.time || "23:59"));
-  const latestPlanAgendaId = db.agenda.find(
-    (item) => item.sourcePlanId && visibleIds.has(item.studentId) && item.ownerId === state.profileId
-  )?.id;
-  const latestPlanAgenda = agenda.find((item) => item.id === latestPlanAgendaId);
-  let agendaPreview = agenda.slice(0, 4);
-  if (latestPlanAgenda && !agendaPreview.some((item) => item.id === latestPlanAgenda.id)) {
-    agendaPreview = [...agendaPreview.slice(0, 3), latestPlanAgenda];
-  }
+  ensureDashboardPreferences();
+  const agenda = activeAgenda(now);
+  const agendaPreview = state.calendarDate ? agenda.filter(item => dateKey(item.scheduledDate) === state.calendarDate) : agenda;
   const scheduledActions = agenda.length;
   const averageAttendance = students.length ? Math.round(students.reduce((total, student) => total + student.attendance, 0) / students.length) : 0;
 
@@ -571,17 +650,35 @@ function renderDashboard(now = new Date()) {
   document.querySelector(".metric:nth-child(3) .metric-trend").textContent = startsToday
     ? `${firstDayCount} para hoje`
     : `${firstDayCount} para ${agendaStartLabel}`;
-  document.querySelector(".agenda-card .today-pill").textContent = startsToday ? "Hoje" : `A partir de ${agendaStartLabel}`;
 
   const order = { alta: 0, media: 1, evolucao: 2, estavel: 3 };
   const ordered = [...students].sort((a, b) => order[a.priority] - order[b.priority]);
+  document.querySelector('#priority-summary').textContent = `${priorities.length} com atenção alta · ${students.length} estudantes no seu escopo`;
+  document.querySelector('#dashboard-priority-preview').innerHTML = ordered.slice(0,2).map(studentButton).join('') || '<p class="dashboard-note">Nenhum estudante neste escopo.</p>';
   document.querySelector("#dashboard-students").innerHTML = ordered.slice(0, 5).map(studentButton).join("");
+  document.querySelector('.metric:nth-child(4) .metric-trend').textContent = `${students.length} estudantes`;
+  const openPlans = plans.filter(plan => !plan.voidedAt && plan.status !== 'done');
+  document.querySelector('#dashboard-open-plans').innerHTML = openPlans.slice(0,3).map(plan => `<li><span>${escapeHtml(getStudent(plan.studentId).name)}<small>${escapeHtml(plan.type)} · prazo ${formatDate(plan.date)}</small></span></li>`).join('') || '<li>Nenhum plano aberto.</li>';
+  document.querySelector('#dashboard-action-summary').textContent = agenda.length ? `Próxima ação: ${agenda[0].title}, em ${formatDate(dateKey(agenda[0].scheduledDate))}${agenda[0].time ? ` às ${agenda[0].time}` : ''}.` : 'Nenhuma ação agendada para este perfil.';
+  const classes = [...new Set(students.map(student => student.className))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  document.querySelector('#dashboard-class-attendance').innerHTML = classes.map(name => {
+    const members = students.filter(student => student.className === name);
+    return `<li><span>${escapeHtml(name)}</span><strong>${Math.round(members.reduce((total,student)=>total+student.attendance,0)/members.length)}%</strong></li>`;
+  }).join('') || '<li>Nenhuma turma neste escopo.</li>';
+  const series = attendanceSeries(), change = series.at(-1) - series[0];
+  const seriesDate = label => { const date = parseDisplayDate(label,2026); return date ? formatDate(dateKey(date)) : label; };
+  document.querySelector('#evolution-summary').textContent = `${series.at(-1)}% em ${seriesDate(db.analytics.labels.at(-1))} · ${change > 0 ? '+' : ''}${change} p.p. desde ${seriesDate(db.analytics.labels[0])}`;
+  document.querySelector('#agenda-upcoming').hidden = !state.calendarDate;
+  document.querySelector('.agenda-card .today-pill').textContent = state.calendarDate ? formatDate(state.calendarDate) : 'Próximas ações';
+  document.querySelector('#agenda-summary').textContent = state.calendarDate
+    ? `${formatDate(state.calendarDate)} · ${agendaPreview.length} ${agendaPreview.length === 1 ? 'compromisso' : 'compromissos'}`
+    : agenda.length ? `${agenda.length} ${agenda.length === 1 ? 'compromisso' : 'compromissos'} · próximo: ${agenda[0].title}, ${formatDate(dateKey(agenda[0].scheduledDate))}` : 'Nenhum compromisso atribuído a você.';
 
   document.querySelector("#agenda-list").innerHTML = agendaPreview.length ? agendaPreview.map((item) => {
     const student = getStudent(item.studentId);
     const stateCopy = item.agendaState ? `<small class="agenda-state">${escapeHtml(item.agendaState.label)} · ${escapeHtml(item.agendaState.text)}</small>` : "";
-    return `<li class="${item.agendaState ? "is-repositioned" : ""}"><span class="agenda-time">${escapeHtml(agendaSlot(item, now, item.scheduledDate))}</span><span class="agenda-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(student.name)} (${escapeHtml(student.className)})</span>${stateCopy}</span></li>`;
-  }).join("") : '<li class="agenda-empty">Nenhum compromisso atribuído a você.</li>';
+    return `<li class="${item.agendaState ? "is-repositioned" : ""}"><span class="agenda-time">${escapeHtml(agendaSlot(item, now, item.scheduledDate))}</span><span class="agenda-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(student.name)} (${escapeHtml(student.className)})</span>${stateCopy}<button class="text-button agenda-context" type="button" data-agenda-student="${escapeHtml(student.id)}">Ver contexto de ${escapeHtml(student.name)}</button></span></li>`;
+  }).join("") : `<li class="agenda-empty">${state.calendarDate ? 'Nenhum compromisso nesta data.' : 'Nenhum compromisso atribuído a você.'}</li>`;
 
   const active = plans.filter((plan) => planEffectiveStatus(plan, now) === "active").length;
   const review = plans.filter((plan) => ["review", "overdue"].includes(planEffectiveStatus(plan, now))).length;
@@ -598,7 +695,10 @@ function renderDashboard(now = new Date()) {
   const returnRate = students.length ? Math.round((casesWithReturn / students.length) * 100) : 0;
   document.querySelector(".outcome-ring strong").textContent = `${returnRate}%`;
   document.querySelector(".outcome-ring").style.background = `radial-gradient(circle, var(--paper) 55%, transparent 57%), conic-gradient(var(--green) 0 ${returnRate}%, #e4e7e3 ${returnRate}% 100%)`;
+  document.querySelector('#overview-summary').textContent = `${active + review} planos abertos · ${review} aguardando revisão · ${returnRate}% dos casos com retorno registrado`;
   renderChart();
+  renderMiniCalendar(now);
+  applyDashboardPanels();
 }
 
 function renderClassFilter(selector, key) {
@@ -1441,6 +1541,12 @@ function switchProfile(profileId, { announce = true } = {}) {
 }
 
 document.addEventListener("click", (event) => {
+  const dashboardToggle = event.target.closest('[data-dashboard-toggle]');
+  if (dashboardToggle) { toggleDashboardPanel(dashboardToggle.dataset.dashboardToggle); return; }
+  const dashboardAction = event.target.closest('[data-dashboard-action]');
+  if (dashboardAction) { openDashboardIndicator(dashboardAction.dataset.dashboardAction); return; }
+  const agendaContext = event.target.closest('[data-agenda-student]');
+  if (agendaContext) { openStudent(agendaContext.dataset.agendaStudent); return; }
   const routeControl = event.target.closest("[data-route]");
   if (routeControl) {
     event.preventDefault();
@@ -1488,6 +1594,27 @@ for (const [selector, key, render] of [
   if (key === "registrationClassFilter") state.registrationPage = 1;
   render();
 });
+
+document.querySelector('#calendar-days').addEventListener('click', event => {
+  const day = event.target.closest('[data-calendar-date]');
+  if (day) selectCalendarDate(day.dataset.calendarDate);
+});
+document.querySelector('#calendar-days').addEventListener('keydown', event => {
+  const day = event.target.closest('[data-calendar-date]');
+  if (!day || !['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'].includes(event.key)) return;
+  event.preventDefault();
+  const date = parseDisplayDate(day.dataset.calendarDate);
+  const weekday = (date.getDay() + 6) % 7;
+  const offset = {ArrowLeft:-1,ArrowRight:1,ArrowUp:-7,ArrowDown:7,Home:-weekday,End:6-weekday,PageUp:-21,PageDown:21}[event.key];
+  const next = addDays(date,offset);
+  while (next < addDays(startOfCurrentWeek(new Date()), state.calendarWeekOffset * 7)) state.calendarWeekOffset--;
+  while (next > addDays(addDays(startOfCurrentWeek(new Date()), state.calendarWeekOffset * 7),20)) state.calendarWeekOffset++;
+  selectCalendarDate(dateKey(next));
+});
+document.querySelector('#calendar-previous').addEventListener('click', () => {state.calendarWeekOffset--;renderMiniCalendar(new Date());});
+document.querySelector('#calendar-next').addEventListener('click', () => {state.calendarWeekOffset++;renderMiniCalendar(new Date());});
+document.querySelector('#calendar-today').addEventListener('click', () => {state.calendarWeekOffset=0;selectCalendarDate(dateKey(new Date()));});
+document.querySelector('#agenda-upcoming').addEventListener('click', () => {state.calendarDate=null;renderDashboard();});
 
 document.querySelector("#student-search").addEventListener("input", (event) => {
   state.query = event.currentTarget.value;
