@@ -48,7 +48,7 @@ A implantação é opcional, preenche os dados de cada etapa automaticamente e u
 - registros de ausência, contato, ocorrência e devolutiva;
 - seleção da turma antes do estudante no novo registro;
 - autoria do registro vinculada ao perfil conectado;
-- sugestão simulada de texto produzida por regras locais;
+- sugestões editáveis por regras locais em Novo registro, comunicados familiares e Resultado e continuidade;
 - textos pré-elaborados que acompanham o tipo de registro, permanecem editáveis e pedem confirmação antes de substituir uma descrição preenchida;
 - planos de ação com responsável, objetivo e prazo em dia útil;
 - central de notificações por perfil, com avisos após 2 e 5 minutos no painel;
@@ -61,13 +61,13 @@ A implantação é opcional, preenche os dados de cada etapa automaticamente e u
 - Clube gratuito para famílias, com ofertas, emissão e cancelamento de vouchers fictícios;
 - parceiro com submissão de ofertas, revisão pela direção e controle de disponibilidade;
 - conversão única de voucher e comissão de 5% estritamente simulada;
-- proposta institucional, revisão, aceite demonstrativo e histórico do plano ativo.
+- proposta institucional em quatro etapas, valores acadêmicos por segmento e aceite local com plano ativo preservado.
 
 ---
 
 ## 👥 Perfis e permissões
 
-A demonstração utiliza a **Escola Horizonte Vivo**, cinco perfis profissionais, duas famílias e dois parceiros:
+A demonstração utiliza a **Escola Horizonte Vivo**, cinco perfis profissionais, duas famílias e cinco parceiros:
 
 | Perfil | Escopo principal |
 | --- | --- |
@@ -180,7 +180,7 @@ Com o Node.js instalado, execute:
 npm run check
 ```
 
-O comando verifica a sintaxe dos arquivos JavaScript e executa 50 testes de dados, datas, permissões, acessibilidade estrutural, persistência e regras dos principais fluxos. A validação real de interface e seus limites estão no documento de conclusão local.
+O comando verifica a sintaxe dos arquivos JavaScript e executa 111 testes de dados, datas, permissões, acessibilidade estrutural, persistência e regras dos principais fluxos. A validação real de interface e seus limites estão no documento de conclusão local.
 
 ---
 
@@ -214,3 +214,10 @@ Homologação de 25/10/2026: [percursos reais em desktop/mobile, correções e l
 
 
 Os limites de funcionamento, a transparência da interface e as regras de anulação de criações estão em [Limites do ambiente local](docs/limites-do-ambiente-local.md).
+
+
+## Candidato final de desenvolvimento — 05/11/2026
+
+Sete imagens fornecidas integradas e Pacote 05 implementado. [Relatório e evidências](docs/missao-final-20261105.md). A avaliação humana continua pendente.
+
+Para preparar exclusivamente os arquivos do site, execute `npm run build`. A saída `dist/` exclui documentação e testes. A publicação na Vercel não foi executada; consulte a [preparação para publicação futura](docs/preparacao-vercel.md). Deploy automático por Git está desativado.

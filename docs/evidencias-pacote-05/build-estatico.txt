@@ -1,0 +1,5 @@
+
+> build
+> node scripts/build-static.mjs
+
+Site estático preparado em dist/. Documentação e testes não foram incluídos.

@@ -1,0 +1,171 @@
+{
+  "date": "2026-11-05",
+  "origin": "http://127.0.0.1:8768",
+  "served": "dist",
+  "observations": [
+    {
+      "test": "onboarding avanço imediato",
+      "step": "Etapa 2 de 4"
+    },
+    {
+      "test": "onboarding avanço imediato",
+      "step": "Etapa 3 de 4"
+    },
+    {
+      "test": "onboarding avanço imediato",
+      "step": "Etapa 4 de 4"
+    },
+    {
+      "test": "retrato Paulo",
+      "image": "assets/community/familia-lucas.png"
+    },
+    {
+      "test": "sugestao familiar vazia",
+      "text": null
+    },
+    {
+      "test": "voltar mantem plano",
+      "value": null
+    },
+    {
+      "test": "rascunhos simultaneos preservados",
+      "value": "Rascunho fictício preservado enquanto concluo outro formulário."
+    },
+    {
+      "test": "assinatura responsiva 320",
+      "dimensions": {
+        "scroll": 305,
+        "width": 320
+      }
+    },
+    {
+      "test": "assinatura responsiva 390",
+      "dimensions": {
+        "scroll": 375,
+        "width": 390
+      }
+    },
+    {
+      "test": "confirmacao390",
+      "text": "Confirme a proposta revisada\n\nNotare Rede · Ensino Médio\n\nMensalidade: R$ 4.400,00 · implantação prevista: R$ 0,00\n\nValores acadêmicos, sem validação comercial. Nenhum contrato, cobrança ou pagamento será realizado.\n\nConfirmar a adesão neste navegador, sem contrato ou cobrança\nVoltar\nConfirmar proposta\nDescartar proposta"
+    },
+    {
+      "test": "familias390",
+      "dimensions": {
+        "client": 375,
+        "scroll": 375,
+        "width": 390
+      }
+    },
+    {
+      "test": "logo parceiro-papelaria",
+      "image": {
+        "height": 264,
+        "loaded": true,
+        "src": "assets/community/parceiro-papelaria.png",
+        "width": 329
+      }
+    },
+    {
+      "test": "logo parceiro-cultura",
+      "image": {
+        "height": 264,
+        "loaded": true,
+        "src": "assets/community/parceiro-cultura.png",
+        "width": 318
+      }
+    },
+    {
+      "test": "logo parceiro-vagalume",
+      "image": {
+        "height": 264,
+        "loaded": true,
+        "src": "assets/community/parceiro-vagalume.png",
+        "width": 318
+      }
+    },
+    {
+      "test": "logo parceiro-trilha",
+      "image": {
+        "height": 264,
+        "loaded": true,
+        "src": "assets/community/parceiro-trilha.png",
+        "width": 319
+      }
+    },
+    {
+      "test": "parceiro320",
+      "dimensions": {
+        "client": 305,
+        "scroll": 305
+      }
+    },
+    {
+      "test": "historico individual",
+      "result": {
+        "students": [
+          "ana",
+          "ana",
+          "ana",
+          "ana"
+        ],
+        "title": "Registros de Ana Souza"
+      }
+    },
+    {
+      "test": "plano anulado persiste",
+      "text": "Ausência\nAna Souza (8º A)\nAnulado\n\nRegistro fictício da estabilização final, a anular pelo controle Desfazer. · por Camila Duarte\n\nCriação anulada em 05/11/2026 por Camila Duarte. Original preservado.\n05/11/2026\n14:42\nPlano de ação\nAna Souza (8º A)\nAnulado\n\nConversa de acolhimento · Camila Duarte · Direção escolar · prazo 09/11/2026\n\nCriação anulada em 05/11/2026 por Camila Duarte. Original preservado.\n05/11/2026\n14:42\nDevolut"
+    },
+    {
+      "test": "cadastros filtro e pagina",
+      "summary": "Mostrando 9–12 de 12 estudantes"
+    },
+    {
+      "test": "calendario e expansao",
+      "result": {
+        "agenda": "Nenhum compromisso nesta data.",
+        "priority": "true",
+        "selected": "2026-11-05"
+      }
+    },
+    {
+      "test": "expansao apos recarga",
+      "value": "true"
+    },
+    {
+      "test": "movimento reduzido",
+      "result": {
+        "expanded": "true",
+        "reduce": true,
+        "transition": "1e-05s"
+      }
+    },
+    {
+      "test": "voucher cancelado",
+      "text": "ria: Arte e aprendizagem\n\nCondições: Uma participação por família; acompanhamento de um responsável; materiais incluídos.\n\nValidade: 31/12/2027\n\nR$ 65,00 · valor ilustrativo após benefício\n\nDisponíveis: 12 · validade 31/12/2027\n\nUm resgate por família. Ao confirmar, o parceiro verá apenas o código do voucher, sem dados escolares.\n\nQuero emitir este voucher, sem realizar compra ou pagamento\nEmitir voucher\nMeus vouchers\nEncontro de criatividade em papel\n\nNT-C02E48D53D · Cancelado\n\nR$ 65,00 · validade 31/12/2027\n\nA confirmação do parceiro registra a utilização do voucher. Nenhum valor é debitado."
+    },
+    {
+      "test": "conversao persiste",
+      "text": "a até\n\nComissão prevista: 5% por conversão confirmada. A emissão do voucher não gera comissão. A escola revisará a oferta antes de exibi-la.\n\nSubmeter oferta\nMinhas ofertas\nEncontro de criatividade em papel\n\nCategoria: Arte e aprendizagem\n\nCondições: Uma participação por família; acompanhamento de um responsável; materiais incluídos.\n\nValidade: 31/12/2027\n\nAprovada · 11 disponíveis · R$ 65,00\n\nPausar oferta\nConversões e comissões\n\nR$ 3,25\n\nComissão registrada neste ambiente local. Não há cobrança ou repasse financeiro. Você não tem acesso a estudantes, contatos ou registros escolares.\n\nEncontro de criatividade em papel\n\nNT-AE43BB6EFE · Conversão confirmada\n\nValor: R$ 65,00 · comissão: R$ 3,25\n\nEncontro de criatividade em papel\n\nNT-C02E48D53D · Cancelado\n\nValor: R$ 65,00 · comissão: R$ 0,00"
+    },
+    {
+      "test": "assinatura1280",
+      "result": {
+        "client": 1265,
+        "historyVisible": false,
+        "scroll": 1265
+      }
+    },
+    {
+      "test": "splash existente",
+      "result": {
+        "logo": "0 0 1130 356",
+        "openingClass": "entry-opening",
+        "reduced": false
+      }
+    }
+  ],
+  "console": [],
+  "reducedMotionRestored": true,
+  "limits": "Navegador integrado desktop; sem dispositivos físicos, Safari, Firefox ou leitor de tela."
+}

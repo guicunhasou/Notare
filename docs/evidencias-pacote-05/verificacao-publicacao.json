@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-05",
+  "htmlStructure": "ok",
+  "duplicateIds": [],
+  "unresolvedAria": [],
+  "missingResources": [],
+  "publicFiles": 34,
+  "publicExcludes": [
+    "docs",
+    "tests",
+    ".git",
+    "README.md",
+    "scripts",
+    "package.json",
+    "vercel.json"
+  ],
+  "secretScan": {
+    "textBlobsScanned": 141,
+    "findings": [],
+    "privateFileNames": [],
+    "limit": "Busca por padr\u00f5es conhecidos e revis\u00e3o dirigida; n\u00e3o certifica\u00e7\u00e3o de seguran\u00e7a."
+  },
+  "runtimeNetworkAPIs": {
+    "fetch": false,
+    "WebSocket": false,
+    "XMLHttpRequest": false,
+    "sendBeacon": false
+  },
+  "communityPngBytes": 817028,
+  "boardSha256": "8fd6ce9d0f10dd70811bf2ec708f5ebb2fa1d56587e054222ba6bac7170f4274"
+}
