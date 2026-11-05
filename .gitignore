@@ -3,3 +3,6 @@ Thumbs.db
 *.log
 .idea/
 .vscode/
+
+dist/
+.vercel/

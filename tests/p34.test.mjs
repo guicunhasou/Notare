@@ -155,12 +155,12 @@ test('P04: aprovação habilita voucher e recusa mantém oferta indisponível', 
   assert.equal(r.run('db.business.redemptions[0].status'),'confirmed');
 });
 
-test('P04: sete assets ficam mapeados sem solicitar imagens ausentes', () => {
+test('P04: sete assets fornecidos ficam mapeados com textos alternativos', () => {
   const r=runtime();
   assert.equal(r.run('Object.keys(window.NOTARE_COMMUNITY_MEDIA).length'),7);
-  assert.equal(r.run('Object.values(window.NOTARE_COMMUNITY_MEDIA).every(media=>media.src===null&&media.expectedFile&&media.alt)'),true);
-  assert.doesNotMatch(r.run('personPhoto(getProfile("familia-ana"))'),/<img/);
-  assert.doesNotMatch(r.run('personPhoto(getProfile("parceiro-vagalume"))'),/<img/);
+  assert.equal(r.run('Object.values(window.NOTARE_COMMUNITY_MEDIA).every(media=>media.src===media.expectedFile&&media.alt)'),true);
+  assert.match(r.run('personPhoto(getProfile("familia-ana"))'),/<img/);
+  assert.match(r.run('personPhoto(getProfile("parceiro-vagalume"))'),/community-logo/);
   r.run('window.NOTARE_COMMUNITY_MEDIA["familia-ana"].src="assets/community/familia-ana.png"');
   assert.match(r.run('personPhoto(getProfile("familia-ana"))'),/alt="Retrato de Marina Souza/);
 });

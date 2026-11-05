@@ -4,6 +4,19 @@
     acompanhamento: { name: 'Notare Acompanhamento', monthly: 250000, setup: 500000 },
     rede: { name: 'Notare Rede', monthly: 400000, setup: 500000 }
   });
+  // Hipótese acadêmica local: fatores em pontos-base, sem pesquisa comercial.
+  const SEGMENTS = Object.freeze({
+    'Educação Infantil': 8000,
+    'Ensino Fundamental': 10000,
+    'Ensino Médio': 11000,
+    'Educação de Jovens e Adultos': 8500,
+    'Educação Profissional e Tecnológica': 12000
+  });
+  function quoteSubscription(db, plan, segment) {
+    if (!Object.hasOwn(PLANS, plan)) throw new Error('Plano inválido.');
+    if (!Object.hasOwn(SEGMENTS, segment)) throw new Error('Selecione um segmento válido.');
+    return { monthly: Math.round(PLANS[plan].monthly * SEGMENTS[segment] / 10000), setup: db.business.subscription.revision === 0 ? PLANS[plan].setup : 0, pricingRevision: 1 };
+  }
   const id = () => window.crypto?.randomUUID?.() || `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const stamp = () => new Date().toISOString();
   const money = value => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value / 100);
@@ -123,10 +136,28 @@
     }
     return message;
   }
+  function familySuggestion(db, actor, studentId) {
+    const student = requireStudent(db, actor, studentId);
+    if (!db.business.families.some(f => f.students.includes(studentId))) throw new Error('Não há responsável configurado para este estudante.');
+    const communication = communicationStatus(db, studentId);
+    const opening = communication?.label === 'retorno recebido' ? 'Agradecemos seu retorno. ' : '';
+    const subject = Number.isFinite(student.attendance) && student.attendance < 90 ? 'o acompanhamento da frequência' : 'o acompanhamento escolar';
+    return `${opening}Olá, família de ${student.name}. Gostaríamos de conversar sobre ${subject} e ouvir como podemos apoiar a rotina de estudos. Podemos combinar um horário para dialogar e definir juntos os próximos passos? Compartilhe apenas as informações necessárias por este canal. Equipe escolar.`;
+  }
+  function continuitySuggestion(db, actor, planId) {
+    requireActor(db, actor, 'plans:create');
+    const plan = db.plans.find(p => p.id === planId && !p.voidedAt && p.status !== 'done');
+    if (!plan) throw new Error('Selecione um acompanhamento disponível.');
+    const student = requireStudent(db, actor, plan.studentId);
+    const count = db.records.filter(record => record.studentId === student.id && !record.voidedAt).length;
+    const owner = profiles(db).find(p => p.id === plan.ownerId)?.name;
+    const deadline = /^\d{4}-\d{2}-\d{2}$/.test(plan.date || '') ? plan.date.split('-').reverse().join('/') : plan.date;
+    return `Revisar o plano “${plan.type}” de ${student.name}.${owner ? ` Responsável registrado: ${owner}.` : ''}${deadline ? ` Prazo registrado: ${deadline}.` : ''} ${count ? `Consultar os ${count} registros anteriores não anulados. ` : ''}Antes de concluir, descreva o que foi verificado, eventuais retornos e o que ainda precisa de atenção. Combine com a equipe se haverá continuidade, responsável e prazo. Não presumir melhora ou encerramento sem avaliação.`;
+  }
   function proposeSubscription(db, actor, plan, segment) {
     requireActor(db, actor, 'subscription:manage');
-    if (!PLANS[plan]) throw new Error('Plano inválido.');
-    const proposal = { id: id(), plan, segment: text(segment, 3, 100), monthly: PLANS[plan].monthly, setup: db.business.subscription.revision === 0 ? PLANS[plan].setup : 0, at: stamp() };
+    const quote = quoteSubscription(db, plan, segment);
+    const proposal = { id: id(), plan, segment, ...quote, at: stamp() };
     db.business.pendingSubscription = proposal;
     return proposal;
   }
@@ -134,7 +165,7 @@
     requireActor(db, actor, 'subscription:manage');
     const proposal = db.business.pendingSubscription;
     if (!accepted || !proposal || proposal.id !== proposalId) throw new Error('Revise e confirme a proposta antes de continuar.');
-    Object.assign(db.business.subscription, { plan: proposal.plan, segment: proposal.segment, status: 'active', revision: db.business.subscription.revision + 1, activatedAt: stamp() });
+    Object.assign(db.business.subscription, { plan: proposal.plan, segment: proposal.segment, monthly: proposal.monthly, setup: proposal.setup, pricingRevision: proposal.pricingRevision || 0, status: 'active', revision: db.business.subscription.revision + 1, activatedAt: stamp() });
     db.business.pendingSubscription = null;
     event(db, actor, `Adesão registrada localmente: ${PLANS[proposal.plan].name}; mensalidade ${money(proposal.monthly)}; implantação ${money(proposal.setup)}. Nenhuma cobrança.`);
   }
@@ -207,5 +238,5 @@
     db.records.unshift({ id: id(), studentId: student.id, kind: 'Devolutiva', sourcePlanId: plan.id, description: `Conclusão do plano ${plan.type}: ${body}`, date: date(), time: new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date()), ownerId: actor.id, followup: false });
     event(db, actor, 'Acompanhamento concluído com registro e histórico preservados.');
   }
-  window.NOTARE_BUSINESS = Object.freeze({ PLANS, initialize, profiles, scopedStudents, sendMessage, communicationStatus, familyMessages, respondMessage, proposeSubscription, activateSubscription, cancelProposal, setClub, createOffer, reviewOffer, toggleOffer, availableOffers, reserve, cancelRedemption, partnerStatement, confirmConversion, completePlan });
+  window.NOTARE_BUSINESS = Object.freeze({ PLANS, SEGMENTS, quoteSubscription, familySuggestion, continuitySuggestion, initialize, profiles, scopedStudents, sendMessage, communicationStatus, familyMessages, respondMessage, proposeSubscription, activateSubscription, cancelProposal, setClub, createOffer, reviewOffer, toggleOffer, availableOffers, reserve, cancelRedemption, partnerStatement, confirmConversion, completePlan });
 })();

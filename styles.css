@@ -911,3 +911,36 @@ button, .button, .text-button, .back-button, .main-nav a { font-weight: 650; }
 @media (prefers-reduced-motion: reduce) {
   .dashboard-reveal, .dashboard-toggle svg { transition: none; }
 }
+/* Pacote 05: imagens fornecidas, assistência revisável e proposta por etapas. */
+.community-logo { object-fit: contain; object-position: center; background: #fff; }
+.user-avatar:has(.community-logo) { border-radius: .3rem; background: #fff; }
+.role-option:has(.community-logo) { grid-template-columns: 5rem minmax(0,1fr) 1.5rem; }
+.role-option:has(.community-logo) .user-avatar { width: 5rem; height: 4rem; border-radius: .4rem; }
+.partner-logo { width: 6.2rem; height: 5rem; border-radius: .5rem; flex-shrink: 0; }
+.partner-identity { max-width: 100%; }
+.partner-identity strong { overflow-wrap: anywhere; }
+.community-identity { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.3rem; }
+.community-identity small { display: block; color: var(--muted); margin-top: .3rem; }
+.community-portrait { width: 4.5rem; height: 4.5rem; border-radius: 50%; object-fit: cover; }
+.community-brand { width: 11rem; max-width: 100%; height: auto; border-radius: .65rem; }
+.suggestion-field { min-width: 0; display: grid; gap: .5rem; }
+.suggestion-field .field-heading { flex-wrap: wrap; gap: .6rem; }
+.suggestion-field .field-heading label { display: block; }
+.suggestion-field small { color: var(--muted); line-height: 1.6; }
+.suggestion-preview { padding: 1rem; border: 1px solid var(--line); border-radius: .7rem; background: var(--primary-soft); }
+.suggestion-preview .form-actions { flex-wrap: wrap; }
+.subscription-progress { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .7rem; padding: 0; list-style: none; }
+.subscription-progress li { display: flex; align-items: center; gap: .5rem; padding: .6rem; color: var(--muted); font-size: .75rem; border: 1px solid var(--line); border-radius: .5rem; }
+.subscription-progress li[aria-current="step"] { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+.subscription-progress li > span { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; flex-shrink: 0; border: 1px solid currentColor; border-radius: 50%; }
+#subscription-step-status { font-size: .8rem; color: var(--muted); }
+#subscription-wizard fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+#subscription-wizard legend { font-family: var(--font-heading); font-weight: 500; font-size: 1.1rem; margin-bottom: 1rem; }
+#subscription-wizard .form-actions, #subscription-confirmation .form-actions { flex-wrap: wrap; justify-content: flex-start; }
+#subscription-wizard p, #subscription-confirmation p { overflow-wrap: anywhere; }
+@media (max-width: 420px) {
+  .role-option:has(.community-logo) { grid-template-columns: 3.5rem minmax(0,1fr) 1rem; gap: .5rem; }
+  .role-option:has(.community-logo) .user-avatar { width: 3.5rem; height: 2.8rem; }
+  .partner-identity { flex-wrap: wrap; }
+  #subscription-wizard .form-actions > .button, #subscription-confirmation .form-actions > .button { width: 100%; }
+}

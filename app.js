@@ -203,7 +203,7 @@ const notificationCenter = window.NOTARE_UI.createNotificationCenter({
 function personPhoto(person) {
   if (person.scope?.startsWith("family:") || person.scope?.startsWith("partner:")) {
     const media = window.NOTARE_COMMUNITY_MEDIA?.[person.id];
-    return media?.src ? `<img class="avatar-photo community-photo" src="${escapeHtml(media.src)}" alt="${escapeHtml(media.alt)}" loading="lazy" />` : `<span class="ecosystem-avatar">${escapeHtml(person.initials)}</span>`;
+    return media?.src ? `<img class="avatar-photo ${person.scope.startsWith("partner:") ? "community-logo" : "community-photo"}" src="${escapeHtml(media.src)}" alt="${escapeHtml(media.alt)}" loading="lazy" />` : `<span class="ecosystem-avatar">${escapeHtml(person.initials)}</span>`;
   }
   if (person.photoSheet && Number.isInteger(person.photoIndex)) {
     const column = person.photoIndex % 6;

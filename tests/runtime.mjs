@@ -26,6 +26,7 @@ export function runtime() {
   const document = { querySelector: element, querySelectorAll: selector => selector === '.contact-card dd' ? contactRows : [], addEventListener() {} };
   class FormData {
     constructor(form) { this.entries = Object.entries(form.elements).filter(([, field]) => field.value !== null).map(([key, field]) => [key, field.value]); }
+    has(key) { return this.entries.some(([name]) => name === key); }
     get(key) { return this.entries.find(([name]) => name === key)?.[1] ?? null; }
     [Symbol.iterator]() { return this.entries[Symbol.iterator](); }
   }
