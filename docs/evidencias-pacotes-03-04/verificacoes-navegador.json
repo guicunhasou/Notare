@@ -1,0 +1,512 @@
+{
+  "date": "2026-11-05",
+  "origin": "http://127.0.0.1:8767",
+  "automacao": "CUA no navegador integrado; interações reais de interface e leituras DOM",
+  "observations": [
+    {
+      "test": "cadastros320 students",
+      "result": {
+        "containers": 2,
+        "controls": [
+          {
+            "height": 54,
+            "text": "Estudantes",
+            "width": 243
+          },
+          {
+            "height": 54,
+            "text": "Funcionários",
+            "width": 243
+          },
+          {
+            "height": 54,
+            "text": "Turmas",
+            "width": 243
+          },
+          {
+            "height": 54,
+            "text": "Todas as turmas6º A6º B7º A7º B8º A8º B9º A9º B",
+            "width": 245
+          },
+          {
+            "height": 54,
+            "text": "Novo estudante",
+            "width": 245
+          }
+        ],
+        "scroll": 305,
+        "w": 320
+      }
+    },
+    {
+      "test": "cadastros320 staff",
+      "result": {
+        "containers": 2,
+        "controls": [
+          {
+            "height": 54,
+            "text": "Estudantes",
+            "width": 243
+          },
+          {
+            "height": 54,
+            "text": "Funcionários",
+            "width": 243
+          },
+          {
+            "height": 54,
+            "text": "Turmas",
+            "width": 243
+          },
+          {
+            "height": 54,
+            "text": "Novo funcionário",
+            "width": 245
+          }
+        ],
+        "scroll": 305,
+        "w": 320
+      }
+    },
+    {
+      "test": "cadastros320 classes",
+      "result": {
+        "containers": 2,
+        "controls": [
+          {
+            "height": 54,
+            "text": "Estudantes",
+            "width": 243
+          },
+          {
+            "height": 54,
+            "text": "Funcionários",
+            "width": 243
+          },
+          {
+            "height": 54,
+            "text": "Turmas",
+            "width": 243
+          },
+          {
+            "height": 54,
+            "text": "Nova turma",
+            "width": 245
+          }
+        ],
+        "scroll": 305,
+        "w": 320
+      }
+    },
+    {
+      "test": "cadastros390 students",
+      "result": {
+        "containers": 2,
+        "controls": [
+          {
+            "height": 54,
+            "text": "Estudantes",
+            "width": 313
+          },
+          {
+            "height": 54,
+            "text": "Funcionários",
+            "width": 313
+          },
+          {
+            "height": 54,
+            "text": "Turmas",
+            "width": 313
+          },
+          {
+            "height": 54,
+            "text": "Todas as turmas6º A6º B7º A7º B8º A8º B9º A9º B",
+            "width": 315
+          },
+          {
+            "height": 54,
+            "text": "Novo estudante",
+            "width": 315
+          }
+        ],
+        "scroll": 375,
+        "w": 390
+      }
+    },
+    {
+      "test": "cadastros390 staff",
+      "result": {
+        "containers": 2,
+        "controls": [
+          {
+            "height": 54,
+            "text": "Estudantes",
+            "width": 313
+          },
+          {
+            "height": 54,
+            "text": "Funcionários",
+            "width": 313
+          },
+          {
+            "height": 54,
+            "text": "Turmas",
+            "width": 313
+          },
+          {
+            "height": 54,
+            "text": "Novo funcionário",
+            "width": 315
+          }
+        ],
+        "scroll": 375,
+        "w": 390
+      }
+    },
+    {
+      "test": "cadastros390 classes",
+      "result": {
+        "containers": 2,
+        "controls": [
+          {
+            "height": 54,
+            "text": "Estudantes",
+            "width": 313
+          },
+          {
+            "height": 54,
+            "text": "Funcionários",
+            "width": 313
+          },
+          {
+            "height": 54,
+            "text": "Turmas",
+            "width": 313
+          },
+          {
+            "height": 54,
+            "text": "Nova turma",
+            "width": 315
+          }
+        ],
+        "scroll": 375,
+        "w": 390
+      }
+    },
+    {
+      "test": "dashboard390 expandido",
+      "result": {
+        "expanded": 7,
+        "scroll": 375,
+        "w": 390
+      }
+    },
+    {
+      "test": "dashboard320 expandido",
+      "result": {
+        "scroll": 305,
+        "w": 320
+      }
+    },
+    {
+      "test": "cadastros1280 students",
+      "result": {
+        "containers": 2,
+        "controls": [
+          {
+            "height": 54,
+            "text": "Estudantes",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Funcionários",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Turmas",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Todas as turmas6º A6º B7º A7º B8º A8º B9º A9º B",
+            "width": 252
+          },
+          {
+            "height": 54,
+            "text": "Novo estudante",
+            "width": 252
+          }
+        ],
+        "scroll": 1265,
+        "w": 1280
+      }
+    },
+    {
+      "test": "cadastros1280 staff",
+      "result": {
+        "containers": 2,
+        "controls": [
+          {
+            "height": 54,
+            "text": "Estudantes",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Funcionários",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Turmas",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Novo funcionário",
+            "width": 252
+          }
+        ],
+        "scroll": 1265,
+        "w": 1280
+      }
+    },
+    {
+      "test": "cadastros1280 classes",
+      "result": {
+        "containers": 2,
+        "controls": [
+          {
+            "height": 54,
+            "text": "Estudantes",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Funcionários",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Turmas",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Nova turma",
+            "width": 252
+          }
+        ],
+        "scroll": 1265,
+        "w": 1280
+      }
+    },
+    {
+      "test": "cadastros1440 students",
+      "result": {
+        "containers": 2,
+        "controls": [
+          {
+            "height": 54,
+            "text": "Estudantes",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Funcionários",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Turmas",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Todas as turmas6º A6º B7º A7º B8º A8º B9º A9º B",
+            "width": 252
+          },
+          {
+            "height": 54,
+            "text": "Novo estudante",
+            "width": 252
+          }
+        ],
+        "scroll": 1425,
+        "w": 1440
+      }
+    },
+    {
+      "test": "cadastros1440 staff",
+      "result": {
+        "containers": 2,
+        "controls": [
+          {
+            "height": 54,
+            "text": "Estudantes",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Funcionários",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Turmas",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Novo funcionário",
+            "width": 252
+          }
+        ],
+        "scroll": 1425,
+        "w": 1440
+      }
+    },
+    {
+      "test": "cadastros1440 classes",
+      "result": {
+        "containers": 2,
+        "controls": [
+          {
+            "height": 54,
+            "text": "Estudantes",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Funcionários",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Turmas",
+            "width": 167
+          },
+          {
+            "height": 54,
+            "text": "Nova turma",
+            "width": 252
+          }
+        ],
+        "scroll": 1425,
+        "w": 1440
+      }
+    },
+    {
+      "test": "dashboard1280 compacto",
+      "result": {
+        "scroll": 1265,
+        "w": 1280
+      }
+    },
+    {
+      "test": "dashboard1440 compacto",
+      "result": {
+        "scroll": 1425,
+        "w": 1440
+      }
+    },
+    {
+      "test": "parceiro320",
+      "result": {
+        "scroll": 305,
+        "w": 320
+      }
+    },
+    {
+      "test": "preferencia orientacao independente",
+      "value": "false"
+    },
+    {
+      "test": "preferencia direcao preservada",
+      "value": "true"
+    },
+    {
+      "test": "historico contextual preservado",
+      "result": {
+        "filters": [],
+        "students": [
+          "ana",
+          "ana",
+          "ana"
+        ],
+        "title": "Registros de Ana Souza"
+      }
+    },
+    {
+      "test": "calendario teclado data vazia",
+      "result": {
+        "agenda": "Nenhum compromisso nesta data.",
+        "focus": "2026-11-07",
+        "outline": "solid",
+        "pressed": "true"
+      }
+    },
+    {
+      "test": "dashboard1280 expandido",
+      "result": {
+        "expanded": 7,
+        "scroll": 1265,
+        "w": 1280
+      }
+    },
+    {
+      "test": "dashboard1440 expandido",
+      "result": {
+        "expanded": 7,
+        "scroll": 1425,
+        "w": 1440
+      }
+    },
+    {
+      "test": "parcerias320",
+      "result": {
+        "pending": 1,
+        "scroll": 305,
+        "w": 320
+      }
+    },
+    {
+      "test": "parcerias390",
+      "result": {
+        "pending": 1,
+        "scroll": 375,
+        "w": 390
+      }
+    },
+    {
+      "test": "parceiro pontes pendente",
+      "text": "Minhas ofertas\nRoda de leitura e criação de histórias\n\nCategoria: Cultura e leitura\n\nCondições: Um encontro por família; um estudante e um responsável; caderno incluído.\n\nValidade: 31/12/2027\n\nEm avaliação · 14 disponíveis · R$ 45,00"
+    }
+  ],
+  "console": [],
+  "reducedMotion": {
+    "tested": true,
+    "matched": true,
+    "transitionDuration": "1e-05s",
+    "expansionWithEnter": true,
+    "originalOffRestored": true
+  },
+  "commercialJourney": {
+    "approved": "oferta-criatividade",
+    "rejected": "oferta-movimento",
+    "pending": "oferta-leitura-pontes",
+    "voucher": "NT-6316E1C6AF",
+    "priceCents": 6500,
+    "commissionBeforeConversion": 0,
+    "commissionAfterConversion": 325,
+    "reloaded": true
+  },
+  "undo": {
+    "recordCreatedAndVoided": true,
+    "planCreatedAndVoided": true,
+    "reloaded": true,
+    "originalsRemainVisible": true
+  }
+}
