@@ -1,0 +1,35 @@
+{
+  "assets_total": 29,
+  "assets_changed": [],
+  "preserved_files": {
+    "core.js": true,
+    "data.js": true,
+    "community-media.js": true,
+    "business.js": true,
+    "operations.js": true,
+    "ui.js": true
+  },
+  "build_matches": {
+    "index.html": true,
+    "styles.css": true,
+    "app.js": true,
+    "core.js": true,
+    "data.js": true,
+    "community-media.js": true,
+    "business.js": true,
+    "business-ui.js": true,
+    "operations.js": true,
+    "ui.js": true
+  },
+  "duplicate_ids": [],
+  "missing_aria": [],
+  "missing_files": [],
+  "changed_this_execution": [
+    "index.html",
+    "styles.css",
+    "business-ui.js",
+    "app.js",
+    "tests/community-logos.test.mjs",
+    "tests/fourth-review.test.mjs"
+  ]
+}

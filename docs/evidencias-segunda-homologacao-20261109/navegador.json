@@ -1,0 +1,773 @@
+{
+  "date": "2026-11-09",
+  "origin": "http://127.0.0.1:8773",
+  "checks": [
+    {
+      "test": "quatro indicadores simplificados",
+      "result": {
+        "agenda": "ter · 13:30\nRevisar plano interrompido\nThiago Barros (9º A)\nVer contexto de Thiago Barros\nter · 14:00\nRevisar combinados de Ana\nAna Souza (8º A)\nVer contexto de Ana Souza\nqua · 10:00\nDevolutiva de atividades de Lucas\nLucas Lima (9º A)\nVer contexto de Lucas Lima",
+        "controlUnderGreeting": true,
+        "controls": [
+          {
+            "expanded": "false",
+            "label": "Expandir Prioridade hoje"
+          },
+          {
+            "expanded": "false",
+            "label": "Expandir Em acompanhamento"
+          },
+          {
+            "expanded": "false",
+            "label": "Expandir Ações agendadas"
+          },
+          {
+            "expanded": "false",
+            "label": "Expandir Frequência média"
+          }
+        ],
+        "detailStudents": 5
+      }
+    },
+    {
+      "test": "versao completa",
+      "result": {
+        "expanded": true,
+        "students": 5
+      }
+    },
+    {
+      "test": "calendario independente",
+      "agendaUnchanged": true,
+      "events": "Revisar plano interrompido\n13:30 · Thiago Barros\nAbrir acompanhamento de Thiago Barros\nRevisar combinados de Ana\n14:00 · Ana Souza\nAbrir acompanhamento de Ana Souza"
+    },
+    {
+      "test": "painel responsivo",
+      "width": 1440,
+      "result": {
+        "client": 1425,
+        "collapsed": 4,
+        "detailsVisible": true,
+        "scroll": 1425
+      }
+    },
+    {
+      "test": "painel responsivo",
+      "width": 1280,
+      "result": {
+        "client": 1265,
+        "collapsed": 4,
+        "detailsVisible": true,
+        "scroll": 1265
+      }
+    },
+    {
+      "test": "painel responsivo",
+      "width": 390,
+      "result": {
+        "client": 375,
+        "collapsed": 4,
+        "detailsVisible": true,
+        "scroll": 375
+      }
+    },
+    {
+      "test": "painel responsivo",
+      "width": 320,
+      "result": {
+        "client": 305,
+        "collapsed": 4,
+        "detailsVisible": true,
+        "scroll": 305
+      }
+    },
+    {
+      "test": "cadastro abre Lucas",
+      "url": "http://127.0.0.1:8773/#estudante?estudante=lucas",
+      "name": "Lucas Lima",
+      "meta": "9º A · código 9A11"
+    },
+    {
+      "test": "retorno ao cadastro",
+      "result": {
+        "rows": "Nome\tTurma\tCódigo\tSituação\n\nLucas Lima\n\t9º A\t9A11\tAcompanhar",
+        "search": "9A11"
+      }
+    },
+    {
+      "test": "contexto com avatar",
+      "result": {
+        "avatar": true,
+        "checked": true,
+        "controls": 1,
+        "description": "Lucas Lima não esteve presente na data informada. O registro foi incluído para acompanhamento da frequência, sem informações adicionais sobre o motivo.",
+        "text": "Registro para Lucas Lima\n9º A · 9A11"
+      }
+    },
+    {
+      "test": "registro sugestao desligada",
+      "value": ""
+    },
+    {
+      "test": "registro sugestao ligada",
+      "value": "Foi realizado contato com o responsável de Lucas Lima. A equipe aguarda confirmação ou devolutiva para definir o próximo passo."
+    },
+    {
+      "test": "desfazer no topo com foco",
+      "result": {
+        "focused": true,
+        "header": 78.5078125,
+        "top": 91,
+        "visible": true
+      }
+    },
+    {
+      "test": "anulacao persistida",
+      "record": "Contato fictício de Lucas para conferir aviso acessível e anulação. · por Camila Duarte"
+    },
+    {
+      "test": "fechar criacao nao anula nem abre outro toast",
+      "result": {
+        "noticeHidden": true,
+        "text": "Ausência\nLucas Lima (9º A)\n\nRegistro fictício para validar fechamento do aviso sem anular a criação. · por Camila Duarte\n\n09/11/2026\n14:33\nContato\nLucas Lima (9º A)\nAnulado\n\nContato fictício de Lucas para conferir aviso acessível e anulação. · por Camila Duarte\n\nCriação anulada em 09/11/2026 por Camila Duarte. Original preservado.\n09/11/2026\n14:33\nPlano de ação\nLucas Lima (9º A)\nAguardando revisão\n\nDevolutiva sobre atividades escolares · Camila Duarte · Direção escolar · prazo 11/11/2026\n\n06/11/2026\n13:00\nDevolutiva\nLucas Lima (9º A)\n\nA família informou que reunirá dúvidas sobre as atividades para a próxima conversa com a escola. · por Camila Duarte\n\n06/11/2026\n12:20\nPlano de ação\nAna Souza (8º A)\nEm acompanhamento\n\nRevisão dos combinados com a família · Camila Duarte · Direção escolar · prazo 10/11/2026\n\n03/11/2026\n10:00\nDevolutiva\nAna Souza (8º A)\n\nA família confirmou disponibilidade para conversar com a equipe e combinar apoios à rotina escolar. · por Lívia Moura\n\n03/11/2026\n09:30\nC",
+        "toastHidden": true
+      }
+    },
+    {
+      "test": "historico familiar enriquecido",
+      "result": {
+        "controlCount": 1,
+        "history": "Novo contato com a família\n\nCompartilhe somente o comunicado destinado à família. Notas internas, ocorrências e sinais de risco não são enviados automaticamente.\n\nEstudante com responsável cadastrado\nAna Souza · 8º A\nLucas Lima · 9º A\nComunicado para Lucas Lima\n9º A · 9A11\nComunicado\nUsar sugestões automáticas\nTexto preparado por regras locais. Revise e edite antes de confirmar.\n\nSugestão inserida. Revise e edite o texto antes de confirmar.\n\nEnviar comunicado\nComunicados e retornos\nAna Souza\nEnviado\n\nOlá, família de Ana. Como continuidade da conversa, propomos revisar os combinados em 10/11. Confirme pelo acesso da família o melhor momento para conversar.\n\n09/11/2026, 09:00\nLucas Lima\nRespondido\n\nPodemos revisar juntos os próximos passos de Lucas? A equipe está disponível para combinar uma rotina de apoio às atividades escolares.\n\n06/11/2026, 09:30\nResposta do responsável\n\nRecebido. Vamos reunir as dúvidas sobre as atividades para conversar com a escola.\n\nLucas Lima\nLeitura confirmada\n\nOlá, família de Lucas. Compartilhamos o convite para revisar as atividades e combinar uma devolutiva com a equipe pedagógica.\n\n04/11/2026, 10:00\nAna Souza\nRespondido\n\nOlá, família de Ana. Gostaríamos de combinar uma conversa para acompanhar a rotina escolar e ouvir quais apoios podem ajudar.\n\n02/11/2026, 09:00\nResposta do responsável\n\nObrigada pelo contato. Podemos conversar com a equipe na próxima semana para combinar o acompanhamento.",
+        "options": 2
+      }
+    },
+    {
+      "test": "comunicado manual sem insercao",
+      "value": ""
+    },
+    {
+      "test": "finalizacao abre contextualizada",
+      "result": {
+        "context": "Lucas Lima\n9º A · 9A11",
+        "focused": true,
+        "open": true,
+        "plan": "pitch-plan-lucas"
+      }
+    },
+    {
+      "test": "cancelar finalizacao retorna foco",
+      "result": {
+        "closed": true,
+        "focus": "open-completion"
+      }
+    },
+    {
+      "test": "finalizacao manual sem insercao",
+      "value": ""
+    },
+    {
+      "test": "finalizacao persistida",
+      "record": "Conclusão do plano Devolutiva sobre atividades escolares: Retorno fictício revisado com a equipe. Etapa concluída, mantendo a observação da rotina de Lucas. · por Camila Duarte"
+    },
+    {
+      "test": "parcerias sem duplicacao",
+      "result": {
+        "logos": 6,
+        "pending": 3,
+        "visibleText": ""
+      }
+    },
+    {
+      "test": "recusa sugerida sem confirmar",
+      "result": {
+        "checked": true,
+        "open": true,
+        "text": "Para a proposta “Vivência de movimento em família”, solicitamos detalhamento das condições e dos critérios de participação antes de uma nova avaliação."
+      }
+    },
+    {
+      "test": "escape recusa mantem estado e foco",
+      "result": {
+        "closed": true,
+        "focus": "oferta-movimento",
+        "pending": 3
+      }
+    },
+    {
+      "test": "recusa vazia bloqueada",
+      "result": {
+        "open": true,
+        "valid": false
+      }
+    },
+    {
+      "test": "recusa e aprovacao persistidas",
+      "result": {
+        "approvedInList": true,
+        "approvedLogos": 7,
+        "pending": 1,
+        "rejectedStillPending": false
+      }
+    },
+    {
+      "test": "Safari nativo",
+      "result": "Controles de expansão e calendário responderam pela árvore de acessibilidade; captura visual não conclusiva com troca de aba/janela. Sem homologação visual completa. Aba de teste encerrada; demais abas preservadas."
+    },
+    {
+      "test": "onboarding inicio etapa 1",
+      "result": {
+        "complete": "O preenchimento é automático; você decide quando avançar.",
+        "revealed": 0,
+        "step": "Etapa 1 de 4"
+      }
+    },
+    {
+      "test": "onboarding etapa1 concluida",
+      "result": {
+        "allRevealed": true,
+        "fields": [
+          43,
+          43
+        ],
+        "gap": 72,
+        "status": "Etapa concluída. Continue quando estiver pronto."
+      }
+    },
+    {
+      "test": "etapa2 inicio sequencial",
+      "result": {
+        "revealed": 0,
+        "status": "O preenchimento é automático; você decide quando avançar."
+      }
+    },
+    {
+      "test": "onboarding etapa2 concluida",
+      "result": {
+        "allRevealed": true,
+        "status": "Etapa concluída. Continue quando estiver pronto."
+      }
+    },
+    {
+      "test": "etapa3 titulo antes dos anexos",
+      "result": {
+        "attachments": [
+          false,
+          false
+        ],
+        "complete": "O preenchimento é automático; você decide quando avançar.",
+        "title": true
+      }
+    },
+    {
+      "test": "etapa3 anexos individuais",
+      "result": {
+        "attachments": [
+          true,
+          false
+        ],
+        "photos": false
+      }
+    },
+    {
+      "test": "onboarding etapa3 concluida",
+      "result": {
+        "allRevealed": true,
+        "status": "Etapa concluída. Continue quando estiver pronto."
+      }
+    },
+    {
+      "test": "etapa4 titulo antes dos campos",
+      "result": {
+        "fields": [
+          false,
+          false
+        ],
+        "title": true
+      }
+    },
+    {
+      "test": "onboarding etapa4 concluida",
+      "result": {
+        "allRevealed": true,
+        "fields": [
+          {
+            "height": 43,
+            "text": "camila@horizontevivo.edu"
+          },
+          {
+            "height": 43,
+            "text": "••••••••••"
+          }
+        ],
+        "status": "Etapa concluída. Continue quando estiver pronto.",
+        "step": "Etapa 4 de 4"
+      }
+    },
+    {
+      "test": "navegacao imediata durante animacao",
+      "elapsedMs": 216,
+      "step": "Etapa 4 de 4",
+      "status": "O preenchimento é automático; você decide quando avançar."
+    },
+    {
+      "test": "ir ao painel durante animacao",
+      "url": "http://127.0.0.1:8773/#painel"
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 1440,
+      "result": {
+        "allRevealed": true,
+        "client": 1425,
+        "complete": true,
+        "fields": [
+          43,
+          43
+        ],
+        "gap": 72,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 1425,
+        "step": "Etapa 1 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 1440,
+      "result": {
+        "allRevealed": true,
+        "client": 1425,
+        "complete": true,
+        "fields": [],
+        "gap": 72,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 1425,
+        "step": "Etapa 2 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 1440,
+      "result": {
+        "allRevealed": true,
+        "client": 1425,
+        "complete": true,
+        "fields": [],
+        "gap": 72,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 1425,
+        "step": "Etapa 3 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 1440,
+      "result": {
+        "allRevealed": true,
+        "client": 1425,
+        "complete": true,
+        "fields": [
+          43,
+          43
+        ],
+        "gap": 72,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 1425,
+        "step": "Etapa 4 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 1280,
+      "result": {
+        "allRevealed": true,
+        "client": 1265,
+        "complete": true,
+        "fields": [
+          43,
+          43
+        ],
+        "gap": 64,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 1265,
+        "step": "Etapa 1 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 1280,
+      "result": {
+        "allRevealed": true,
+        "client": 1265,
+        "complete": true,
+        "fields": [],
+        "gap": 64,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 1265,
+        "step": "Etapa 2 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 1280,
+      "result": {
+        "allRevealed": true,
+        "client": 1265,
+        "complete": true,
+        "fields": [],
+        "gap": 64,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 1265,
+        "step": "Etapa 3 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 1280,
+      "result": {
+        "allRevealed": true,
+        "client": 1265,
+        "complete": true,
+        "fields": [
+          43,
+          43
+        ],
+        "gap": 64,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 1265,
+        "step": "Etapa 4 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 390,
+      "result": {
+        "allRevealed": true,
+        "client": 375,
+        "complete": true,
+        "fields": [
+          43,
+          43
+        ],
+        "gap": 45,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 375,
+        "step": "Etapa 1 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 390,
+      "result": {
+        "allRevealed": true,
+        "client": 375,
+        "complete": true,
+        "fields": [],
+        "gap": 45,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 375,
+        "step": "Etapa 2 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 390,
+      "result": {
+        "allRevealed": true,
+        "client": 375,
+        "complete": true,
+        "fields": [],
+        "gap": 45,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 375,
+        "step": "Etapa 3 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 390,
+      "result": {
+        "allRevealed": true,
+        "client": 375,
+        "complete": true,
+        "fields": [
+          43,
+          43
+        ],
+        "gap": 45,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 375,
+        "step": "Etapa 4 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 320,
+      "result": {
+        "allRevealed": true,
+        "client": 305,
+        "complete": true,
+        "fields": [
+          43,
+          43
+        ],
+        "gap": 45,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 305,
+        "step": "Etapa 1 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 320,
+      "result": {
+        "allRevealed": true,
+        "client": 305,
+        "complete": true,
+        "fields": [],
+        "gap": 45,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 305,
+        "step": "Etapa 2 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 320,
+      "result": {
+        "allRevealed": true,
+        "client": 305,
+        "complete": true,
+        "fields": [],
+        "gap": 45,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 305,
+        "step": "Etapa 3 de 4"
+      }
+    },
+    {
+      "test": "onboarding responsivo reduzido",
+      "width": 320,
+      "result": {
+        "allRevealed": true,
+        "client": 305,
+        "complete": true,
+        "fields": [
+          43,
+          43
+        ],
+        "gap": 45,
+        "navAbove": true,
+        "reduced": true,
+        "scroll": 305,
+        "step": "Etapa 4 de 4"
+      }
+    },
+    {
+      "test": "preferencia original restaurada",
+      "reduced": false
+    },
+    {
+      "test": "responsividade familias",
+      "width": 320,
+      "result": {
+        "client": 305,
+        "scroll": 305
+      }
+    },
+    {
+      "test": "responsividade cadastros",
+      "width": 320,
+      "result": {
+        "client": 305,
+        "scroll": 305
+      }
+    },
+    {
+      "test": "responsividade busca-ativa",
+      "width": 320,
+      "result": {
+        "client": 305,
+        "scroll": 305
+      }
+    },
+    {
+      "test": "responsividade parcerias",
+      "width": 320,
+      "result": {
+        "client": 305,
+        "scroll": 305
+      }
+    },
+    {
+      "test": "responsividade familias",
+      "width": 390,
+      "result": {
+        "client": 375,
+        "scroll": 375
+      }
+    },
+    {
+      "test": "responsividade cadastros",
+      "width": 390,
+      "result": {
+        "client": 375,
+        "scroll": 375
+      }
+    },
+    {
+      "test": "responsividade busca-ativa",
+      "width": 390,
+      "result": {
+        "client": 375,
+        "scroll": 375
+      }
+    },
+    {
+      "test": "responsividade parcerias",
+      "width": 390,
+      "result": {
+        "client": 375,
+        "scroll": 375
+      }
+    },
+    {
+      "test": "responsividade familias",
+      "width": 1280,
+      "result": {
+        "client": 1265,
+        "scroll": 1265
+      }
+    },
+    {
+      "test": "responsividade cadastros",
+      "width": 1280,
+      "result": {
+        "client": 1265,
+        "scroll": 1265
+      }
+    },
+    {
+      "test": "responsividade busca-ativa",
+      "width": 1280,
+      "result": {
+        "client": 1265,
+        "scroll": 1265
+      }
+    },
+    {
+      "test": "responsividade parcerias",
+      "width": 1280,
+      "result": {
+        "client": 1265,
+        "scroll": 1265
+      }
+    },
+    {
+      "test": "modal recusa mobile",
+      "result": {
+        "client": 375,
+        "dialogWidth": 333,
+        "focus": "reject-offer-reason",
+        "scroll": 375
+      }
+    },
+    {
+      "test": "teclado modal recusa",
+      "focus": "reject-offer-cancel"
+    },
+    {
+      "test": "modal finalizacao mobile",
+      "result": {
+        "client": 305,
+        "dialogWidth": 263,
+        "focus": "plan",
+        "scroll": 305
+      }
+    },
+    {
+      "test": "escape finalizacao",
+      "result": {
+        "closed": true,
+        "focus": "open-completion"
+      }
+    },
+    {
+      "test": "familia Ana preservada",
+      "result": {
+        "images": true,
+        "text": "Seu vínculo com a escola\nMarina Souza\nResponsável familiar\n\nAna Souza · 8º A\n\nVocê recebe apenas os comunicados compartilhados pela escola. Os registros internos da equipe não aparecem aqui.\n\nO Clube é gratuito para a família e seu uso é opcional.\n\nConhecer benefícios\nComunicados da escola\nAna Souza\nNovo comunicado\n\nOlá, família de Ana. Como continuidade da conversa, propomos revisar os combinados em 10/11. Confirme pelo acesso da família o melhor momento para conversar.\n\n09/11/2026, 09:00\nConfirmar leitura\nResposta à escola\nEnviar resposta\nAna Souza\nRespondido\n\nOlá, família de Ana. Gostaríamos de combinar uma conversa para acompanhar a rotina escolar e ouvir quais apoios podem ajudar.\n\n02/11/2026, 09:00\nSua resposta\n\nObrigada pelo contato. Podemos conversar com a equipe na próxima semana para combinar o acompanhamento."
+      }
+    },
+    {
+      "test": "familia Lucas preservada",
+      "result": {
+        "images": true,
+        "text": "Seu vínculo com a escola\nPaulo Lima\nResponsável familiar\n\nLucas Lima · 9º A\n\nVocê recebe apenas os comunicados compartilhados pela escola. Os registros internos da equipe não aparecem aqui.\n\nO Clube é gratuito para a família e seu uso é opcional.\n\nConhecer benefícios\nComunicados da escola\nLucas Lima\nRespondido\n\nPodemos revisar juntos os próximos passos de Lucas? A equipe está disponível para combinar uma rotina de apoio às atividades escolares.\n\n06/11/2026, 09:30\nSua resposta\n\nRecebido. Vamos reunir as dúvidas sobre as atividades para conversar com a escola.\n\nLucas Lima\nLeitura confirmada\n\nOlá, família de Lucas. Compartilhamos o convite para revisar as atividades e combinar uma devolutiva com a equipe pedagógica.\n\n04/11/2026, 10:00\nResposta à escola\nEnviar resposta"
+      }
+    },
+    {
+      "test": "parceiro com oferta de exemplo",
+      "text": "AlimentaBem\nParceiro do Clube\nNova oferta\nTítulo da oferta\nCondição do benefício\nValor ilustrativo após benefício (R$)\nQuantidade\nVálida até\n\nComissão prevista: 5% por conversão confirmada. A emissão do voucher não gera comissão. A escola revisará a oferta antes de exibi-la.\n\nSubmeter oferta\nMinhas ofertas\nOficina de lanches em família\n\nCategoria: Alimentação e convivência\n\nCondições: Uma participação por família; informar restrições alimentares diretamente ao parceiro antes da atividade. Sem atendimento nutricional.\n\nValidade: 31/12/2027\n\nAprovada · 12 disponíveis · R$ 35,00\n\nPausar oferta\nConversões e comissões\n\nR$ 0,00\n\nComissão registrada neste ambiente local. Não há cobrança ou repasse financeiro. Você não tem acesso a estudantes, contatos ou registros escolares.\n\nNenhum voucher emitido para suas ofertas."
+    },
+    {
+      "test": "cadastros desktop 1440",
+      "result": {
+        "client": 1425,
+        "scroll": 1425
+      }
+    },
+    {
+      "test": "indicadores completos no fim",
+      "expanded": true
+    },
+    {
+      "test": "modal final sem padding duplicado",
+      "width": 320,
+      "result": {
+        "client": 305,
+        "formPadding": "0px",
+        "scroll": 305,
+        "svgWidth": 18
+      }
+    },
+    {
+      "test": "modal final sem padding duplicado",
+      "width": 390,
+      "result": {
+        "client": 375,
+        "formPadding": "0px",
+        "scroll": 375,
+        "svgWidth": 18
+      }
+    },
+    {
+      "test": "estado final",
+      "result": {
+        "collapsed": 4,
+        "details": 5,
+        "modalOpen": false,
+        "motionReduced": false
+      }
+    }
+  ],
+  "console": [],
+  "limits": [
+    "Safari: controles responderam pela árvore de acessibilidade; inspeção visual completa não conclusiva com troca de aba/janela.",
+    "Firefox, dispositivo físico e leitor de tela não homologados.",
+    "Observações são evidências das jornadas; não são uma contagem de testes automatizados."
+  ]
+}

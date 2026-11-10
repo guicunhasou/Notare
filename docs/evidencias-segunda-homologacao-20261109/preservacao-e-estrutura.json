@@ -1,0 +1,18 @@
+{
+  "preservacao": {
+    "introducao_html_identica": true,
+    "css_preexistente_preservado": true,
+    "core.js_inalterado": true,
+    "data.js_inalterado": true,
+    "community-media.js_inalterado": true,
+    "assets_inalterados": true,
+    "build_identico": true
+  },
+  "estrutura": {
+    "erros": [],
+    "tags_nao_fechadas": [],
+    "ids_duplicados": [],
+    "aria_sem_destino": [],
+    "caminhos_ausentes": []
+  }
+}

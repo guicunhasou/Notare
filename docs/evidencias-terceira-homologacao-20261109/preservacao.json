@@ -1,0 +1,41 @@
+{
+  "preserved_files": {
+    "core.js": true,
+    "data.js": true,
+    "community-media.js": true
+  },
+  "assets_total": 29,
+  "assets_changed": [],
+  "new_assets": [],
+  "previous_css_preserved": true,
+  "intro_svg_preserved": true,
+  "build_matches": {
+    "index.html": true,
+    "styles.css": true,
+    "core.js": true,
+    "ui.js": true,
+    "community-media.js": true,
+    "operations.js": true,
+    "app.js": true,
+    "data.js": true,
+    "business.js": true,
+    "business-ui.js": true
+  },
+  "changed_this_execution": [
+    "app.js",
+    "business-ui.js",
+    "business.js",
+    "index.html",
+    "operations.js",
+    "styles.css",
+    "tests/community-logos.test.mjs",
+    "tests/final-ux.test.mjs",
+    "tests/notare.test.mjs",
+    "tests/p01.test.mjs",
+    "tests/p05.test.mjs",
+    "tests/p34.test.mjs",
+    "tests/second-review.test.mjs",
+    "tests/third-review.test.mjs",
+    "ui.js"
+  ]
+}

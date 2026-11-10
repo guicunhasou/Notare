@@ -1,0 +1,141 @@
+{
+  "checks": [
+    {
+      "width": 1440,
+      "result": {
+        "client": 1425,
+        "images": [
+          {
+            "alt": "Logo da empresa fictícia Papelaria Horizonte",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia Espaço Cultura",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia AlimentaBem",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia CulturaViva",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia Saúde em Foco",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia Transporte Solidário",
+            "loaded": true
+          }
+        ],
+        "scroll": 1425,
+        "text": ""
+      }
+    },
+    {
+      "width": 1280,
+      "result": {
+        "client": 1265,
+        "images": [
+          {
+            "alt": "Logo da empresa fictícia Papelaria Horizonte",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia Espaço Cultura",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia AlimentaBem",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia CulturaViva",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia Saúde em Foco",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia Transporte Solidário",
+            "loaded": true
+          }
+        ],
+        "scroll": 1265,
+        "text": ""
+      }
+    },
+    {
+      "width": 390,
+      "result": {
+        "client": 375,
+        "images": [
+          {
+            "alt": "Logo da empresa fictícia Papelaria Horizonte",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia Espaço Cultura",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia AlimentaBem",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia CulturaViva",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia Saúde em Foco",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia Transporte Solidário",
+            "loaded": true
+          }
+        ],
+        "scroll": 375,
+        "text": ""
+      }
+    },
+    {
+      "width": 320,
+      "result": {
+        "client": 305,
+        "images": [
+          {
+            "alt": "Logo da empresa fictícia Papelaria Horizonte",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia Espaço Cultura",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia AlimentaBem",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia CulturaViva",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia Saúde em Foco",
+            "loaded": true
+          },
+          {
+            "alt": "Logo da empresa fictícia Transporte Solidário",
+            "loaded": true
+          }
+        ],
+        "scroll": 305,
+        "text": ""
+      }
+    }
+  ],
+  "console": []
+}

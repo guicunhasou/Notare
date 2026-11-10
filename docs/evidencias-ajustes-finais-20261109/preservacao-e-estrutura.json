@@ -1,0 +1,18 @@
+{
+  "preservacao": {
+    "introducao_html": true,
+    "css_preexistente_completo": true,
+    "base_escolar": true,
+    "regras_comerciais": true,
+    "regras_desfazer_ui": true,
+    "logos_existentes": true
+  },
+  "html": {
+    "fechamentos_inconsistentes": [],
+    "tags_nao_fechadas": [],
+    "ids_duplicados": [],
+    "aria_sem_destino": [],
+    "caminhos_ausentes": []
+  },
+  "build_identico_ao_fonte": true
+}

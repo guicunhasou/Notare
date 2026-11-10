@@ -1,0 +1,36 @@
+{
+  "assets_total": 29,
+  "assets_changed": [],
+  "preserved_files": {
+    "core.js": true,
+    "data.js": true,
+    "community-media.js": true,
+    "operations.js": true,
+    "ui.js": true
+  },
+  "business_only_new_suggestion": true,
+  "previous_css_preserved": true,
+  "splash_svg_preserved": true,
+  "build_matches": {
+    "index.html": true,
+    "styles.css": true,
+    "core.js": true,
+    "ui.js": true,
+    "community-media.js": true,
+    "operations.js": true,
+    "app.js": true,
+    "data.js": true,
+    "business.js": true,
+    "business-ui.js": true
+  },
+  "duplicate_ids": [],
+  "missing_aria_targets": [],
+  "changed_this_execution": [
+    "index.html",
+    "styles.css",
+    "business-ui.js",
+    "business.js",
+    "app.js",
+    "tests/fifth-review.test.mjs"
+  ]
+}

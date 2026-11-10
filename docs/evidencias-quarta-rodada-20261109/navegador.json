@@ -1,0 +1,625 @@
+[
+  {
+    "area": "acompanhamento",
+    "controls": [
+      {
+        "height": 54,
+        "name": "Buscar estudante",
+        "top": 289.9049377441406,
+        "width": 314.7890625
+      },
+      {
+        "height": 54,
+        "name": "Filtrar acompanhamento por turma",
+        "top": 289.9049377441406,
+        "width": 216
+      },
+      {
+        "height": 54,
+        "name": "Todos",
+        "top": 289.9049377441406,
+        "width": 67.171875
+      },
+      {
+        "height": 54,
+        "name": "Alta",
+        "top": 289.9049377441406,
+        "width": 53.5546875
+      },
+      {
+        "height": 54,
+        "name": "Acompanhar",
+        "top": 289.9049377441406,
+        "width": 114.2890625
+      },
+      {
+        "height": 54,
+        "name": "Em evolução",
+        "top": 289.9049377441406,
+        "width": 113.1015625
+      },
+      {
+        "height": 54,
+        "name": "Sem alertas",
+        "top": 289.9049377441406,
+        "width": 108.3125
+      }
+    ],
+    "pageWidth": 1425,
+    "width": 1440
+  },
+  {
+    "area": "acompanhamento",
+    "controls": [
+      {
+        "height": 54,
+        "name": "Buscar estudante",
+        "top": 311.2265625,
+        "width": 654.0078125
+      },
+      {
+        "height": 54,
+        "name": "Filtrar acompanhamento por turma",
+        "top": 311.2265625,
+        "width": 216
+      },
+      {
+        "height": 54,
+        "name": "Todos",
+        "top": 379.625,
+        "width": 67.171875
+      },
+      {
+        "height": 54,
+        "name": "Alta",
+        "top": 379.625,
+        "width": 53.5546875
+      },
+      {
+        "height": 54,
+        "name": "Acompanhar",
+        "top": 379.625,
+        "width": 114.2890625
+      },
+      {
+        "height": 54,
+        "name": "Em evolução",
+        "top": 379.625,
+        "width": 113.1015625
+      },
+      {
+        "height": 54,
+        "name": "Sem alertas",
+        "top": 379.625,
+        "width": 108.3125
+      }
+    ],
+    "pageWidth": 1265,
+    "width": 1280
+  },
+  {
+    "area": "acompanhamento",
+    "controls": [
+      {
+        "height": 54,
+        "name": "Buscar estudante",
+        "top": 382.390625,
+        "width": 310.0078125
+      },
+      {
+        "height": 54,
+        "name": "Filtrar acompanhamento por turma",
+        "top": 450.7890625,
+        "width": 310.0078125
+      },
+      {
+        "height": 54,
+        "name": "Todos",
+        "top": 519.1875,
+        "width": 67.171875
+      },
+      {
+        "height": 54,
+        "name": "Alta",
+        "top": 519.1875,
+        "width": 53.5546875
+      },
+      {
+        "height": 54,
+        "name": "Acompanhar",
+        "top": 519.1875,
+        "width": 114.2890625
+      },
+      {
+        "height": 54,
+        "name": "Em evolução",
+        "top": 580.3828125,
+        "width": 113.1015625
+      },
+      {
+        "height": 54,
+        "name": "Sem alertas",
+        "top": 580.3828125,
+        "width": 108.3125
+      }
+    ],
+    "pageWidth": 375,
+    "width": 390
+  },
+  {
+    "area": "acompanhamento",
+    "controls": [
+      {
+        "height": 54,
+        "name": "Buscar estudante",
+        "top": 416.046875,
+        "width": 240.0078125
+      },
+      {
+        "height": 54,
+        "name": "Filtrar acompanhamento por turma",
+        "top": 484.4453125,
+        "width": 240.0078125
+      },
+      {
+        "height": 54,
+        "name": "Todos",
+        "top": 552.84375,
+        "width": 67.171875
+      },
+      {
+        "height": 54,
+        "name": "Alta",
+        "top": 552.84375,
+        "width": 53.5546875
+      },
+      {
+        "height": 54,
+        "name": "Acompanhar",
+        "top": 614.0390625,
+        "width": 114.2890625
+      },
+      {
+        "height": 54,
+        "name": "Em evolução",
+        "top": 614.0390625,
+        "width": 113.1015625
+      },
+      {
+        "height": 54,
+        "name": "Sem alertas",
+        "top": 675.234375,
+        "width": 108.3125
+      }
+    ],
+    "pageWidth": 305,
+    "width": 320
+  },
+  {
+    "area": "registros",
+    "controls": [
+      {
+        "centerY": 324.79913330078125,
+        "decoration": "none",
+        "height": 54,
+        "name": "Filtrar registros por turma",
+        "width": 216,
+        "x": 321.59375
+      },
+      {
+        "centerY": 324.79913330078125,
+        "decoration": "underline",
+        "height": 31.4375,
+        "name": "Limpar filtros e ver todos",
+        "width": 168.5390625,
+        "x": 1188.8671875
+      }
+    ],
+    "generalText": false,
+    "pageWidth": 1425,
+    "width": 1440
+  },
+  {
+    "area": "registros",
+    "controls": [
+      {
+        "centerY": 310.88665771484375,
+        "decoration": "none",
+        "height": 54,
+        "name": "Filtrar registros por turma",
+        "width": 216,
+        "x": 318.1953125
+      },
+      {
+        "centerY": 310.88665771484375,
+        "decoration": "underline",
+        "height": 31.4375,
+        "name": "Limpar filtros e ver todos",
+        "width": 168.5390625,
+        "x": 1032.265625
+      }
+    ],
+    "generalText": false,
+    "pageWidth": 1265,
+    "width": 1280
+  },
+  {
+    "area": "registros",
+    "controls": [
+      {
+        "centerY": 352.828125,
+        "decoration": "none",
+        "height": 54,
+        "name": "Filtrar registros por turma",
+        "width": 308.2109375,
+        "x": 33.390625
+      },
+      {
+        "centerY": 409.9453125,
+        "decoration": "underline",
+        "height": 31.4375,
+        "name": "Limpar filtros e ver todos",
+        "width": 168.5390625,
+        "x": 33.390625
+      }
+    ],
+    "generalText": false,
+    "pageWidth": 375,
+    "width": 390
+  },
+  {
+    "area": "registros",
+    "controls": [
+      {
+        "centerY": 352.828125,
+        "decoration": "none",
+        "height": 54,
+        "name": "Filtrar registros por turma",
+        "width": 238.2109375,
+        "x": 33.390625
+      },
+      {
+        "centerY": 409.9453125,
+        "decoration": "underline",
+        "height": 31.4375,
+        "name": "Limpar filtros e ver todos",
+        "width": 168.5390625,
+        "x": 33.390625
+      }
+    ],
+    "generalText": false,
+    "pageWidth": 305,
+    "width": 320
+  },
+  {
+    "area": "sugestao-desativada",
+    "checked": false,
+    "kind": "Ocorrência",
+    "student": "Luana Gomes",
+    "value": "Texto manual preservado durante a quarta avaliação."
+  },
+  {
+    "area": "parcerias-transicao",
+    "label": "inicial",
+    "active": [
+      "papelaria",
+      "cultura",
+      "saude-em-foco"
+    ],
+    "intersection": [],
+    "review": [
+      "vagalume",
+      "trilha",
+      "pontes",
+      "alimentabem",
+      "culturaviva",
+      "transporte-solidario"
+    ]
+  },
+  {
+    "area": "comunicados",
+    "lists": [
+      {
+        "gap": "18px",
+        "items": [
+          {
+            "bottom": 537.453125,
+            "previousGap": null,
+            "radius": "10.8px",
+            "top": 347.953125
+          },
+          {
+            "bottom": 890.9453125,
+            "previousGap": 18,
+            "radius": "10.8px",
+            "top": 555.453125
+          },
+          {
+            "bottom": 1098.4453125,
+            "previousGap": 18,
+            "radius": "10.8px",
+            "top": 908.9453125
+          },
+          {
+            "bottom": 1451.9375,
+            "previousGap": 18,
+            "radius": "10.8px",
+            "top": 1116.4453125
+          }
+        ]
+      }
+    ],
+    "pageWidth": 1425,
+    "width": 1440
+  },
+  {
+    "area": "comunicados",
+    "lists": [
+      {
+        "gap": "18px",
+        "items": [
+          {
+            "bottom": 550.0546875,
+            "previousGap": null,
+            "radius": "10.8px",
+            "top": 335.3203125
+          },
+          {
+            "bottom": 903.546875,
+            "previousGap": 18,
+            "radius": "10.8px",
+            "top": 568.0546875
+          },
+          {
+            "bottom": 1111.046875,
+            "previousGap": 18,
+            "radius": "10.8px",
+            "top": 921.546875
+          },
+          {
+            "bottom": 1489.7734375,
+            "previousGap": 18,
+            "radius": "10.8px",
+            "top": 1129.046875
+          }
+        ]
+      }
+    ],
+    "pageWidth": 1265,
+    "width": 1280
+  },
+  {
+    "area": "comunicados",
+    "lists": [
+      {
+        "gap": "18px",
+        "items": [
+          {
+            "bottom": 1381.1875,
+            "previousGap": null,
+            "radius": "10.8px",
+            "top": 1141.21875
+          },
+          {
+            "bottom": 1785.1484375,
+            "previousGap": 18,
+            "radius": "10.8px",
+            "top": 1399.1875
+          },
+          {
+            "bottom": 2017.8828125,
+            "previousGap": 18,
+            "radius": "10.8px",
+            "top": 1803.1484375
+          },
+          {
+            "bottom": 2447.078125,
+            "previousGap": 18,
+            "radius": "10.8px",
+            "top": 2035.8828125
+          }
+        ]
+      }
+    ],
+    "pageWidth": 375,
+    "width": 390
+  },
+  {
+    "area": "comunicados",
+    "lists": [
+      {
+        "gap": "18px",
+        "items": [
+          {
+            "bottom": 1552.25,
+            "previousGap": null,
+            "radius": "10.8px",
+            "top": 1261.8125
+          },
+          {
+            "bottom": 2057.1484375,
+            "previousGap": 18,
+            "radius": "10.8px",
+            "top": 1570.25
+          },
+          {
+            "bottom": 2345.6328125,
+            "previousGap": 18,
+            "radius": "10.8px",
+            "top": 2075.1484375
+          },
+          {
+            "bottom": 2875.765625,
+            "previousGap": 18,
+            "radius": "10.8px",
+            "top": 2363.6328125
+          }
+        ]
+      }
+    ],
+    "pageWidth": 305,
+    "width": 320
+  },
+  {
+    "area": "ofertas-final",
+    "gaps": [
+      18,
+      18,
+      18,
+      18,
+      18
+    ],
+    "pageWidth": 1425,
+    "sets": {
+      "active": [
+        "papelaria",
+        "cultura",
+        "saude-em-foco"
+      ],
+      "review": [
+        "vagalume",
+        "trilha",
+        "pontes",
+        "alimentabem",
+        "culturaviva",
+        "transporte-solidario"
+      ]
+    },
+    "width": 1440
+  },
+  {
+    "area": "ofertas-final",
+    "gaps": [
+      18,
+      18,
+      18,
+      18,
+      18
+    ],
+    "pageWidth": 1265,
+    "sets": {
+      "active": [
+        "papelaria",
+        "cultura",
+        "saude-em-foco"
+      ],
+      "review": [
+        "vagalume",
+        "trilha",
+        "pontes",
+        "alimentabem",
+        "culturaviva",
+        "transporte-solidario"
+      ]
+    },
+    "width": 1280
+  },
+  {
+    "area": "ofertas-final",
+    "gaps": [
+      18,
+      18,
+      18,
+      18,
+      18
+    ],
+    "pageWidth": 375,
+    "sets": {
+      "active": [
+        "papelaria",
+        "cultura",
+        "saude-em-foco"
+      ],
+      "review": [
+        "vagalume",
+        "trilha",
+        "pontes",
+        "alimentabem",
+        "culturaviva",
+        "transporte-solidario"
+      ]
+    },
+    "width": 390
+  },
+  {
+    "area": "ofertas-final",
+    "gaps": [
+      18,
+      18,
+      18,
+      18,
+      18
+    ],
+    "pageWidth": 305,
+    "sets": {
+      "active": [
+        "papelaria",
+        "cultura",
+        "saude-em-foco"
+      ],
+      "review": [
+        "vagalume",
+        "trilha",
+        "pontes",
+        "alimentabem",
+        "culturaviva",
+        "transporte-solidario"
+      ]
+    },
+    "width": 320
+  },
+  {
+    "area": "splash-grupo",
+    "lastButtonDelay": "4.65s",
+    "openingEnd": "3.5s",
+    "parts": [
+      {
+        "animation": "none",
+        "tag": "path"
+      },
+      {
+        "animation": "none",
+        "tag": "ellipse"
+      },
+      {
+        "animation": "none",
+        "tag": "path"
+      },
+      {
+        "animation": "none",
+        "tag": "path"
+      },
+      {
+        "animation": "none",
+        "tag": "ellipse"
+      },
+      {
+        "animation": "none",
+        "tag": "path"
+      },
+      {
+        "animation": "none",
+        "tag": "path"
+      },
+      {
+        "animation": "none",
+        "tag": "path"
+      }
+    ],
+    "sloganDelay": "3.9s",
+    "word": {
+      "animation": "opening-lettering-in",
+      "delay": "1.95s",
+      "duration": "1.5s"
+    }
+  },
+  {
+    "area": "limitacao-interativa",
+    "completed": false,
+    "detail": "Após cancelar um rascunho, a sessão integrada deixou de aplicar cliques. Tentativas de aprovação não modificaram o estado e não foram contabilizadas como teste funcional aprovado. Transições cobertas pelos testes automatizados."
+  },
+  {
+    "area": "console",
+    "entries": []
+  }
+]

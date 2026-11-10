@@ -1,0 +1,282 @@
+[
+  {
+    "area": "painel",
+    "chartBox": "0 0 340 250",
+    "chartGrid": "240.008px",
+    "copyWidth": 240.0078125,
+    "details": true,
+    "links": [
+      {
+        "color": "rgb(28, 98, 112)",
+        "decoration": "underline"
+      }
+    ],
+    "pointCount": 8,
+    "scrollWidth": 305,
+    "width": 320
+  },
+  {
+    "area": "painel",
+    "chartBox": "0 0 340 250",
+    "chartGrid": "310.008px",
+    "copyWidth": 310.0078125,
+    "details": true,
+    "links": [
+      {
+        "color": "rgb(28, 98, 112)",
+        "decoration": "underline"
+      }
+    ],
+    "pointCount": 8,
+    "scrollWidth": 375,
+    "width": 390
+  },
+  {
+    "area": "painel",
+    "chartBox": "0 0 340 250",
+    "chartGrid": "306px 525.086px",
+    "copyWidth": 306,
+    "details": true,
+    "links": [
+      {
+        "color": "rgb(28, 98, 112)",
+        "decoration": "underline"
+      }
+    ],
+    "pointCount": 8,
+    "scrollWidth": 1265,
+    "width": 1280,
+    "nota": "Leitura do viewBox durante resize; conferência posterior confirmou 0 0 760 250, conforme captura painel-1280.jpg."
+  },
+  {
+    "area": "painel",
+    "chartBox": "0 0 760 250",
+    "chartGrid": "350.078px 622.367px",
+    "copyWidth": 350.078125,
+    "details": true,
+    "links": [
+      {
+        "color": "rgb(28, 98, 112)",
+        "decoration": "underline"
+      }
+    ],
+    "pointCount": 8,
+    "scrollWidth": 1425,
+    "width": 1440
+  },
+  {
+    "area": "parcerias",
+    "activeLogos": 5,
+    "imagesOK": true,
+    "pending": 5,
+    "scrollWidth": 305,
+    "width": 320
+  },
+  {
+    "area": "parcerias",
+    "activeLogos": 5,
+    "imagesOK": true,
+    "pending": 5,
+    "scrollWidth": 375,
+    "width": 390
+  },
+  {
+    "area": "parcerias",
+    "activeLogos": 5,
+    "imagesOK": true,
+    "pending": 5,
+    "scrollWidth": 1265,
+    "width": 1280
+  },
+  {
+    "area": "parcerias",
+    "activeLogos": 5,
+    "imagesOK": true,
+    "pending": 5,
+    "scrollWidth": 1425,
+    "width": 1440
+  },
+  {
+    "area": "splash",
+    "elements": [
+      {
+        "delay": "0.6s",
+        "duration": "0.55s",
+        "opacity": "1",
+        "tag": "path"
+      },
+      {
+        "delay": "0s",
+        "duration": "0.55s",
+        "opacity": "1",
+        "tag": "path"
+      },
+      {
+        "delay": "1.2s",
+        "duration": "0.7s",
+        "opacity": "1",
+        "tag": "path"
+      },
+      {
+        "delay": "1.95s",
+        "duration": "0.17s",
+        "opacity": "1",
+        "tag": "path"
+      },
+      {
+        "delay": "2.14s",
+        "duration": "0.17s",
+        "opacity": "1",
+        "tag": "ellipse"
+      },
+      {
+        "delay": "2.33s",
+        "duration": "0.17s",
+        "opacity": "1",
+        "tag": "path"
+      },
+      {
+        "delay": "2.52s",
+        "duration": "0.17s",
+        "opacity": "1",
+        "tag": "path"
+      },
+      {
+        "delay": "2.71s",
+        "duration": "0.17s",
+        "opacity": "1",
+        "tag": "ellipse"
+      },
+      {
+        "delay": "2.9s",
+        "duration": "0.17s",
+        "opacity": "1",
+        "tag": "path"
+      },
+      {
+        "delay": "3.09s",
+        "duration": "0.17s",
+        "opacity": "1",
+        "tag": "path"
+      },
+      {
+        "delay": "3.28s",
+        "duration": "0.17s",
+        "opacity": "1",
+        "tag": "path"
+      },
+      {
+        "delay": "3.9s",
+        "duration": "0.35s",
+        "opacity": "1",
+        "tag": "H1"
+      },
+      {
+        "delay": "4.3s",
+        "duration": "0.3s",
+        "opacity": "1",
+        "tag": "BUTTON"
+      },
+      {
+        "delay": "4.65s",
+        "duration": "0.3s",
+        "opacity": "1",
+        "tag": "BUTTON"
+      }
+    ],
+    "openingVisibility": "hidden"
+  },
+  {
+    "area": "onboarding4",
+    "done": "Etapa concluída. Continue quando estiver pronto.",
+    "footerGap": 54,
+    "photoVisible": true,
+    "scrollWidth": 305,
+    "width": 320
+  },
+  {
+    "area": "onboarding4",
+    "done": "Etapa concluída. Continue quando estiver pronto.",
+    "footerGap": 54,
+    "photoVisible": true,
+    "scrollWidth": 375,
+    "width": 390
+  },
+  {
+    "area": "onboarding4",
+    "done": "Etapa concluída. Continue quando estiver pronto.",
+    "footerGap": 76.796875,
+    "photoVisible": true,
+    "scrollWidth": 1265,
+    "width": 1280
+  },
+  {
+    "area": "onboarding4",
+    "done": "Etapa concluída. Continue quando estiver pronto.",
+    "footerGap": 86.3984375,
+    "photoVisible": true,
+    "scrollWidth": 1425,
+    "width": 1440
+  },
+  {
+    "area": "onboarding4-ordem",
+    "footerGap": 54,
+    "navGap": 45,
+    "overflow": false,
+    "width": 320
+  },
+  {
+    "area": "onboarding4-ordem",
+    "footerGap": 54,
+    "navGap": 45,
+    "overflow": false,
+    "width": 390
+  },
+  {
+    "area": "onboarding4-ordem",
+    "footerGap": 76.796875,
+    "navGap": 64,
+    "overflow": false,
+    "width": 1280
+  },
+  {
+    "area": "onboarding4-ordem",
+    "footerGap": 86.3984375,
+    "navGap": 72,
+    "overflow": false,
+    "width": 1440
+  },
+  {
+    "area": "onboarding1",
+    "footerGap": 86.3984375,
+    "navGap": 72,
+    "scrollWidth": 1425,
+    "width": 1440
+  },
+  {
+    "area": "onboarding1",
+    "footerGap": 86.3984375,
+    "navGap": 72,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "area": "onboarding1",
+    "footerGap": 86.3984375,
+    "navGap": 72,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "area": "onboarding1",
+    "footerGap": 86.3984375,
+    "navGap": 72,
+    "scrollWidth": 1440,
+    "width": 1440
+  },
+  {
+    "area": "console-final",
+    "origin127": [],
+    "originLocalhost": []
+  }
+]

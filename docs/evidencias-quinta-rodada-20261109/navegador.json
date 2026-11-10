@@ -1,0 +1,113 @@
+[
+  {
+    "area": "calendario",
+    "closed": true,
+    "focusDate": "2026-11-11",
+    "agendaUnchanged": true
+  },
+  {
+    "area": "modal-recusa",
+    "buttonGap": "18px",
+    "controlsReasonGap": 25.1953125,
+    "fieldButtonsGap": 25.1953125,
+    "headingControlsGap": 22.5,
+    "modalHeight": 508.109375,
+    "modalScroll": false,
+    "modalWidth": 600,
+    "pageOverflow": false,
+    "titleDescriptionGap": 11.6953125,
+    "viewportHeight": 1000,
+    "width": 1440
+  },
+  {
+    "area": "modal-recusa",
+    "buttonGap": "18px",
+    "controlsReasonGap": 25.1953125,
+    "fieldButtonsGap": 25.1953125,
+    "headingControlsGap": 22.5,
+    "modalHeight": 508.109375,
+    "modalScroll": false,
+    "modalWidth": 600,
+    "pageOverflow": false,
+    "titleDescriptionGap": 11.6953125,
+    "viewportHeight": 1000,
+    "width": 1280
+  },
+  {
+    "area": "modal-recusa",
+    "buttonGap": "18px",
+    "controlsReasonGap": 19.796875,
+    "fieldButtonsGap": 19.796875,
+    "headingControlsGap": 18,
+    "modalHeight": 565.2265625,
+    "modalScroll": false,
+    "modalWidth": 333,
+    "pageOverflow": false,
+    "titleDescriptionGap": 11.6953125,
+    "viewportHeight": 844,
+    "width": 390
+  },
+  {
+    "area": "modal-recusa",
+    "buttonGap": "18px",
+    "controlsReasonGap": 19.796875,
+    "fieldButtonsGap": 19.796875,
+    "headingControlsGap": 18,
+    "modalHeight": 612.7421875,
+    "modalScroll": false,
+    "modalWidth": 263,
+    "pageOverflow": false,
+    "titleDescriptionGap": 11.6953125,
+    "viewportHeight": 844,
+    "width": 320
+  },
+  {
+    "area": "modal-encerramento-final",
+    "checked": true,
+    "modalHeight": 581.6796875,
+    "modalScroll": false,
+    "pageOverflow": false,
+    "viewportHeight": 1000,
+    "width": 1440
+  },
+  {
+    "area": "modal-encerramento-final",
+    "checked": true,
+    "modalHeight": 581.6796875,
+    "modalScroll": false,
+    "pageOverflow": false,
+    "viewportHeight": 1000,
+    "width": 1280
+  },
+  {
+    "area": "modal-encerramento-final",
+    "checked": true,
+    "modalHeight": 657.5859375,
+    "modalScroll": false,
+    "pageOverflow": false,
+    "viewportHeight": 844,
+    "width": 390
+  },
+  {
+    "area": "modal-encerramento-final",
+    "checked": true,
+    "modalHeight": 737.3203125,
+    "modalScroll": false,
+    "pageOverflow": false,
+    "viewportHeight": 844,
+    "width": 320
+  },
+  {
+    "area": "encerramento-persistencia",
+    "buttonRemoved": true
+  },
+  {
+    "area": "justificativa-persistida",
+    "endedVisible": true,
+    "reasonVisible": true
+  },
+  {
+    "area": "console",
+    "entries": []
+  }
+]

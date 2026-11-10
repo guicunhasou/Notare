@@ -1,0 +1,34 @@
+ M app.js
+ M business-ui.js
+ M business.js
+ M community-media.js
+ M core.js
+ M index.html
+ M operations.js
+ M styles.css
+ M tests/business.test.mjs
+ M tests/notare.test.mjs
+ M tests/p01.test.mjs
+ M tests/p02.test.mjs
+ M tests/p05.test.mjs
+ M tests/p34.test.mjs
+ M tests/runtime.mjs
+ M ui.js
+?? assets/community/parceiro-alimentabem.png
+?? assets/community/parceiro-culturaviva.png
+?? assets/community/parceiro-saude-em-foco.png
+?? assets/community/parceiro-transporte-solidario.png
+?? docs/ajustes-finais-20261109.md
+?? docs/evidencias-ajustes-finais-20261109/
+?? docs/evidencias-logos-20261109/
+?? docs/evidencias-segunda-homologacao-20261109/
+?? docs/logos-parceiros-20261109.md
+?? docs/segunda-homologacao-20261109.md
+?? tests/community-logos.test.mjs
+?? tests/final-ux.test.mjs
+?? tests/second-review.test.mjs
+
+Branch: codex/conclusao-mvp-2026
+HEAD/main:
+c254b8f72a42c31c7a36b67e001604a30027612d
+e33081459c1124abbe62858b02bddb50cccf66d3

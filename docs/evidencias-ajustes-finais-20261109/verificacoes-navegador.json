@@ -1,0 +1,383 @@
+{
+  "date": "2026-11-09",
+  "origin": "http://127.0.0.1:8770",
+  "checks": [
+    {
+      "test": "calendario independente",
+      "agendaInalterada": true,
+      "eventos": "Revisar plano interrompido\n13:30 · Thiago Barros\nAbrir acompanhamento de Thiago Barros"
+    },
+    {
+      "test": "teclado calendario vazio",
+      "result": {
+        "events": "Nenhum compromisso nesta data.",
+        "pressed": "true",
+        "selected": "2026-11-11"
+      }
+    },
+    {
+      "test": "perfil codigo novo",
+      "meta": "8º A · código 8A02"
+    },
+    {
+      "test": "sugestao desabilitada registro",
+      "value": ""
+    },
+    {
+      "test": "desfazer no topo",
+      "position": {
+        "headerBottom": 86.3984375,
+        "noticeTop": 90
+      }
+    },
+    {
+      "test": "anulacao persiste",
+      "text": "Contato\nAna Souza (8º A)\nAnulado\n\nContato fictício revisado para validar o pacote final. · por Camila Duarte\n\nCriação anulada em 09/11/2026 por Camila Duarte. Original preservado.\n09/11/2026\n10:11\nAusência\nAna Souza (8º A)\n\nNova ausência registrada no primeiro horário. · por Bruno Reis\n\n25/09/2026\n08:12\nContato\nAna Souza (8º A)\n\nMensagem enviada ao responsáv"
+    },
+    {
+      "test": "comunicado manual",
+      "value": ""
+    },
+    {
+      "test": "comunicado automatico contextual",
+      "value": "Olá, família de Lucas Lima. Gostaríamos de conversar sobre o acompanhamento da frequência e ouvir como podemos apoiar a rotina de estudos. Podemos combinar um horário para dialogar e definir juntos os próximos passos? Compartilhe apenas as informações necessárias por este canal. Equipe escolar."
+    },
+    {
+      "test": "continuidade manual",
+      "value": ""
+    },
+    {
+      "test": "modal foco inicial",
+      "focus": "reject-offer-reason"
+    },
+    {
+      "test": "Escape retorna foco",
+      "focus": {
+        "action": "open-rejection",
+        "id": "oferta-movimento"
+      }
+    },
+    {
+      "test": "cancelar preserva pendencia",
+      "present": 1
+    },
+    {
+      "test": "justificativa obrigatoria",
+      "result": {
+        "open": true,
+        "valid": false
+      }
+    },
+    {
+      "test": "prioridade compacta",
+      "result": {
+        "count": "6",
+        "height": 97.390625,
+        "label": "Expandir Prioridades de hoje, 6 prioridades"
+      }
+    },
+    {
+      "test": "dashboard 1440",
+      "dimensions": {
+        "client": 1425,
+        "scroll": 1425
+      }
+    },
+    {
+      "test": "dashboard 1280",
+      "dimensions": {
+        "client": 1265,
+        "scroll": 1265
+      }
+    },
+    {
+      "test": "onboarding inicio",
+      "status": "O preenchimento é automático; você decide quando avançar.",
+      "dimensions": {
+        "controlsGap": 51.1953125,
+        "fieldHeight": 43.1953125
+      }
+    },
+    {
+      "test": "onboarding termino etapa1",
+      "status": "Etapa concluída. Continue quando estiver pronto."
+    },
+    {
+      "test": "avanco imediato onboarding",
+      "step": "Etapa 2 de 4",
+      "status": "O preenchimento é automático; você decide quando avançar."
+    },
+    {
+      "test": "avanco imediato onboarding",
+      "step": "Etapa 3 de 4",
+      "status": "O preenchimento é automático; você decide quando avançar."
+    },
+    {
+      "test": "avanco imediato onboarding",
+      "step": "Etapa 4 de 4",
+      "status": "O preenchimento é automático; você decide quando avançar."
+    },
+    {
+      "test": "etapa4 campos compactos",
+      "heights": [
+        43,
+        43
+      ]
+    },
+    {
+      "test": "Ir ao painel imediato",
+      "url": "http://127.0.0.1:8770/#painel"
+    },
+    {
+      "test": "dashboard 390",
+      "result": {
+        "client": 375,
+        "countTop": 1141.4296875,
+        "priorityHeight": 97.390625,
+        "scroll": 375,
+        "titleTop": 1151.8359375
+      }
+    },
+    {
+      "test": "dashboard 320",
+      "result": {
+        "client": 305,
+        "countTop": 1608.109375,
+        "priorityHeight": 135.9765625,
+        "scroll": 305,
+        "titleTop": 1564.125
+      }
+    },
+    {
+      "test": "parcerias 320",
+      "dimensions": {
+        "client": 305,
+        "logos": 3,
+        "scroll": 305
+      }
+    },
+    {
+      "test": "parcerias 390",
+      "dimensions": {
+        "client": 375,
+        "logos": 3,
+        "scroll": 375
+      }
+    },
+    {
+      "test": "modal Tab",
+      "focus": "reject-offer-cancel"
+    },
+    {
+      "test": "sem pendencias e quatro parcerias aprovadas",
+      "result": {
+        "active": 4,
+        "headerBottom": 78.5078125,
+        "pending": 0,
+        "toastTop": 91
+      }
+    },
+    {
+      "test": "parcerias finais 390",
+      "dimensions": {
+        "client": 375,
+        "scroll": 375
+      }
+    },
+    {
+      "test": "parcerias finais 320",
+      "dimensions": {
+        "client": 305,
+        "scroll": 305
+      }
+    },
+    {
+      "test": "parcerias finais 1280",
+      "dimensions": {
+        "client": 1265,
+        "scroll": 1265
+      }
+    },
+    {
+      "test": "parcerias finais 1440",
+      "dimensions": {
+        "client": 1440,
+        "scroll": 1440
+      }
+    },
+    {
+      "test": "prioridade 320 alinhada",
+      "result": {
+        "countTop": 1578.5234375,
+        "height": 97.390625,
+        "titleTop": 1576.8359375
+      }
+    },
+    {
+      "test": "registro direto Lucas",
+      "result": {
+        "context": "Registro para Lucas Lima · 9º A · 9A11",
+        "description": "Lucas Lima não esteve presente na data informada. O registro foi incluído para acompanhamento da frequência, sem informações adicionais sobre o motivo.",
+        "selected": "lucas"
+      }
+    },
+    {
+      "test": "desfazer 320 abaixo do cabecalho",
+      "result": {
+        "client": 305,
+        "header": 78.5078125,
+        "scroll": 305,
+        "top": 91
+      }
+    },
+    {
+      "test": "onboarding movimento reduzido 320 etapa 1",
+      "result": {
+        "client": 305,
+        "complete": "As etapas são ilustrativas: não executam contratação, importação ou autenticação.\n            Etapa concluída. Continue quando estiver pronto.",
+        "fields": [
+          43,
+          43
+        ],
+        "gap": 36,
+        "scroll": 305,
+        "step": "Etapa 1 de 4"
+      }
+    },
+    {
+      "test": "onboarding movimento reduzido 320 etapa 2",
+      "result": {
+        "client": 305,
+        "complete": "As etapas são ilustrativas: não executam contratação, importação ou autenticação.\n            Etapa concluída. Continue quando estiver pronto.",
+        "fields": [],
+        "gap": 36,
+        "scroll": 305,
+        "step": "Etapa 2 de 4"
+      }
+    },
+    {
+      "test": "onboarding movimento reduzido 320 etapa 3",
+      "result": {
+        "client": 305,
+        "complete": "As etapas são ilustrativas: não executam contratação, importação ou autenticação.\n            Etapa concluída. Continue quando estiver pronto.",
+        "fields": [],
+        "gap": 36,
+        "scroll": 305,
+        "step": "Etapa 3 de 4"
+      }
+    },
+    {
+      "test": "onboarding movimento reduzido 320 etapa 4",
+      "result": {
+        "client": 305,
+        "complete": "As etapas são ilustrativas: não executam contratação, importação ou autenticação.\n            Etapa concluída. Continue quando estiver pronto.",
+        "fields": [
+          43,
+          43
+        ],
+        "gap": 36,
+        "scroll": 305,
+        "step": "Etapa 4 de 4"
+      }
+    },
+    {
+      "test": "onboarding movimento reduzido 390 etapa 1",
+      "result": {
+        "client": 375,
+        "complete": "As etapas são ilustrativas: não executam contratação, importação ou autenticação.\n            Etapa concluída. Continue quando estiver pronto.",
+        "fields": [
+          43,
+          43
+        ],
+        "gap": 36,
+        "scroll": 375,
+        "step": "Etapa 1 de 4"
+      }
+    },
+    {
+      "test": "onboarding movimento reduzido 390 etapa 2",
+      "result": {
+        "client": 375,
+        "complete": "As etapas são ilustrativas: não executam contratação, importação ou autenticação.\n            Etapa concluída. Continue quando estiver pronto.",
+        "fields": [],
+        "gap": 36,
+        "scroll": 375,
+        "step": "Etapa 2 de 4"
+      }
+    },
+    {
+      "test": "onboarding movimento reduzido 390 etapa 3",
+      "result": {
+        "client": 375,
+        "complete": "As etapas são ilustrativas: não executam contratação, importação ou autenticação.\n            Etapa concluída. Continue quando estiver pronto.",
+        "fields": [],
+        "gap": 36,
+        "scroll": 375,
+        "step": "Etapa 3 de 4"
+      }
+    },
+    {
+      "test": "onboarding movimento reduzido 390 etapa 4",
+      "result": {
+        "client": 375,
+        "complete": "As etapas são ilustrativas: não executam contratação, importação ou autenticação.\n            Etapa concluída. Continue quando estiver pronto.",
+        "fields": [
+          43,
+          43
+        ],
+        "gap": 36,
+        "scroll": 375,
+        "step": "Etapa 4 de 4"
+      }
+    },
+    {
+      "test": "preferencia original restaurada",
+      "reduced": false
+    },
+    {
+      "test": "cadastros busca codigo novo",
+      "text": "Nome\tTurma\tCódigo\tSituação\n\nAna Souza\n\t8º A\t8A02\tAtenção alta"
+    },
+    {
+      "test": "cadastros busca codigo legado",
+      "text": "Nome\tTurma\tCódigo\tSituação\n\nAna Souza\n\t8º A\t8A02\tAtenção alta"
+    },
+    {
+      "test": "cadastros filtro 8A",
+      "text": "Nome\tTurma\tCódigo\tSituação\n\nAlice Monteiro\n\t8º A\t8A01\tAcompanhar\n\nAna Souza\n\t8º A\t8A02\tAtenção alta\n\nBianca Farias\n\t8º A\t8A03\tSem alertas\n\nCarlos Eduardo Melo\n\t8º A\t8A04\tSem alertas\n\nDébora Reis\n\t8º A\t8A05\tSem alertas\n\nErick Silva\n\t8º A\t8A06\tSem alertas\n\nFlávia Cunha\n\t8º A\t8A07\tSem alertas\n\nGabriel Rocha\n\t8º A\t8A08\tEm evolução"
+    },
+    {
+      "test": "cadastros paginacao",
+      "text": "Nome\tTurma\tCódigo\tSituação\n\nBeatriz Santos\n\t9º A\t9A02\tEm evolução\n\nBenício Alves\n\t6º A\t6A02\tSem alertas\n\nBernardo Dias\n\t9º A\t9A03\tSem alertas\n\nBianca Farias\n\t8º A\t8A03\tSem alertas\n\nBreno Cavalcante\n\t7º A\t7A01\tSem alertas\n\nBruna Almeida\n\t9º B\t9B02\tSem alertas\n\nCaio Mendes\n\t6º B\t6B02\tAtenção alta\n\nCamila Rocha\n\t9º A\t9A04\tSem alertas"
+    },
+    {
+      "test": "plano contextual Lucas",
+      "url": "http://127.0.0.1:8770/#plano?estudante=lucas",
+      "caption": "Lucas Lima · 9º A · 9A11"
+    },
+    {
+      "test": "familia contextual Lucas",
+      "result": {
+        "context": []
+      }
+    },
+    {
+      "test": "calendario final independente",
+      "agendaUnchanged": true,
+      "events": "Revisar plano interrompido\n13:30 · Thiago Barros\nAbrir acompanhamento de Thiago Barros"
+    },
+    {
+      "test": "familia contextual Lucas",
+      "result": {
+        "context": "Comunicado para Lucas Lima · 9º A · 9A11",
+        "linkedOptions": 2,
+        "selected": "lucas"
+      }
+    }
+  ],
+  "console": [],
+  "limits": [
+    "IAB Chromium; sem homologação em Safari/Firefox/dispositivo físico/leitor de tela",
+    "Quatro novas logos não anexadas; recursos anteriores preservados"
+  ]
+}

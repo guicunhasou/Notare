@@ -1,0 +1,263 @@
+{
+  "date": "2026-11-09",
+  "origin": "http://127.0.0.1:8771",
+  "checks": [
+    {
+      "width": 1440,
+      "result": {
+        "active": [
+          "Papelaria Horizonte",
+          "Espaço Cultura",
+          "AlimentaBem",
+          "CulturaViva",
+          "Saúde em Foco",
+          "Transporte Solidário"
+        ],
+        "client": 1425,
+        "images": [
+          {
+            "alt": "Logo da empresa fictícia Papelaria Horizonte",
+            "loaded": true,
+            "src": "assets/community/parceiro-papelaria.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia Espaço Cultura",
+            "loaded": true,
+            "src": "assets/community/parceiro-cultura.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia AlimentaBem",
+            "loaded": true,
+            "src": "assets/community/parceiro-alimentabem.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia CulturaViva",
+            "loaded": true,
+            "src": "assets/community/parceiro-culturaviva.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia Saúde em Foco",
+            "loaded": true,
+            "src": "assets/community/parceiro-saude-em-foco.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia Transporte Solidário",
+            "loaded": true,
+            "src": "assets/community/parceiro-transporte-solidario.png"
+          }
+        ],
+        "pending": 3,
+        "scroll": 1425
+      }
+    },
+    {
+      "width": 1280,
+      "result": {
+        "active": [
+          "Papelaria Horizonte",
+          "Espaço Cultura",
+          "AlimentaBem",
+          "CulturaViva",
+          "Saúde em Foco",
+          "Transporte Solidário"
+        ],
+        "client": 1265,
+        "images": [
+          {
+            "alt": "Logo da empresa fictícia Papelaria Horizonte",
+            "loaded": true,
+            "src": "assets/community/parceiro-papelaria.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia Espaço Cultura",
+            "loaded": true,
+            "src": "assets/community/parceiro-cultura.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia AlimentaBem",
+            "loaded": true,
+            "src": "assets/community/parceiro-alimentabem.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia CulturaViva",
+            "loaded": true,
+            "src": "assets/community/parceiro-culturaviva.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia Saúde em Foco",
+            "loaded": true,
+            "src": "assets/community/parceiro-saude-em-foco.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia Transporte Solidário",
+            "loaded": true,
+            "src": "assets/community/parceiro-transporte-solidario.png"
+          }
+        ],
+        "pending": 3,
+        "scroll": 1265
+      }
+    },
+    {
+      "width": 390,
+      "result": {
+        "active": [
+          "Papelaria Horizonte",
+          "Espaço Cultura",
+          "AlimentaBem",
+          "CulturaViva",
+          "Saúde em Foco",
+          "Transporte Solidário"
+        ],
+        "client": 375,
+        "images": [
+          {
+            "alt": "Logo da empresa fictícia Papelaria Horizonte",
+            "loaded": true,
+            "src": "assets/community/parceiro-papelaria.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia Espaço Cultura",
+            "loaded": true,
+            "src": "assets/community/parceiro-cultura.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia AlimentaBem",
+            "loaded": true,
+            "src": "assets/community/parceiro-alimentabem.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia CulturaViva",
+            "loaded": true,
+            "src": "assets/community/parceiro-culturaviva.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia Saúde em Foco",
+            "loaded": true,
+            "src": "assets/community/parceiro-saude-em-foco.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia Transporte Solidário",
+            "loaded": true,
+            "src": "assets/community/parceiro-transporte-solidario.png"
+          }
+        ],
+        "pending": 3,
+        "scroll": 375
+      }
+    },
+    {
+      "width": 320,
+      "result": {
+        "active": [
+          "Papelaria Horizonte",
+          "Espaço Cultura",
+          "AlimentaBem",
+          "CulturaViva",
+          "Saúde em Foco",
+          "Transporte Solidário"
+        ],
+        "client": 305,
+        "images": [
+          {
+            "alt": "Logo da empresa fictícia Papelaria Horizonte",
+            "loaded": true,
+            "src": "assets/community/parceiro-papelaria.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia Espaço Cultura",
+            "loaded": true,
+            "src": "assets/community/parceiro-cultura.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia AlimentaBem",
+            "loaded": true,
+            "src": "assets/community/parceiro-alimentabem.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia CulturaViva",
+            "loaded": true,
+            "src": "assets/community/parceiro-culturaviva.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia Saúde em Foco",
+            "loaded": true,
+            "src": "assets/community/parceiro-saude-em-foco.png"
+          },
+          {
+            "alt": "Logo da empresa fictícia Transporte Solidário",
+            "loaded": true,
+            "src": "assets/community/parceiro-transporte-solidario.png"
+          }
+        ],
+        "pending": 3,
+        "scroll": 305
+      }
+    },
+    {
+      "profile": "alimentabem",
+      "result": {
+        "loaded": true,
+        "logo": "assets/community/parceiro-alimentabem.png",
+        "name": "AlimentaBem",
+        "view": "parceiro"
+      }
+    },
+    {
+      "profile": "culturaviva",
+      "result": {
+        "loaded": true,
+        "logo": "assets/community/parceiro-culturaviva.png",
+        "name": "CulturaViva",
+        "view": "parceiro"
+      }
+    },
+    {
+      "profile": "saude-em-foco",
+      "result": {
+        "loaded": true,
+        "logo": "assets/community/parceiro-saude-em-foco.png",
+        "name": "Saúde em Foco",
+        "view": "parceiro"
+      }
+    },
+    {
+      "profile": "transporte-solidario",
+      "result": {
+        "loaded": true,
+        "logo": "assets/community/parceiro-transporte-solidario.png",
+        "name": "Transporte Solidário",
+        "view": "parceiro"
+      }
+    },
+    {
+      "test": "menu recolhido",
+      "result": {
+        "loaded": true,
+        "title": "Transporte Solidário · Parceiro do Clube"
+      }
+    },
+    {
+      "test": "persistencia apos recarga",
+      "active": [
+        "Papelaria Horizonte",
+        "Espaço Cultura",
+        "AlimentaBem",
+        "CulturaViva",
+        "Saúde em Foco",
+        "Transporte Solidário"
+      ],
+      "pending": 3
+    },
+    {
+      "test": "perfil mobile 320",
+      "result": {
+        "client": 305,
+        "loaded": true,
+        "name": "Saúde em Foco",
+        "scroll": 305
+      }
+    }
+  ],
+  "console": []
+}

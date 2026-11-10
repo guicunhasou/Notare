@@ -1,0 +1,91 @@
+[
+  {
+    "area": "toast",
+    "background": "rgb(238, 247, 241)",
+    "focus": "Desfazer",
+    "headerBottom": 86.3984375,
+    "overflow": false,
+    "toast": {
+      "bottom": 201.125,
+      "left": 867,
+      "right": 1407,
+      "top": 99
+    },
+    "visible": true,
+    "width": 1440
+  },
+  {
+    "area": "toast",
+    "background": "rgb(238, 247, 241)",
+    "focus": "Desfazer",
+    "headerBottom": 86.3984375,
+    "overflow": false,
+    "toast": {
+      "bottom": 201.125,
+      "left": 707,
+      "right": 1247,
+      "top": 99
+    },
+    "visible": true,
+    "width": 1280
+  },
+  {
+    "area": "toast",
+    "background": "rgb(238, 247, 241)",
+    "focus": "Desfazer",
+    "headerBottom": 78.5078125,
+    "overflow": false,
+    "toast": {
+      "bottom": 260.2578125,
+      "left": 10.8046875,
+      "right": 364.203125,
+      "top": 91
+    },
+    "visible": true,
+    "width": 390
+  },
+  {
+    "area": "toast",
+    "background": "rgb(238, 247, 241)",
+    "focus": "Desfazer",
+    "headerBottom": 78.5078125,
+    "overflow": false,
+    "toast": {
+      "bottom": 277.8984375,
+      "left": 10.8046875,
+      "right": 294.203125,
+      "top": 91
+    },
+    "visible": true,
+    "width": 320
+  },
+  {
+    "area": "persistencia-desfazer",
+    "restored": true
+  },
+  {
+    "area": "fechar-sem-desfazer",
+    "remainsEnded": true
+  },
+  {
+    "area": "outra-aba",
+    "blocked": true,
+    "message": "Não concluído\n\nOs dados mudaram em outra aba. Recarregue a página para preservar o histórico.\n\n×"
+  },
+  {
+    "area": "integridade-apos-bloqueio",
+    "endedStillAbsent": true,
+    "otherDecisionPreserved": true,
+    "pendingOfferAbsent": true
+  },
+  {
+    "area": "restauracao-legado",
+    "activeAgain": true,
+    "message": "SucessoEncerramento desfeito. A parceria voltou ao estado anterior.×"
+  },
+  {
+    "area": "console",
+    "first": [],
+    "second": []
+  }
+]

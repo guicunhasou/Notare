@@ -19,6 +19,25 @@ A ampliação local de 24/10/2026 integra famílias, Clube de Benefícios, parce
 
 ---
 
+## Estado homologado — 10/11/2026
+
+O MVP está **apto para entrega acadêmica nos cenários verificados**, com 270 testes automatizados aprovados na data real e A01–A06 homologados. As jornadas principais incluem contexto do estudante → registro → plano → conclusão e histórico; escola → comunicado → resposta familiar; aprovação de oferta → voucher → conversão ilustrativa; e adesão institucional demonstrativa.
+
+| Correção | Resultado homologado |
+| --- | --- |
+| A01 | Web Locks, detecção de base desatualizada e rollback protegem as gravações entre abas. |
+| A02 | Indicadores contam planos concluídos sem substituir os saldos históricos. |
+| A03 | Contraste das onze introduções corrigidas preservado. |
+| A04 | Justificativa automática de recusa abre no início do texto. |
+| A05 | Testes do calendário independentes da data corrente; conferidos de 09 a 15/11. |
+| A06 | Sete ocorrências localizadas com contraste superior a 4,5:1. |
+
+As verificações de contraste, teclado e foco foram localizadas e não constituem declaração de conformidade WCAG integral. A autenticação é demonstrativa, as sugestões usam regras locais e o localStorage não é um backend de produção. Não há IA generativa conectada, pagamentos ou comunicação externa.
+
+Os [refinamentos de 09/11](docs/ajustes-finais-20261109.md) e a [sexta rodada](docs/sexta-rodada-20261109.md) preservam as evidências históricas de suas respectivas etapas. A homologação acadêmica não implica publicação ou integração à main.
+
+---
+
 ## 🧭 User Flow
 
 O fluxo principal demonstra a jornada da contratação institucional ao acompanhamento cotidiano:
@@ -67,7 +86,7 @@ A implantação é opcional, preenche os dados de cada etapa automaticamente e u
 
 ## 👥 Perfis e permissões
 
-A demonstração utiliza a **Escola Horizonte Vivo**, cinco perfis profissionais, duas famílias e cinco parceiros:
+A demonstração utiliza a **Escola Horizonte Vivo**, cinco perfis profissionais, duas famílias e parceiros fictícios:
 
 | Perfil | Escopo principal |
 | --- | --- |
@@ -128,6 +147,7 @@ A validação institucional, a contratação, a importação de arquivos e a sug
 - **HTML5** para estrutura e semântica;
 - **CSS3** para identidade visual, responsividade e estados de interação;
 - **JavaScript** para navegação, regras do MVP e persistência local;
+- **localStorage e Web Locks API** para persistência e proteção de gravações entre abas na mesma origem;
 - **Node.js Test Runner** para as verificações automatizadas.
 
 O projeto não utiliza framework frontend nem exige instalação de dependências para abrir a aplicação.
@@ -180,7 +200,7 @@ Com o Node.js instalado, execute:
 npm run check
 ```
 
-O comando verifica a sintaxe dos arquivos JavaScript e executa 111 testes de dados, datas, permissões, acessibilidade estrutural, persistência e regras dos principais fluxos. A validação real de interface e seus limites estão no documento de conclusão local.
+O comando verifica a sintaxe dos arquivos JavaScript e executa 270 testes de dados, datas, permissões, acessibilidade estrutural, persistência e regras dos principais fluxos. Em 10/11/2026, os 270 testes passaram, sem falhas ou testes ignorados. A01–A06 estão homologados nos cenários verificados; essa cobertura não equivale a certificação universal de acessibilidade ou compatibilidade.
 
 ---
 
@@ -216,8 +236,8 @@ Homologação de 25/10/2026: [percursos reais em desktop/mobile, correções e l
 Os limites de funcionamento, a transparência da interface e as regras de anulação de criações estão em [Limites do ambiente local](docs/limites-do-ambiente-local.md).
 
 
-## Candidato final de desenvolvimento — 05/11/2026
+## Registro histórico do candidato — 05/11/2026
 
-Sete imagens fornecidas integradas e Pacote 05 implementado. [Relatório e evidências](docs/missao-final-20261105.md). A avaliação humana continua pendente.
+Na etapa de 05/11, sete imagens fornecidas foram integradas e o Pacote 05 foi implementado. [Relatório e evidências daquela etapa](docs/missao-final-20261105.md). O estado homologado atual está descrito na seção de 10/11 acima.
 
 Para preparar exclusivamente os arquivos do site, execute `npm run build`. A saída `dist/` exclui documentação e testes. A publicação na Vercel não foi executada; consulte a [preparação para publicação futura](docs/preparacao-vercel.md). Deploy automático por Git está desativado.
