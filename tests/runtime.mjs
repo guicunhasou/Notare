@@ -2,17 +2,18 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 // Executa os controladores reais com um DOM mínimo e armazenamento isolado.
 // A navegação visual e o teclado também são verificados no navegador real.
-export function runtime() {
+export function runtime({ sharedStorage, locks, browser = Boolean(locks) } = {}) {
   const elements = new Map();
   function element(selector) {
     if (elements.has(selector)) return elements.get(selector);
     const classes = new Set();
     const node = {
-      id: selector.replace(/^#/, ''), value: '', textContent: '', innerHTML: '', hidden: false,
+      id: selector.replace(/^#/, ''), value: '', textContent: '', innerHTML: '', hidden: false, inert: false,
       style: {setProperty(){}}, dataset: {}, elements: {}, listeners: {}, attributes: {},
       classList: { add: (...items) => items.forEach(x => classes.add(x)), remove: (...items) => items.forEach(x => classes.delete(x)), contains: x => classes.has(x), toggle(x, force) { const active = force ?? !classes.has(x); active ? classes.add(x) : classes.delete(x); return active; } },
       addEventListener(type, fn) { this.listeners[type] = fn; },
       setAttribute(key, value) { this.attributes[key] = value; }, removeAttribute(key) { delete this.attributes[key]; },
+      setSelectionRange(start, end) { this.selectionStart = start; this.selectionEnd = end; },
       focus() { this.focused = true; }, replaceChildren() { this.innerHTML = ''; },
       querySelector: child => element(`${selector} ${child}`), querySelectorAll: () => [],
       getClientRects: () => [1], getBoundingClientRect: () => ({left:0,top:0,width:100,height:20}), reset() { Object.values(this.elements).forEach(field => { field.value = field.defaultValue || ''; }); }
@@ -20,7 +21,7 @@ export function runtime() {
     elements.set(selector, node);
     return node;
   }
-  const storage = new Map();
+  const storage = sharedStorage || new Map();
   let failStorage = false;
   const contactRows = [element('contact-0'), element('contact-1'), element('contact-2')];
   const document = { querySelector: element, querySelectorAll: selector => selector === '.contact-card dd' ? contactRows : [], addEventListener() {} };
@@ -31,13 +32,13 @@ export function runtime() {
     [Symbol.iterator]() { return this.entries[Symbol.iterator](); }
   }
   const noOp = () => {};
-  const context = vm.createContext({ document, console, URLSearchParams, FormData, location: {search:'',hash:'#painel'}, localStorage: {
+  const context = vm.createContext({ ...(browser ? { navigator: { locks } } : {}), document, console, URLSearchParams, FormData, location: {search:'',hash:'#painel'}, localStorage: {
     getItem: key => storage.get(key) ?? null,
     setItem: (key, value) => { if (failStorage) throw new Error('Armazenamento indisponível'); storage.set(key, value); }
   }, history: { replaceState:noOp, pushState:noOp }, window: {
     matchMedia: () => ({matches:false}), confirm: () => true,
     addEventListener:noOp, setTimeout: () => 1, clearTimeout:noOp, scrollTo:noOp, requestAnimationFrame:noOp,
-    NOTARE_UI: { createModalDrawer: () => ({close:noOp}), createNotificationCenter: () => ({}), createUndoNotice: options => { context.window.undoOptions = options; return {clear:noOp, show:(text,operation)=>{context.window.lastUndo=operation;}}; } }
+    NOTARE_UI: { createToastNotice: options => ({show:text=>{options.root.textContent=text;},clear:noOp}), createModalDrawer: () => ({close:noOp}), createNotificationCenter: () => ({}), createUndoNotice: options => { context.window.undoOptions = options; return {clear:noOp, show:(text,operation)=>{context.window.lastUndo=operation;}}; } }
   }});
   const read = file => fs.readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
   for (const file of ['core.js', 'data.js', 'community-media.js', 'business.js', 'operations.js']) vm.runInContext(read(file), context);

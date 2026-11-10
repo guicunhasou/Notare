@@ -20,9 +20,10 @@ test('migração acrescenta comunidade sem apagar registros ou preferências exi
 });
 test('comunicados respeitam turma do professor e vínculo de cada família',()=>{
  const db=fresh(),staff=actor(db,'docencia'),family=actor(db,'familia-ana');
+ const beforeAna=B.familyMessages(db,family).length,beforeLucas=B.familyMessages(db,actor(db,'familia-lucas')).length;
  B.sendMessage(db,staff,'ana','Vamos combinar um encontro para conversar.');
  assert.throws(()=>B.sendMessage(db,staff,'lucas','Mensagem fora do escopo.'));
- assert.equal(B.familyMessages(db,family).length,1);assert.equal(B.familyMessages(db,actor(db,'familia-lucas')).length,0);
+ assert.equal(B.familyMessages(db,family).length,beforeAna+1);assert.equal(B.familyMessages(db,actor(db,'familia-lucas')).length,beforeLucas);
  assert.throws(()=>B.respondMessage(db,actor(db,'familia-lucas'),db.business.messages[0].id));
  assert.throws(()=>B.sendMessage(db,family,'ana','Tentativa de acesso institucional.'));
 });
@@ -92,6 +93,7 @@ test('extrato do parceiro exclui identidade familiar, estudante e registros inte
 
 test('comunicação atual acompanha envio, leitura, resposta e novo contato sem reutilizar estado antigo',()=>{
  const db=fresh(),staff=actor(db,'direcao'),family=actor(db,'familia-ana');
+ db.business.messages=[]; // Exercita também uma base sem histórico prévio.
  assert.equal(B.communicationStatus(db,'ana'),null);
  const first=B.sendMessage(db,staff,'ana','Vamos conversar sobre o acompanhamento.');
  assert.equal(B.communicationStatus(db,'ana').label,'aguardando retorno');

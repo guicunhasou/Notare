@@ -41,12 +41,13 @@ test('P01: sugestão recusa substituição e permite editar antes de persistir',
   const r = runtime();
   r.form.elements.description.value = 'Texto autoral';
   r.run('window.confirm=()=>false');
-  r.element('#record-suggestion').listeners.click();
+  r.element('#record-auto-suggestion').checked=true;r.element('#record-auto-suggestion').listeners.change({currentTarget:r.element('#record-auto-suggestion')});
   assert.equal(r.form.elements.description.value, 'Texto autoral');
+  r.form.elements.description.value='';
   r.run('window.confirm=()=>true');
-  r.element('#record-suggestion').listeners.click();
+  r.element('#record-auto-suggestion').checked=true;r.element('#record-auto-suggestion').listeners.change({currentTarget:r.element('#record-auto-suggestion')});
   assert.match(r.form.elements.description.value, /Ana Souza/);
-  assert.equal(r.element('#record-text-status').hidden, false);
+  assert.match(r.form.elements.description.value, /Ana Souza/);
   r.form.elements.description.value += ' Revisão fictícia.';
   const edited = r.form.elements.description.value;
   r.run('renderAll=()=>{}; renderRecordTemplates=()=>{}; showRoute=route=>{window.savedRoute=route}');

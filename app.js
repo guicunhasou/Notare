@@ -7,6 +7,9 @@ const {
   assetSlug,
   capitalize,
   createdPlanForScope,
+  completionSummary,
+  studentDisplayCode,
+  frequencyChangeDescription,
   dateKey,
   escapeHtml,
   formatDate,
@@ -37,6 +40,10 @@ function reconcileRecordTimes(database, seed) {
   };
 }
 
+let persistedSnapshot; // Texto exato lido nesta aba; não é uma versão recalculada.
+let databaseLockHeld = false;
+let databaseWritePending = false;
+
 function loadDatabase({ persistMigration = true } = {}) {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -44,17 +51,28 @@ function loadDatabase({ persistMigration = true } = {}) {
     if (saved?.schemaVersion === window.NOTARE_SEED.schemaVersion) {
       const reconciled = reconcileProfileConfiguration(reconcileStudentMedia(saved, window.NOTARE_SEED), window.NOTARE_SEED);
       const previousExampleRevision = saved.business?.exampleRevision || 0;
+      const previousPresentationRevision = saved.business?.presentationRevision || 0;
+      const previousReviewRevision = saved.business?.reviewExamplesRevision || 0;
       const database = window.NOTARE_BUSINESS.initialize(reconcileRecordTimes(reconciled, window.NOTARE_SEED));
-      if (persistMigration && previousExampleRevision < (database.business.exampleRevision || 0)) {
-        // Persistência aditiva; uma falha de armazenamento não restaura nem apaga a base em uso.
+      // No navegador, a migração será persistida dentro de Web Lock, nunca no carregamento síncrono.
+      // Os testes Node (sem navigator) mantêm a forma síncrona anterior.
+      let snapshot = raw;
+      if (persistMigration && (previousExampleRevision < (database.business.exampleRevision || 0) || previousPresentationRevision < (database.business.presentationRevision || 0) || previousReviewRevision < (database.business.reviewExamplesRevision || 0))) {
         try {
           if (localStorage.getItem(STORAGE_KEY) !== raw) return loadDatabase({ persistMigration: false });
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(database));
+          if (typeof navigator === "undefined") {
+            const migrated = JSON.stringify(database);
+            localStorage.setItem(STORAGE_KEY, migrated);
+            snapshot = migrated;
+          }
         } catch (error) { console.warn("Os novos exemplos estão disponíveis nesta sessão; a base anterior foi mantida no armazenamento.", error); }
       }
+      persistedSnapshot = snapshot;
       return database;
     }
+    persistedSnapshot = raw;
   } catch (error) {
+    persistedSnapshot = undefined; // Impede uma gravação após falha de leitura.
     console.warn("A base local não pôde ser carregada; usando a base inicial.", error);
   }
   return cloneSeed();
@@ -82,6 +100,8 @@ const state = {
   registrationQuery: "",
   registrationPage: 1,
   recordKind: "Ausência",
+  recordAutoText: null,
+  recordAutoContext: null,
   query: "",
   calendarDate: null,
   calendarWeekOffset: 0,
@@ -90,8 +110,8 @@ const state = {
   lastPlanId: null
 };
 
-const DASHBOARD_PANELS = ['priority', 'followup', 'actions', 'attendance', 'agenda', 'evolution', 'overview'];
-const DASHBOARD_KEY = 'notare-dashboard-v1:';
+const DASHBOARD_PANELS = ['priority', 'followup', 'actions', 'attendance'];
+const DASHBOARD_KEY = 'notare-dashboard-v3:';
 function readDashboardPreferences(profileId) {
   try {
     const preferences = JSON.parse(localStorage.getItem(DASHBOARD_KEY + profileId) || '{}');
@@ -115,14 +135,15 @@ function applyDashboardPanels() {
     const button = document.querySelector(`[data-dashboard-toggle="${key}"]`);
     const details = document.querySelector(`#dashboard-${key}-details`);
     button.setAttribute('aria-expanded', String(expanded));
-    const title = document.querySelector(`[data-dashboard-panel="${key}"] h2`)?.textContent || ({followup:'Em acompanhamento',actions:'Ações agendadas',attendance:'Frequência média'})[key];
+    const title = document.querySelector(`[data-dashboard-panel="${key}"] h2`)?.textContent || ({priority:'Prioridade hoje',followup:'Em acompanhamento',actions:'Ações agendadas',attendance:'Frequência média'})[key];
     button.setAttribute('aria-label', `${expanded ? 'Recolher' : 'Expandir'} ${title}`);
-    button.querySelector('span').textContent = expanded ? 'Recolher' : 'Expandir';
+    (button.querySelector('[data-toggle-label]') || button.querySelector('span')).textContent = expanded ? 'Recolher' : 'Expandir';
     details.classList.toggle('is-expanded', expanded);
     details.inert = !expanded;
     details.setAttribute('aria-hidden', String(!expanded));
     document.querySelector(`[data-dashboard-panel="${key}"]`).classList.toggle('is-expanded', expanded);
   });
+
 }
 function toggleDashboardPanel(key) {
   if (!DASHBOARD_PANELS.includes(key)) return;
@@ -137,13 +158,12 @@ function activeAgenda(now = new Date()) {
     .map(item => ({...item, scheduledDate: agendaDate(item, now), agendaState: agendaState(item, now)}))
     .sort((a,b) => a.scheduledDate - b.scheduledDate || (a.time || '23:59').localeCompare(b.time || '23:59'));
 }
-function selectCalendarDate(value, {focus = true} = {}) {
+function selectCalendarDate(value, {focus = true, toggle = false} = {}) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !parseDisplayDate(value)) return;
   ensureDashboardPreferences();
-  state.calendarDate = value;
-  state.dashboardExpansion.agenda = true;
-  saveDashboardPreferences();
-  renderDashboard();
+  state.calendarDate = toggle && state.calendarDate === value ? null : value;
+  renderMiniCalendar(new Date());
+  if(!state.calendarDate)document.querySelector("#calendar-day-summary").textContent="Compromissos do dia recolhidos.";
   if (focus) document.querySelector(`[data-calendar-date="${value}"]`)?.focus({preventScroll:true});
 }
 function openDashboardIndicator(action) {
@@ -165,6 +185,7 @@ function openDashboardIndicator(action) {
 const views = [...document.querySelectorAll("[data-view]")];
 const announcement = document.querySelector("#announcement");
 const toast = document.querySelector("#toast");
+const toastNotice = window.NOTARE_UI.createToastNotice({root:toast});
 const sidebar = document.querySelector("#sidebar");
 const scrim = document.querySelector("#sidebar-scrim");
 const profileDialog = document.querySelector("#profile-dialog");
@@ -308,6 +329,17 @@ function renderMiniCalendar(now) {
     const label = `${fullDate.format(date)}, ${count ? `${count} ${count === 1 ? 'compromisso' : 'compromissos'}` : 'sem compromissos'}`;
     return `<button class="calendar-day ${isToday ? 'is-today' : ''} ${selected ? 'is-selected' : ''}" type="button" data-calendar-date="${key}" tabindex="${key === target ? 0 : -1}" aria-pressed="${selected}" ${isToday ? 'aria-current="date"' : ''} aria-label="${escapeHtml(label)}"><strong>${date.getDate()}</strong><span class="event-dots" aria-hidden="true">${Array.from({length:Math.min(count,4)},()=>'<i></i>').join('')}</span></button>`;
   }).join('');
+  const selection = document.querySelector('#calendar-selection');
+  selection.hidden = !state.calendarDate;
+  if (state.calendarDate) {
+    document.querySelector('#calendar-selected-title').textContent = `Compromissos de ${formatDate(state.calendarDate)}`;
+    const events = activeAgenda(now).filter(item => dateKey(item.scheduledDate) === state.calendarDate);
+    document.querySelector('#calendar-events').innerHTML = events.length ? events.map(item => {
+      const student = getStudent(item.studentId);
+      return `<li><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.time || 'Horário a combinar')} · ${escapeHtml(student.name)}</span><button class="text-button" type="button" data-agenda-student="${escapeHtml(student.id)}">Abrir acompanhamento de ${escapeHtml(student.name)}</button></li>`;
+    }).join('') : '<li class="calendar-empty">Nenhum compromisso nesta data.</li>';
+    document.querySelector('#calendar-day-summary').textContent = `${formatDate(state.calendarDate)}: ${events.length} ${events.length === 1 ? 'compromisso' : 'compromissos'}.`;
+  }
   if (focusedDate) document.querySelector(`[data-calendar-date="${focusedDate}"]`)?.focus({preventScroll:true});
 }
 
@@ -317,8 +349,63 @@ function renderTemporalContext(now = new Date()) {
   renderMiniCalendar(now);
 }
 
+function positionNotifications() {
+  const header = document.querySelector('.topbar');
+  const height = appShell.classList.contains('journey-mode') ? 0 : header.getBoundingClientRect().height;
+  document.querySelector('.notification-stack').style.setProperty('--notice-top', `${Math.ceil(height + 12)}px`);
+}
+window.addEventListener('resize', positionNotifications);
+
+const DATA_CHANGED_MESSAGE = "Os dados mudaram em outra aba. Sua operação não foi salva. Recarregue a página após preservar seus rascunhos.";
+
 function saveDatabase() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+  // A escrita direta é mantida somente para a suíte Node; abas reais exigem Web Lock.
+  if (typeof navigator !== "undefined" && !databaseLockHeld) {
+    throw new Error("Gravação bloqueada: não foi possível obter o bloqueio de segurança.");
+  }
+  if (persistedSnapshot === undefined) throw new Error("A leitura da base falhou. Gravação bloqueada para preservar os dados existentes.");
+  if (localStorage.getItem(STORAGE_KEY) !== persistedSnapshot) throw new Error(DATA_CHANGED_MESSAGE);
+  const next = JSON.stringify(db);
+  localStorage.setItem(STORAGE_KEY, next);
+  persistedSnapshot = next;
+}
+
+function withDatabaseWrite(mutate) {
+  const execute = () => {
+    const before = JSON.stringify(db);
+    try {
+      if (persistedSnapshot === undefined || localStorage.getItem(STORAGE_KEY) !== persistedSnapshot) {
+        throw new Error(DATA_CHANGED_MESSAGE);
+      }
+      const result = mutate();
+      saveDatabase();
+      return result;
+    } catch (error) {
+      db = JSON.parse(before); // Desfaz somente as mutações desta tentativa em memória.
+      throw error;
+    }
+  };
+  if (typeof navigator === "undefined") return execute(); // Ambiente isolado de testes Node.
+  if (!navigator.locks?.request) return Promise.reject(new Error("Este navegador não oferece Web Locks. Gravação bloqueada para proteger seus dados."));
+  if (databaseWritePending) return Promise.reject(new Error("Uma gravação já está em andamento nesta aba. Tente novamente."));
+  databaseWritePending = true;
+  try {
+    return navigator.locks.request(`${STORAGE_KEY}:write`, { mode: "exclusive" }, () => {
+      databaseLockHeld = true;
+      try { return execute(); } finally { databaseLockHeld = false; }
+    }).finally(() => { databaseWritePending = false; });
+  } catch (error) {
+    databaseWritePending = false;
+    return Promise.reject(error);
+  }
+}
+
+function handleWrite(attempt, onSuccess, onFailure) {
+  try {
+    const result = attempt();
+    if (result && typeof result.then === "function") result.then(onSuccess, onFailure);
+    else onSuccess(result);
+  } catch (error) { onFailure(error); }
 }
 
 function currentTimeLabel(now = new Date()) {
@@ -557,7 +644,8 @@ function attendanceSeries() {
 function renderChart() {
   const labels = db.analytics.labels;
   const attendance = attendanceSeries();
-  const width = 760;
+  const compact = window.innerWidth <= 620;
+  const width = compact ? 340 : 760;
   const height = 250;
   const left = 42;
   const right = 20;
@@ -575,7 +663,7 @@ function renderChart() {
   const svg = document.querySelector("#attendance-chart");
   svg.innerHTML = `
     <defs><linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6F927D" stop-opacity=".24"/><stop offset="1" stop-color="#6F927D" stop-opacity="0"/></linearGradient></defs>
-    ${gridValues.map((value) => `<line x1="${left}" y1="${y(value)}" x2="${width - right}" y2="${y(value)}" stroke="rgba(24,59,70,.10)"/><text x="${left - 10}" y="${y(value) + 4}" fill="#768184" font-family="Manrope, system-ui, sans-serif" font-size="11" font-weight="500" text-anchor="end">${value}%</text>`).join("")}
+    ${gridValues.map((value) => `<line x1="${left}" y1="${y(value)}" x2="${width - right}" y2="${y(value)}" stroke="rgba(24,59,70,.10)"/><text x="${left - 10}" y="${y(value) + 4}" fill="#768184" font-family="Manrope, system-ui, sans-serif" font-size="${compact ? 15 : 11}" font-weight="500" text-anchor="end">${value}%</text>`).join("")}
     <path d="${area}" fill="url(#chart-fill)"/>
     <polyline points="${points}" fill="none" stroke="#183B46" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
     ${attendance.map((value, index) => {
@@ -584,7 +672,8 @@ function renderChart() {
       const label = `${labels[index]}: ${value}%`;
       return `<g class="chart-point" tabindex="0" role="img" aria-label="${escapeHtml(labels[index])}: ${value}% de frequência"><circle class="chart-point-hit" cx="${x(index)}" cy="${y(value)}" r="15"/><circle class="chart-point-dot" cx="${x(index)}" cy="${y(value)}" r="5"/><g class="chart-tooltip"><rect x="${tooltipX}" y="${tooltipY}" width="90" height="30" rx="7"/><text x="${tooltipX + 45}" y="${tooltipY + 19}" text-anchor="middle">${escapeHtml(label)}</text></g></g>`;
     }).join("")}
-    ${labels.map((label, index) => `<text x="${x(index)}" y="${height - 12}" fill="#768184" font-family="Manrope, system-ui, sans-serif" font-size="10" font-weight="500" text-anchor="middle">${escapeHtml(label)}</text>`).join("")}`;
+    ${labels.map((label, index) => `<text x="${x(index)}" y="${compact ? height - (index % 2 ? 3 : 20) : height - 12}" fill="#768184" font-family="Manrope, system-ui, sans-serif" font-size="${compact ? 14 : 10}" font-weight="500" text-anchor="middle">${escapeHtml(label)}</text>`).join("")}`;
+  svg.setAttribute("viewBox",`0 0 ${width} ${height}`);
   svg.setAttribute("aria-label", `Frequência de ${attendance.at(-1)} por cento em ${labels.at(-1)}`);
 }
 
@@ -633,7 +722,7 @@ function renderDashboard(now = new Date()) {
   const plans = visiblePlans();
   ensureDashboardPreferences();
   const agenda = activeAgenda(now);
-  const agendaPreview = state.calendarDate ? agenda.filter(item => dateKey(item.scheduledDate) === state.calendarDate) : agenda;
+  const agendaPreview = agenda;
   const scheduledActions = agenda.length;
   const averageAttendance = students.length ? Math.round(students.reduce((total, student) => total + student.attendance, 0) / students.length) : 0;
 
@@ -654,7 +743,6 @@ function renderDashboard(now = new Date()) {
   const order = { alta: 0, media: 1, evolucao: 2, estavel: 3 };
   const ordered = [...students].sort((a, b) => order[a.priority] - order[b.priority]);
   document.querySelector('#priority-summary').textContent = `${priorities.length} com atenção alta · ${students.length} estudantes no seu escopo`;
-  document.querySelector('#dashboard-priority-preview').innerHTML = ordered.slice(0,2).map(studentButton).join('') || '<p class="dashboard-note">Nenhum estudante neste escopo.</p>';
   document.querySelector("#dashboard-students").innerHTML = ordered.slice(0, 5).map(studentButton).join("");
   document.querySelector('.metric:nth-child(4) .metric-trend').textContent = `${students.length} estudantes`;
   const openPlans = plans.filter(plan => !plan.voidedAt && plan.status !== 'done');
@@ -667,22 +755,18 @@ function renderDashboard(now = new Date()) {
   }).join('') || '<li>Nenhuma turma neste escopo.</li>';
   const series = attendanceSeries(), change = series.at(-1) - series[0];
   const seriesDate = label => { const date = parseDisplayDate(label,2026); return date ? formatDate(dateKey(date)) : label; };
-  document.querySelector('#evolution-summary').textContent = `${series.at(-1)}% em ${seriesDate(db.analytics.labels.at(-1))} · ${change > 0 ? '+' : ''}${change} p.p. desde ${seriesDate(db.analytics.labels[0])}`;
-  document.querySelector('#agenda-upcoming').hidden = !state.calendarDate;
-  document.querySelector('.agenda-card .today-pill').textContent = state.calendarDate ? formatDate(state.calendarDate) : 'Próximas ações';
-  document.querySelector('#agenda-summary').textContent = state.calendarDate
-    ? `${formatDate(state.calendarDate)} · ${agendaPreview.length} ${agendaPreview.length === 1 ? 'compromisso' : 'compromissos'}`
-    : agenda.length ? `${agenda.length} ${agenda.length === 1 ? 'compromisso' : 'compromissos'} · próximo: ${agenda[0].title}, ${formatDate(dateKey(agenda[0].scheduledDate))}` : 'Nenhum compromisso atribuído a você.';
+  document.querySelector('#evolution-summary').textContent = `${series.at(-1)}% em ${seriesDate(db.analytics.labels.at(-1))} · ${frequencyChangeDescription(change)} desde ${seriesDate(db.analytics.labels[0])}`;
+  document.querySelector('.agenda-card .today-pill').textContent = 'Próximas ações';
 
   document.querySelector("#agenda-list").innerHTML = agendaPreview.length ? agendaPreview.map((item) => {
     const student = getStudent(item.studentId);
     const stateCopy = item.agendaState ? `<small class="agenda-state">${escapeHtml(item.agendaState.label)} · ${escapeHtml(item.agendaState.text)}</small>` : "";
     return `<li class="${item.agendaState ? "is-repositioned" : ""}"><span class="agenda-time">${escapeHtml(agendaSlot(item, now, item.scheduledDate))}</span><span class="agenda-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(student.name)} (${escapeHtml(student.className)})</span>${stateCopy}<button class="text-button agenda-context" type="button" data-agenda-student="${escapeHtml(student.id)}">Ver contexto de ${escapeHtml(student.name)}</button></span></li>`;
-  }).join("") : `<li class="agenda-empty">${state.calendarDate ? 'Nenhum compromisso nesta data.' : 'Nenhum compromisso atribuído a você.'}</li>`;
+  }).join("") : '<li class="agenda-empty">Nenhum compromisso atribuído a você.</li>';
 
   const active = plans.filter((plan) => planEffectiveStatus(plan, now) === "active").length;
   const review = plans.filter((plan) => ["review", "overdue"].includes(planEffectiveStatus(plan, now))).length;
-  const completed = students.reduce((total, student) => total + student.actionsCompleted, 0);
+  const { completed, casesWithReturn } = completionSummary(students, plans);
   const maximum = Math.max(active, review, completed, 1);
   const bars = document.querySelectorAll(".status-bars > div");
   const values = [active, review, completed];
@@ -691,7 +775,6 @@ function renderDashboard(now = new Date()) {
     bar.querySelector("strong").textContent = String(values[index]);
   });
   document.querySelector(".status-bars").setAttribute("aria-label", `${active} em acompanhamento, ${review} aguardando revisão e ${completed} ações concluídas`);
-  const casesWithReturn = students.filter((student) => student.actionsCompleted > 0).length;
   const returnRate = students.length ? Math.round((casesWithReturn / students.length) * 100) : 0;
   document.querySelector(".outcome-ring strong").textContent = `${returnRate}%`;
   document.querySelector(".outcome-ring").style.background = `radial-gradient(circle, var(--paper) 55%, transparent 57%), conic-gradient(var(--green) 0 ${returnRate}%, #e4e7e3 ${returnRate}% 100%)`;
@@ -701,16 +784,16 @@ function renderDashboard(now = new Date()) {
   applyDashboardPanels();
 }
 
-function renderClassFilter(selector, key) {
+function renderClassFilter(selector, key, placeholder = "Todas as turmas") {
   const select = document.querySelector(selector);
   const classes = [...new Set(visibleStudents().map(student => student.className))].sort((a, b) => a.localeCompare(b, "pt-BR"));
   if (!classes.includes(state[key])) state[key] = "todas";
-  select.innerHTML = `<option value="todas">Todas as turmas</option>${classes.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("")}`;
+  select.innerHTML = `<option value="todas">${escapeHtml(placeholder)}</option>${classes.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("")}`;
   select.value = state[key];
 }
 
 function renderStudents() {
-  renderClassFilter("#followup-class-filter", "followupClassFilter");
+  renderClassFilter("#followup-class-filter", "followupClassFilter", "Selecione turma");
   const scopedStudents = sortStudentsByName(visibleStudents());
   const classNames = [...new Set(scopedStudents.map((student) => student.className))].sort((a, b) => a.localeCompare(b, "pt-BR"));
   const classSelect = document.querySelector("#class-filter");
@@ -722,7 +805,7 @@ function renderStudents() {
 
   const visible = sortStudents(scopedStudents.filter((student) => {
     const matchesFilter = state.filter === "todos" || student.priority === state.filter;
-    const haystack = `${student.name} ${student.className} ${student.code}`.toLocaleLowerCase("pt-BR");
+    const haystack = `${student.name} ${student.className} ${student.code} ${studentDisplayCode(student, db.students)}`.toLocaleLowerCase("pt-BR");
     return matchesFilter && (state.followupClassFilter === "todas" || student.className === state.followupClassFilter) && haystack.includes(state.query.toLocaleLowerCase("pt-BR"));
   }), "priority");
 
@@ -743,7 +826,7 @@ function renderStudents() {
   document.querySelector("#student-directory").innerHTML = directoryStudents.map((student) => `
     <button class="directory-card" data-student="${escapeHtml(student.id)}">
       <span class="mini-avatar">${personPhoto(student)}</span>
-      <div><strong>${escapeHtml(student.name)}</strong><span>${escapeHtml(student.className)} · ${escapeHtml(student.code)}</span><span class="status-badge ${statusClass(student.priority)}">${escapeHtml(student.status)}</span></div>
+      <div><strong>${escapeHtml(student.name)}</strong><span>${escapeHtml(student.className)} · ${escapeHtml(studentDisplayCode(student, db.students))}</span><span class="status-badge ${statusClass(student.priority)}">${escapeHtml(student.status)}</span></div>
     </button>`).join("");
 }
 
@@ -800,8 +883,8 @@ function renderRegistrations() {
     createLabel.textContent = "Nova turma";
   } else {
     columns = ["Nome", "Turma", "Código", "Situação"];
-    records = sortStudentsByName(visibleStudents()).filter((student) => (state.registrationClassFilter === "todas" || student.className === state.registrationClassFilter) && `${student.name} ${student.className} ${student.code}`.toLocaleLowerCase("pt-BR").includes(query));
-    renderRow = (student) => `<tr><td><span class="registration-identity">${personPhoto(student)}<strong>${escapeHtml(student.name)}</strong></span></td><td>${escapeHtml(student.className)}</td><td>${escapeHtml(student.code)}</td><td><span class="status-badge ${statusClass(student.priority)}">${escapeHtml(student.status)}</span></td></tr>`;
+    records = sortStudentsByName(visibleStudents()).filter((student) => (state.registrationClassFilter === "todas" || student.className === state.registrationClassFilter) && `${student.name} ${student.className} ${student.code} ${studentDisplayCode(student, db.students)}`.toLocaleLowerCase("pt-BR").includes(query));
+    renderRow = (student) => `<tr><td><span class="registration-identity">${personPhoto(student)}<button class="text-button registration-student-link" type="button" data-student="${escapeHtml(student.id)}">${escapeHtml(student.name)}</button></span></td><td>${escapeHtml(student.className)}</td><td>${escapeHtml(studentDisplayCode(student, db.students))}</td><td><span class="status-badge ${statusClass(student.priority)}">${escapeHtml(student.status)}</span></td></tr>`;
     search.placeholder = "Buscar estudante";
     createLabel.textContent = "Novo estudante";
   }
@@ -829,6 +912,15 @@ function renderRegistrations() {
   });
 }
 
+function studentContextMarkup(student, prefix = '') {
+  const avatar = student.photoSheet || student.photo ? personPhoto(student) : `<span class="student-avatar-fallback">${escapeHtml(student.initials || student.name.split(' ').slice(0,2).map(part=>part[0]).join(''))}</span>`;
+  return `<span class="student-context-avatar" aria-hidden="true">${avatar}</span><span>${prefix ? `${escapeHtml(prefix)} ` : ''}<strong>${escapeHtml(student.name)}</strong><small>${escapeHtml(student.className)} · ${escapeHtml(studentDisplayCode(student,db.students))}</small></span>`;
+}
+function syncStudentContext() {
+  const student = getStudent();
+  document.querySelector('#record-student-context').innerHTML = studentContextMarkup(student,'Registro para');
+  if (['novo-registro','plano'].includes(state.currentRoute)) history.replaceState(navigationContext(),'',routeHash());
+}
 function renderStudentSelect() {
   const scopedStudents = sortStudentsByName(visibleStudents());
   const classSelect = document.querySelector("#record-class");
@@ -843,6 +935,7 @@ function renderStudentSelect() {
   if (!classStudents.some((student) => student.id === state.currentStudent)) state.currentStudent = classStudents[0]?.id || scopedStudents[0]?.id;
   studentSelect.innerHTML = classStudents.map((student) => `<option value="${escapeHtml(student.id)}">${escapeHtml(student.name)}</option>`).join("");
   studentSelect.value = state.currentStudent;
+  syncStudentContext();
 }
 
 function renderStudentProfile() {
@@ -850,7 +943,7 @@ function renderStudentProfile() {
   state.currentStudent = student.id;
   document.querySelector("#student-initials").innerHTML = personPhoto(student);
   document.querySelector("#student-name").textContent = student.name;
-  document.querySelector("#student-meta").textContent = `${student.className} · cadastro ${student.code}`;
+  document.querySelector("#student-meta").textContent = `${student.className} · código ${studentDisplayCode(student, db.students)}`;
   const badge = document.querySelector("#student-status");
   badge.textContent = student.status;
   badge.className = `status-badge ${statusClass(student.priority)}`;
@@ -892,10 +985,12 @@ function renderStudentProfile() {
     .map(([date, copy]) => ({ date, copy, parsedDate: parseDisplayDate(date, 2026) }))
     .sort((a, b) => (b.parsedDate?.getTime() || 0) - (a.parsedDate?.getTime() || 0));
   document.querySelector("#student-timeline").innerHTML = timelineEntries.map(({ date, copy, parsedDate }) => `<div class="timeline-entry"><span class="timeline-dot"></span><time${parsedDate ? ` datetime="${dateKey(parsedDate)}"` : ""}>${escapeHtml(parsedDate ? formatDate(dateKey(parsedDate)) : date)}</time><p>${escapeHtml(copy)}</p></div>`).join("");
-  document.querySelector("#plan-student-caption").textContent = `${student.name} · ${student.className}`;
+  document.querySelector("#plan-student-caption").innerHTML = studentContextMarkup(student);
   syncRecordDate();
   syncPlanDeadline();
   renderStudentSelect();
+  const familyAction = document.querySelector('#student-family-action');
+  familyAction.hidden = !hasPermission('families:manage') || !db.business.families.some(f => f.students.includes(student.id));
 }
 
 function recordKindPresentation(kind) {
@@ -944,24 +1039,20 @@ function renderRecordTemplates() {
   select.value = templates.some((template) => template.id === selected) ? selected : "";
 }
 
-function insertRecordText(text, announcementText) {
-  const description = document.querySelector('#record-form textarea[name="description"]');
-  description.value = text;
-  description.focus();
-  const status = document.querySelector("#record-text-status");
-  status.hidden = false;
-  status.textContent = announcementText;
-  announcement.textContent = announcementText;
+function insertRecordText(text, {focus = true, automatic = false} = {}) {
+  const description=document.querySelector('#record-form textarea[name="description"]');
+  description.value=text;if(focus)description.focus();
+  state.recordAutoText=automatic?text:null;
+  state.recordAutoContext=automatic?`${state.currentStudent}|${new FormData(document.querySelector('#record-form')).get('kind')}`:null;
 }
 
 function renderRecords() {
-  renderClassFilter("#records-class-filter", "recordsClassFilter");
+  renderClassFilter("#records-class-filter", "recordsClassFilter", "Selecione turma");
   if (!visibleStudents().some(student => student.id === state.recordsStudentId)) state.recordsStudentId = null;
   const scopedStudent = state.recordsStudentId ? getStudent(state.recordsStudentId) : null;
   document.querySelector("#registros-title").textContent = scopedStudent ? `Registros de ${scopedStudent.name}` : "Registros";
   document.querySelector("#records-back").hidden = !scopedStudent;
   document.querySelector("#records-filters").hidden = Boolean(scopedStudent);
-  document.querySelector("#records-context").textContent = scopedStudent ? `${scopedStudent.name} · ${scopedStudent.className}` : "Consulta geral";
   const plans = visiblePlans().map((plan) => ({ id: plan.id, kind: "Plano", studentId: plan.studentId, description: `${plan.type} · ${plan.owner} · prazo ${formatDate(plan.date)}`, date: plan.created, time: plan.createdTime, status: planEffectiveStatus(plan), voidedAt: plan.voidedAt, voidedById: plan.voidedById }));
   const items = [...visibleRecords(), ...plans]
     .filter((record) => (!state.recordsStudentId || record.studentId === state.recordsStudentId) &&
@@ -1027,21 +1118,21 @@ const routePermissions = {
   plano: "plans:create"
 };
 
-const navigationKeys = ["currentStudent", "filter", "classFilter", "studentSort", "recordFilter", "recordsStudentId", "followupClassFilter", "recordsClassFilter", "registrationClassFilter", "query", "studentReturnContext"];
+const navigationKeys = ["currentStudent", "filter", "classFilter", "studentSort", "recordFilter", "recordsStudentId", "followupClassFilter", "recordsClassFilter", "registrationClassFilter", "registrationQuery", "registrationPage", "registrationTab", "query", "studentReturnContext"];
 const formBaselines = new Map();
 const businessFormBaselines = new WeakMap();
 function captureBusinessFormBaselines() {
   document.querySelectorAll("[data-business-form]").forEach(form => businessFormBaselines.set(form, formSnapshot(form)));
 }
 function hasUnsavedBusinessForm() {
-  return [...document.querySelectorAll(".view.active [data-business-form]")].some(form =>
+  return [...document.querySelectorAll(".view.active [data-business-form], dialog[open] [data-business-form]")].some(form =>
     businessFormBaselines.has(form) && formSnapshot(form) !== businessFormBaselines.get(form));
 }
 function navigationContext() {
   return Object.fromEntries([ ["route", state.currentRoute], ...navigationKeys.map(key => [key, state[key]]) ]);
 }
 function routeHash(route = state.currentRoute) {
-  const studentId = route === "estudante" ? state.currentStudent : route === "registros" ? state.recordsStudentId : null;
+  const studentId = ["estudante","novo-registro","plano"].includes(route) ? state.currentStudent : route === "registros" ? state.recordsStudentId : null;
   return `#${route}${studentId ? `?estudante=${encodeURIComponent(studentId)}` : ""}`;
 }
 function formSnapshot(form) { return JSON.stringify([...new FormData(form)]); }
@@ -1063,7 +1154,7 @@ function confirmFormExit() {
   form.reset();
   formBaselines.delete(form.id);
   state.recordKind = "Ausência";
-  document.querySelector("#record-text-status").hidden = true;
+
   showToast("Operação cancelada. Nenhuma alteração foi salva.");
   return true;
 }
@@ -1071,9 +1162,10 @@ function returnToContext(context, fallback = "painel") {
   return showRoute(context?.route || fallback, { context });
 }
 function syncNavigationControls() {
-  const returnLabels = { "busca-ativa": "Voltar ao acompanhamento", estudantes: "Voltar aos estudantes", registros: "Voltar aos registros", painel: "Voltar à visão geral" };
+  const returnLabels = { "busca-ativa": "Voltar ao acompanhamento", estudantes: "Voltar aos estudantes", registros: "Voltar aos registros", cadastros: "Voltar aos cadastros", painel: "Voltar à visão geral" };
   document.querySelector("#student-back span").textContent = returnLabels[state.studentReturnContext?.route] || "Voltar ao acompanhamento";
   document.querySelector("#student-search").value = state.query;
+  document.querySelector("#registration-search").value = state.registrationQuery;
   document.querySelectorAll("[data-filter], [data-record-filter]").forEach(button => {
     const active = button.dataset.filter ? button.dataset.filter === state.filter : button.dataset.recordFilter === state.recordFilter;
     button.classList.toggle("active", active);
@@ -1146,10 +1238,10 @@ function showRoute(route, options = {}) {
   if (["busca-ativa", "estudantes"].includes(nextRoute)) renderStudents();
   if (nextRoute === "registros") renderRecords();
   if (["novo-registro", "plano"].includes(nextRoute)) {
-    if (nextRoute === "novo-registro") renderRecordTemplates();
+    if (nextRoute === "novo-registro") {renderRecordTemplates(); autoFillRecordSuggestion();}
     const form = activeForm();
     if (!formBaselines.has(form.id)) formBaselines.set(form.id, formSnapshot(form));
-    document.querySelector("#record-text-status").hidden = !form.elements.description?.value;
+
   }
   if (nextRoute === "painel") {
     renderDashboard();
@@ -1168,6 +1260,8 @@ function showRoute(route, options = {}) {
     if (active) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
   });
+  if (nextRoute === "familias" && typeof businessUI !== "undefined") businessUI.prepareSuggestions(state.currentStudent);
+  positionNotifications();
   const nextHash = routeHash(nextRoute);
   if (options.skipHistory && location.hash !== nextHash) {
     history.replaceState(navigationContext(), "", nextHash);
@@ -1250,7 +1344,7 @@ function completeJourneyPreview(step) {
     element.value = element.dataset.demoSelect;
     element.classList.add("is-set");
   });
-  step.querySelectorAll(".demo-reveal, .demo-photo").forEach((element) => element.classList.add("is-visible"));
+  step.querySelectorAll("[data-journey-reveal], .demo-photo").forEach((element) => element.classList.add("is-visible"));
 }
 
 function prepareJourneyPreview(step) {
@@ -1262,7 +1356,7 @@ function prepareJourneyPreview(step) {
     element.value = "";
     element.classList.remove("is-set");
   });
-  step.querySelectorAll(".demo-reveal, .demo-photo").forEach((element) => element.classList.remove("is-visible"));
+  step.querySelectorAll("[data-journey-reveal], .demo-photo").forEach((element) => element.classList.remove("is-visible"));
 }
 
 function advanceJourney() {
@@ -1309,25 +1403,30 @@ async function playJourneyStep() {
     return;
   }
 
-  if (!await journeyWait(2000, runId)) return;
-  if (journeyReducedMotion) {
-    completeJourneyPreview(step);
-  } else {
-    for (const element of step.querySelectorAll("[data-demo-text]")) {
-      if (!await typeJourneyText(element, element.dataset.demoText, runId)) return;
-      if (!await journeyWait(600, runId)) return;
+  if (!await journeyWait(350, runId)) return;
+  const revealItems=[...step.querySelectorAll('[data-journey-reveal]')];
+  const lastPhoto=step.querySelector('.journey-login .demo-identity-reveal');
+  const sequence=lastPhoto?[...revealItems.filter(element=>element!==lastPhoto),lastPhoto]:revealItems;
+  for (const element of sequence) {
+    if (runId !== journeyRunId || state.currentRoute !== 'jornada') return;
+    element.classList.add('is-visible');
+    if (!await journeyWait(element.matches('.journey-preview') ? 450 : 350, runId)) return;
+    for (const field of element.querySelectorAll('[data-demo-text]')) {
+      // Campos pertencem ao seu label; o container não preenche descendentes antecipadamente.
+      if (!element.matches('.demo-field')) break;
+      if (!await typeJourneyText(field,field.dataset.demoText,runId)) return;
+      if (!await journeyWait(400,runId)) return;
     }
-    for (const element of step.querySelectorAll("[data-demo-select]")) {
-      if (!await journeyWait(850, runId)) return;
-      element.value = element.dataset.demoSelect;
-      element.classList.add("is-set");
-      if (!await journeyWait(650, runId)) return;
+    if (element.matches('.demo-field')) for (const select of element.querySelectorAll('[data-demo-select]')) {
+      if (!await journeyWait(500,runId)) return;
+      select.value=select.dataset.demoSelect;select.classList.add('is-set');
+      if (!await journeyWait(500,runId)) return;
     }
-    for (const element of step.querySelectorAll(".demo-reveal, .demo-photo")) {
-      element.classList.add("is-visible");
-      if (!await journeyWait(800, runId)) return;
+    if (element.matches('.demo-photo-upload')) for (const photo of element.querySelectorAll('.demo-photo')) {
+      photo.classList.add('is-visible');if (!await journeyWait(350,runId)) return;
     }
   }
+  if (!await journeyWait(450,runId)) return;
   journeyStepComplete = true;
   journeyRunning = false;
   renderJourney();
@@ -1350,9 +1449,8 @@ function renderJourney() {
   const status = document.querySelector("#journey-autoplay");
   if (journeyCaptureMode) status.textContent = "Modo de captura: preenchimento concluído.";
   else if (journeyPaused) status.textContent = "Apresentação pausada.";
-  else if (journeyMode === "manual" && journeyStepComplete) status.textContent = "Etapa concluída. Continue quando estiver pronto.";
+  else if (journeyStepComplete) status.textContent = "Etapa concluída. Continue quando estiver pronto.";
   else if (journeyMode === "manual") status.textContent = "O preenchimento é automático; você decide quando avançar.";
-  else if (journeyStepComplete) status.textContent = "Próxima etapa em alguns segundos.";
   else status.textContent = "Os dados desta etapa serão apresentados em sequência.";
 
   document.querySelectorAll("[data-journey-mode]").forEach((button) => {
@@ -1427,28 +1525,30 @@ const creationNotice = window.NOTARE_UI.createUndoNotice({
   root: document.querySelector("#creation-notice"),
   notify: showToast,
   undo: operation => {
-    if (hasUnsavedForm() || hasUnsavedBusinessForm()) throw new Error("Conclua ou cancele o formulário aberto antes de desfazer a criação anterior.");
-    if (localStorage.getItem(STORAGE_KEY) !== JSON.stringify(db)) throw new Error("Os dados mudaram em outra aba. Recarregue a página para preservar o histórico.");
-    const previousDatabase = JSON.parse(JSON.stringify(db));
-    let annulled;
+    if (hasUnsavedForm() || hasUnsavedBusinessForm()) throw new Error("Conclua ou cancele o formulário aberto antes de desfazer a ação anterior.");
+    const commit = () => withDatabaseWrite(() => operation.kind === "offer-review"
+      ? window.NOTARE_OPERATIONS.undoOfferReview(db, getProfile(), operation)
+      : operation.kind === "partner-end"
+        ? window.NOTARE_OPERATIONS.undoPartnerEnd(db, getProfile(), operation)
+        : window.NOTARE_OPERATIONS.annulCreation(db, getProfile(), operation));
+    const done = annulled => {
+      renderAll();
+      if (["record", "plan"].includes(operation.kind) && state.currentRoute === "conclusao") showRoute(`registros?estudante=${encodeURIComponent(annulled.studentId)}`);
+      document.querySelector("#main-content").focus({ preventScroll: true });
+      if (operation.kind === "offer-review") return "Revisão desfeita. A oferta voltou para avaliação.";
+      if (operation.kind === "partner-end") return "Encerramento desfeito. A parceria voltou ao estado anterior.";
+    };
+    const failed = error => { throw new Error(`Não foi possível desfazer. ${error.message}`); };
     try {
-      annulled = window.NOTARE_OPERATIONS.annulCreation(db, getProfile(), operation);
-      saveDatabase();
-    } catch (error) {
-      db = previousDatabase;
-      throw new Error(`Não foi possível desfazer. ${error.message}`);
-    }
-    renderAll();
-    if (state.currentRoute === "conclusao") showRoute(`registros?estudante=${encodeURIComponent(annulled.studentId)}`);
-    document.querySelector("#main-content").focus({ preventScroll: true });
+      const result = commit();
+      return result && typeof result.then === "function" ? result.then(done, failed) : done(result);
+    } catch (error) { return failed(error); }
   }
 });
 
-function showToast(message) {
-  toast.textContent = message;
-  toast.hidden = false;
-  window.clearTimeout(showToast.timer);
-  showToast.timer = window.setTimeout(() => { toast.hidden = true; }, 3500);
+function showToast(message, options = {}) {
+  positionNotifications();
+  toastNotice.show(message,options);
 }
 
 function applySidebarState(collapsed) {
@@ -1597,7 +1697,7 @@ for (const [selector, key, render] of [
 
 document.querySelector('#calendar-days').addEventListener('click', event => {
   const day = event.target.closest('[data-calendar-date]');
-  if (day) selectCalendarDate(day.dataset.calendarDate);
+  if (day) selectCalendarDate(day.dataset.calendarDate,{toggle:true});
 });
 document.querySelector('#calendar-days').addEventListener('keydown', event => {
   const day = event.target.closest('[data-calendar-date]');
@@ -1611,10 +1711,15 @@ document.querySelector('#calendar-days').addEventListener('keydown', event => {
   while (next > addDays(addDays(startOfCurrentWeek(new Date()), state.calendarWeekOffset * 7),20)) state.calendarWeekOffset++;
   selectCalendarDate(dateKey(next));
 });
+document.querySelector('#calendar-close').addEventListener('click',()=>{
+  const date=state.calendarDate;state.calendarDate=null;renderMiniCalendar(new Date());
+  document.querySelector('#calendar-day-summary').textContent='Compromissos do dia recolhidos.';
+  const day=date&&document.querySelector(`[data-calendar-date="${date}"]`);(day||document.querySelector('#calendar-today')).focus({preventScroll:true});
+});
 document.querySelector('#calendar-previous').addEventListener('click', () => {state.calendarWeekOffset--;renderMiniCalendar(new Date());});
 document.querySelector('#calendar-next').addEventListener('click', () => {state.calendarWeekOffset++;renderMiniCalendar(new Date());});
 document.querySelector('#calendar-today').addEventListener('click', () => {state.calendarWeekOffset=0;selectCalendarDate(dateKey(new Date()));});
-document.querySelector('#agenda-upcoming').addEventListener('click', () => {state.calendarDate=null;renderDashboard();});
+
 
 document.querySelector("#student-search").addEventListener("input", (event) => {
   state.query = event.currentTarget.value;
@@ -1681,13 +1786,15 @@ document.querySelector("#registration-next").addEventListener("click", () => {
 function confirmRecordContextChange() {
   const form = document.querySelector("#record-form");
   const description = form.elements.description;
-  if (!description.value.trim()) {
+  if(document.querySelector("#record-auto-suggestion").checked === false){form.elements.template.value="";state.recordAutoText=null;state.recordAutoContext=null;return true;}
+  if (!description.value.trim() || description.value === state.recordAutoText) {
+    description.value = ""; state.recordAutoText = null;
     form.elements.template.value = "";
     return true;
   }
   if (!window.confirm("Trocar o estudante ou o tipo de registro limpará a descrição atual. Deseja continuar?")) return false;
   description.value = "";
-  document.querySelector("#record-text-status").hidden = true;
+
   form.elements.template.value = "";
   return true;
 }
@@ -1708,6 +1815,7 @@ document.querySelector("#record-class").addEventListener("change", (event) => {
   const firstStudent = visibleStudents().find((student) => student.className === state.recordClass);
   if (firstStudent) state.currentStudent = firstStudent.id;
   renderStudentSelect();
+  autoFillRecordSuggestion();
 });
 
 document.querySelector("#record-student").addEventListener("change", (event) => {
@@ -1717,6 +1825,7 @@ document.querySelector("#record-student").addEventListener("change", (event) => 
     return;
   }
   state.currentStudent = event.currentTarget.value;
+  syncStudentContext();autoFillRecordSuggestion();
 });
 
 document.querySelectorAll('#record-form input[name="kind"]').forEach((input) => input.addEventListener("change", (event) => {
@@ -1725,11 +1834,11 @@ document.querySelectorAll('#record-form input[name="kind"]').forEach((input) => 
     return;
   }
   state.recordKind = event.currentTarget.value;
-  renderRecordTemplates();
+  renderRecordTemplates();autoFillRecordSuggestion();
 }));
 
 document.querySelector("#record-template").addEventListener("change", (event) => {
-  if (!event.currentTarget.value) return;
+  if (!event.currentTarget.value || document.querySelector("#record-auto-suggestion").checked === false) return;
   if (!confirmRecordTextReplacement()) {
     event.currentTarget.value = "";
     document.querySelector('#record-form textarea[name="description"]').focus();
@@ -1739,22 +1848,35 @@ document.querySelector("#record-template").addEventListener("change", (event) =>
   const student = getStudent(form.elements.student.value);
   const template = (recordTextTemplates[selectedRecordKind(form)] || []).find((item) => item.id === event.currentTarget.value);
   if (!template) return;
-  insertRecordText(template.text(student), "Texto pré-elaborado inserido. Você pode editar a descrição antes de salvar.");
+  insertRecordText(template.text(student),{automatic:true});
 });
 
-document.querySelector("#record-suggestion").addEventListener("click", () => {
-  if (!confirmRecordTextReplacement()) return;
+function recordSuggestionText() {
   const form = document.querySelector("#record-form");
   const student = getStudent(form.elements.student.value);
   const kind = new FormData(form).get("kind");
+  const situation=(recordTextTemplates[kind]||[]).find(item=>item.id===form.elements.template?.value);
+  if(situation)return situation.text(student);
   const suggestions = {
     "Ausência": `${student.name} não esteve presente na data informada. O registro foi incluído para acompanhamento da frequência, sem informações adicionais sobre o motivo.`,
     "Contato": `Foi realizado contato com o responsável de ${student.name}. A equipe aguarda confirmação ou devolutiva para definir o próximo passo.`,
     "Ocorrência": `Foi observado um fato relacionado à rotina escolar de ${student.name}. O registro descreve apenas o que foi verificado e será revisado pela equipe responsável.`,
     "Devolutiva": `Foi registrada uma devolutiva sobre o acompanhamento de ${student.name}. A equipe irá verificar o retorno e combinar a continuidade necessária.`
   };
-  insertRecordText(suggestions[kind] || suggestions["Ausência"], "Sugestão inserida. Revise e edite o texto antes de salvar.");
+  return suggestions[kind] || suggestions['Ausência'];
+}
+function autoFillRecordSuggestion() {
+  const field = document.querySelector('#record-description');
+  const context = `${state.currentStudent}|${new FormData(document.querySelector("#record-form")).get("kind")}`;
+  if (field.value === state.recordAutoText && state.recordAutoContext !== context) {field.value='';state.recordAutoText=null;state.recordAutoContext=null;}
+  if (document.querySelector('#record-auto-suggestion').checked === false || field.value.trim()) return;
+  insertRecordText(recordSuggestionText(), {focus:false,automatic:true});
+}
+document.querySelector('#record-auto-suggestion').addEventListener('change', event => {
+  if(!event.currentTarget.checked){document.querySelector('#record-description').value='';state.recordAutoText=null;state.recordAutoContext=null;return;}
+  autoFillRecordSuggestion();
 });
+
 
 document.querySelectorAll("[data-record-filter]").forEach((button) => button.addEventListener("click", () => {
   state.recordFilter = button.dataset.recordFilter;
@@ -1768,6 +1890,7 @@ document.querySelectorAll("[data-record-filter]").forEach((button) => button.add
 
 document.querySelector("#plan-form").addEventListener("submit", (event) => {
   event.preventDefault();
+  const submittedForm = event.currentTarget;
   if (!hasPermission("plans:create")) return showToast("Este perfil não pode criar planos de ação.");
   const data = new FormData(event.currentTarget);
   const deadlineInput = event.currentTarget.elements.date;
@@ -1784,8 +1907,6 @@ document.querySelector("#plan-form").addEventListener("submit", (event) => {
     return showToast("Escolha um dia útil para o prazo do acompanhamento.");
   }
   if (data.get("family") === "on" && !window.confirm("Salvar o plano e incluir um comunicado no acesso da família neste navegador? Revise as informações antes de confirmar.")) return showToast("Salvamento cancelado. Você pode revisar o plano.");
-  const databaseBeforeSave = JSON.parse(JSON.stringify(db));
-  const previousPlanId = state.lastPlanId;
   const student = getStudent();
   const owner = getProfile(data.get("owner"));
   const plan = {
@@ -1801,36 +1922,32 @@ document.querySelector("#plan-form").addEventListener("submit", (event) => {
     created: todayLabel(),
     createdTime: currentTimeLabel()
   };
-  const undoOperation = window.NOTARE_OPERATIONS.offer("plan", plan, state.profileId);
-  db.plans.unshift(plan);
-  if (plan.family && db.business.families.some((family) => family.students.includes(student.id))) {
-    const message = window.NOTARE_BUSINESS.sendMessage(db, getProfile(), student.id, `A escola organizou um acompanhamento: ${plan.type}. Prazo para retorno: ${formatDate(plan.date)}. Entre em contato para combinar os próximos passos.`);
-    message.sourcePlanId = plan.id;
-  }
-  state.lastPlanId = plan.id;
-  db.agenda.unshift({
-    id: `agenda-${plan.id}`,
-    date: plan.date,
-    title: `Revisar plano: ${plan.type}`,
-    studentId: student.id,
-    ownerId: owner.id,
-    sourcePlanId: plan.id
-  });
-  try { saveDatabase(); } catch (error) {
-    db = databaseBeforeSave;
-    state.lastPlanId = previousPlanId;
-    return showToast("Não foi possível salvar neste navegador. O formulário foi preservado; revise o armazenamento e tente novamente.");
-  }
-  formBaselines.delete(event.currentTarget.id);
-  renderPlanSuccess();
-  event.currentTarget.reset();
-  renderAll();
-  showRoute("conclusao");
-  creationNotice.show("Plano de ação salvo com sucesso.", undoOperation);
+  handleWrite(() => withDatabaseWrite(() => {
+    const undoOperation = window.NOTARE_OPERATIONS.offer("plan", plan, state.profileId);
+    db.plans.unshift(plan);
+    if (plan.family && db.business.families.some((family) => family.students.includes(student.id))) {
+      const message = window.NOTARE_BUSINESS.sendMessage(db, getProfile(), student.id, `A escola organizou um acompanhamento: ${plan.type}. Prazo para retorno: ${formatDate(plan.date)}. Entre em contato para combinar os próximos passos.`);
+      message.sourcePlanId = plan.id;
+    }
+    db.agenda.unshift({
+      id: `agenda-${plan.id}`, date: plan.date, title: `Revisar plano: ${plan.type}`,
+      studentId: student.id, ownerId: owner.id, sourcePlanId: plan.id
+    });
+    return undoOperation;
+  }), undoOperation => {
+    state.lastPlanId = plan.id;
+    formBaselines.delete(submittedForm.id);
+    renderPlanSuccess();
+    submittedForm.reset();
+    renderAll();
+    showRoute("conclusao");
+    creationNotice.show("Plano de ação salvo com sucesso.", undoOperation);
+  }, error => showToast(`Não foi possível salvar o plano. O formulário foi preservado. ${error.message}`, {tone:"error"}));
 });
 
 document.querySelector("#record-form").addEventListener("submit", (event) => {
   event.preventDefault();
+  const submittedForm = event.currentTarget;
   if (!hasPermission("records:create")) return showToast("Este perfil não pode criar registros.");
   const data = new FormData(event.currentTarget);
   if (data.get("kind") === "Ocorrência" && !hasPermission("occurrences:create")) return showToast("Este perfil não pode criar registros de ocorrência.");
@@ -1840,31 +1957,26 @@ document.querySelector("#record-form").addEventListener("submit", (event) => {
     return showToast("Preencha ou revise a descrição antes de salvar.");
   }
   const student = getStudent(data.get("student"));
-  db.records.unshift({
-    id: `rec-${Date.now()}`,
-    kind: data.get("kind"),
-    studentId: student.id,
-    description,
-    date: formatDate(data.get("date")),
-    time: currentTimeLabel(),
-    ownerId: state.profileId,
-    followup: data.get("followup") === "on"
-  });
-  const undoOperation = window.NOTARE_OPERATIONS.offer("record", db.records[0], state.profileId);
-  try { saveDatabase(); } catch (error) {
-    db.records.shift();
-    return showToast("Não foi possível salvar neste navegador. A descrição foi preservada; revise o armazenamento e tente novamente.");
-  }
-  formBaselines.delete(event.currentTarget.id);
-  event.currentTarget.reset();
-  state.recordKind = "Ausência";
-  renderRecordTemplates();
-  renderAll();
-  state.recordFilter = "todos";
-  state.recordsClassFilter = "todas";
-  const contextual = ["estudante", "plano"].includes(state.formReturnContext?.route) || state.formReturnContext?.recordsStudentId;
-  showRoute(contextual ? `registros?estudante=${encodeURIComponent(student.id)}` : "registros");
-  creationNotice.show("Registro salvo com sucesso.", undoOperation);
+  const record = {
+    id: `rec-${Date.now()}`, kind: data.get("kind"), studentId: student.id,
+    description, date: formatDate(data.get("date")), time: currentTimeLabel(),
+    ownerId: state.profileId, followup: data.get("followup") === "on"
+  };
+  handleWrite(() => withDatabaseWrite(() => {
+    db.records.unshift(record);
+    return window.NOTARE_OPERATIONS.offer("record", record, state.profileId);
+  }), undoOperation => {
+    formBaselines.delete(submittedForm.id);
+    submittedForm.reset();
+    state.recordKind = "Ausência";
+    renderRecordTemplates();
+    renderAll();
+    state.recordFilter = "todos";
+    state.recordsClassFilter = "todas";
+    const contextual = ["estudante", "plano"].includes(state.formReturnContext?.route) || state.formReturnContext?.recordsStudentId;
+    showRoute(contextual ? `registros?estudante=${encodeURIComponent(student.id)}` : "registros");
+    creationNotice.show("Registro salvo com sucesso.", undoOperation);
+  }, error => showToast(`Não foi possível salvar o registro. A descrição foi preservada. ${error.message}`, {tone:"error"}));
 });
 
 document.querySelector("#menu-button").addEventListener("click", sidebarDrawer.open);
@@ -1919,22 +2031,18 @@ document.querySelector("#institution-plan-done").addEventListener("click", close
 document.querySelector("#reset-demo").addEventListener("click", () => {
   if (!window.confirm("Restaurar a base inicial e apagar os registros adicionados neste navegador?")) return showToast("Restauração cancelada. Os dados foram mantidos.");
   if (!confirmFormExit()) return;
-  const databaseBeforeReset = db;
-  db = cloneSeed();
-  try { saveDatabase(); } catch (error) {
-    db = databaseBeforeReset;
-    return showToast("Não foi possível restaurar a base. Os dados atuais foram mantidos.");
-  }
-  formBaselines.clear();
-  creationNotice.clear();
-  resetProfileNotifications();
-  state.profileId = "direcao";
-  state.currentStudent = "ana";
-  localStorage.setItem(PROFILE_KEY, state.profileId);
-  renderAll();
-  closeProfileDialog();
-  showRoute("painel");
-  showToast("Base inicial restaurada.");
+  handleWrite(() => withDatabaseWrite(() => { db = cloneSeed(); }), () => {
+    formBaselines.clear();
+    creationNotice.clear();
+    resetProfileNotifications();
+    state.profileId = "direcao";
+    state.currentStudent = "ana";
+    localStorage.setItem(PROFILE_KEY, state.profileId);
+    renderAll();
+    closeProfileDialog();
+    showRoute("painel");
+    showToast("Base inicial restaurada.");
+  }, error => showToast(`Não foi possível restaurar a base. ${error.message}`, {tone:"error"}));
 });
 profileDialog.addEventListener("cancel", (event) => { event.preventDefault(); closeProfileDialog(); });
 profileDialog.addEventListener("click", (event) => { if (event.target === profileDialog) closeProfileDialog(); });
@@ -1948,16 +2056,18 @@ document.addEventListener("keydown", (event) => {
 });
 window.addEventListener("popstate", event => showRoute(location.hash.slice(1) || "entrada", { skipHistory: true, context: event.state }));
 window.addEventListener("resize", alignEntryBrand);
+window.addEventListener("resize", () => {if(state.currentRoute === "painel")renderChart();});
 motionPreference.addEventListener?.("change", event => { journeyReducedMotion = event.matches; if (state.currentRoute === "jornada") startJourney({ reset: false }); });
 window.addEventListener("beforeunload", event => {
-  if (!hasUnsavedForm()) return;
+  if (!hasUnsavedForm() && !hasUnsavedBusinessForm()) return;
   event.preventDefault();
   event.returnValue = "";
 });
 
 const businessUI = window.NOTARE_BUSINESS_UI.create({
   database: () => db, actor: () => getProfile(), save: saveDatabase,
-  refresh: renderAll, navigate: showRoute, notify: showToast, escape: escapeHtml
+  transaction: fn => withDatabaseWrite(() => fn(db, getProfile())),
+  refresh: renderAll, navigate: showRoute, notify: showToast, escape: escapeHtml, studentIdentity: studentContextMarkup, selectedStudent: () => state.currentStudent, draftReady: form => businessFormBaselines.set(form,formSnapshot(form)), showUndo: (text,operation) => {positionNotifications();toastNotice.clear();creationNotice.show(text,operation);}
 });
 document.querySelector("#manage-subscription").addEventListener("click", () => { closeInstitutionPlanDialog(); showRoute("assinatura"); });
 

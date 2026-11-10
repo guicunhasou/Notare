@@ -12,6 +12,40 @@
       .replace(/(^-|-$)/g, "");
   }
 
+  // Código apenas de apresentação: relações continuam usando student.id.
+  function studentDisplayCode(student, students) {
+    const match = /^(\d+)\s*[º°]?\s*([A-Z])$/i.exec(student?.className || '');
+    if (!match) return student?.code || '';
+    const members = students.filter(item => item.className === student.className).slice().sort((a,b) => a.name.localeCompare(b.name,'pt-BR',{sensitivity:'base'}) || String(a.id).localeCompare(String(b.id)));
+    const position = members.findIndex(item => item.id === student.id) + 1;
+    return position > 0 ? `${match[1]}${match[2].toUpperCase()}${String(position).padStart(2,'0')}` : student.code || '';
+  }
+  function frequencyChangeDescription(change) {
+    const value = Math.abs(change), unit = value === 1 ? 'ponto percentual' : 'pontos percentuais';
+    return change < 0 ? `queda de ${value} ${unit}` : change > 0 ? `aumento de ${value} ${unit}` : 'sem variação';
+  }
+
+  // actionsCompleted é o saldo histórico da base, não um contador de db.plans.
+  // Cada plano concluído acrescenta uma ação; agenda e devolutiva vinculadas
+  // representam a mesma conclusão e não são contadas novamente. Cálculo sem escrita,
+  // inclusive para conclusões salvas antes desta regra e planos posteriormente anulados.
+  function completionSummary(students, plans) {
+    const totals = new Map(students.map(student => [student.id,
+      Number.isSafeInteger(student.actionsCompleted) && student.actionsCompleted >= 0 ? student.actionsCompleted : 0
+    ]));
+    const counted = new Set();
+    for (const plan of plans) {
+      if (!plan.id || counted.has(plan.id) || plan.voidedAt || plan.status !== "done" || !totals.has(plan.studentId)) continue;
+      counted.add(plan.id);
+      totals.set(plan.studentId, totals.get(plan.studentId) + 1);
+    }
+    const values = [...totals.values()];
+    return {
+      completed: values.reduce((total, count) => total + count, 0),
+      casesWithReturn: values.filter(count => count > 0).length
+    };
+  }
+
   function dateKey(date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -158,6 +192,9 @@
 
   window.NOTARE_CORE = Object.freeze({
     createdPlanForScope,
+    completionSummary,
+    studentDisplayCode,
+    frequencyChangeDescription,
     addBusinessDays,
     addDays,
     assetSlug,

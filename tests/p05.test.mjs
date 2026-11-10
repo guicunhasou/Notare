@@ -16,6 +16,7 @@ function uiHarness() {
   return node;
  }
  function click(form,action,generation=false) {
+  if(generation){const option=form.querySelector('[data-auto-suggestion]');option.dataset.autoSuggestion=action;option.checked=true;option.closest=()=>form;option.matches=()=>true;handlers.change({target:option});return;}
   const control={dataset:generation?{businessSuggestion:action}:{business:action},closest:()=>form};
   handlers.click({target:{closest:selector=>selector===(generation?'[data-business-suggestion]':'[data-business]')?control:null}});
  }
@@ -39,27 +40,25 @@ test('P05.1: sugestões respeitam vínculo e escopo do perfil',()=>{
 });
 test('P05.2: continuidade informa plano, responsável e prazo sem presumir desfecho',()=>{
  const r=runtime(),before=r.run('JSON.stringify(db)');const text=r.run('window.NOTARE_BUSINESS.continuitySuggestion(db,getProfile(),"plan-001")');
- assert.match(text,/Plano de retorno/);assert.match(text,/Beatriz Santos/);assert.match(text,/Lívia Moura/);assert.match(text,/30\/09\/2026/);assert.match(text,/Não presumir melhora/);assert.ok(text.length<=600);
+ assert.match(text,/Plano de retorno/);assert.match(text,/Beatriz Santos/);assert.match(text,/Lívia Moura/);assert.match(text,/30\/09\/2026/);assert.match(text,/resultado desta ação ainda não consta/);assert.doesNotMatch(text,/Antes de concluir|Revisar o plano|Combine com a equipe/);assert.ok(text.length<=600);
  assert.equal(r.run('JSON.stringify(db)'),before);
 });
-test('P05.2: plano anulado ou concluído não gera sugestão, e registros anulados não contam',()=>{
- const r=runtime();r.run('db.records.filter(record=>record.studentId==="beatriz").forEach(record=>record.voidedAt="2026-11-05")');
- assert.doesNotMatch(r.run('window.NOTARE_BUSINESS.continuitySuggestion(db,getProfile(),"plan-001")'),/registros anteriores/);
- r.run('db.plans[0].voidedAt="2026-11-05"');assert.throws(()=>r.run('window.NOTARE_BUSINESS.continuitySuggestion(db,getProfile(),"plan-001")'),/disponível/);
+test('P05.2 atualizado: plano anulado ou concluído não gera sugestão e resultado anulado não conta',()=>{
+ const r=runtime();r.run('db.records.push({id:"resultado-anulado",studentId:"beatriz",sourcePlanId:"plan-001",kind:"Devolutiva",description:"RESULTADO_ANULADO",voidedAt:"2026-11-05"})');assert.doesNotMatch(r.run('window.NOTARE_BUSINESS.continuitySuggestion(db,getProfile(),"plan-001")'),/RESULTADO_ANULADO/);r.run('db.plans[0].voidedAt="2026-11-05"');assert.throws(()=>r.run('window.NOTARE_BUSINESS.continuitySuggestion(db,getProfile(),"plan-001")'),/disponível/);
 });
+
 test('P05.3: gerar preenche campo vazio editável sem salvar ou enviar',()=>{
  const h=uiHarness(),f=h.form('message'),before=h.r.run('JSON.stringify(db)');h.click(f,'body',true);
- assert.match(f.elements.body.value,/Ana Souza/);assert.equal(f.elements.body.focused,true);assert.match(f.querySelector('[data-suggestion-status]').textContent,/Revise e edite/);assert.equal(h.refreshes(),0);assert.equal(h.r.run('JSON.stringify(db)'),before);
+ assert.match(f.elements.body.value,/Ana Souza/);assert.notEqual(f.elements.body.focused,true);assert.equal(f.querySelector('[data-suggestion-status]').hidden,true);assert.equal(h.refreshes(),0);assert.equal(h.r.run('JSON.stringify(db)'),before);
 });
-test('P05.3: conteúdo preenchido exige escolha explícita e Manter texto preserva o rascunho',()=>{
- const h=uiHarness(),f=h.form('message');f.elements.body.value='Meu texto em revisão.';h.click(f,'body',true);
- assert.equal(f.elements.body.value,'Meu texto em revisão.');assert.equal(f.querySelector('[data-suggestion-preview]').hidden,false);
- h.click(f,'keep-text');assert.equal(f.elements.body.value,'Meu texto em revisão.');assert.equal(f.querySelector('[data-suggestion-preview]').hidden,true);
+test('P05.3 atualizado: ativar sugestão preserva integralmente um texto preenchido',()=>{
+ const h=uiHarness(),f=h.form('message');f.elements.body.value='Meu texto em revisão.';const before=h.r.run('JSON.stringify(db)');h.click(f,'body',true);assert.equal(f.elements.body.value,'Meu texto em revisão.');assert.equal(h.r.run('JSON.stringify(db)'),before);
 });
-test('P05.3: substituir é explícito e sugestão de outro contexto não é aplicada',()=>{
- const h=uiHarness(),f=h.form('message');f.elements.body.value='Texto atual.';h.click(f,'body',true);h.click(f,'apply-suggestion');assert.match(f.elements.body.value,/Ana Souza/);
- f.elements.body.value='Texto preservado.';h.click(f,'body',true);f.elements.student.value='lucas';h.click(f,'apply-suggestion');assert.equal(f.elements.body.value,'Texto preservado.');
+
+test('P05.3 atualizado: sugestão de outro contexto só preenche após o usuário limpar o texto',()=>{
+ const h=uiHarness(),f=h.form('message');f.elements.body.value='Texto preservado.';f.elements.student.value='lucas';h.click(f,'body',true);assert.equal(f.elements.body.value,'Texto preservado.');f.elements.body.value='';h.click(f,'body',true);assert.match(f.elements.body.value,/Lucas Lima/);assert.doesNotMatch(f.elements.body.value,/Ana Souza/);
 });
+
 test('P05.1: comunicado salva o texto revisado e persiste para a família correta',()=>{
  const h=uiHarness(),f=h.form('message');h.click(f,'body',true);f.elements.body.value='Comunicado fictício revisado pela equipe antes de confirmar.';
  h.handlers.submit({target:{closest:()=>f},preventDefault(){}});h.r.run('db=loadDatabase()');
@@ -87,9 +86,9 @@ test('P05.5–6: revisar não altera plano ativo; cancelar preserva; confirmar f
 });
 test('P05.4: histórico sai da interface de assinatura mas permanece nos dados',()=>{
  const h=uiHarness();h.r.setForm('#subscription-wizard',{plan:'acompanhamento',segment:'Ensino Fundamental'});h.r.run('db.business.history.push({id:"preservado",actorId:"direcao",description:"Ação anterior",at:new Date().toISOString()})');h.ui.render();
- const html=h.r.element('[data-business-content="assinatura"]').innerHTML;assert.doesNotMatch(html,/Histórico institucional/);assert.match(html,/data-subscription-step="3"/);assert.equal(h.r.run('db.business.history[0].id'),'preservado');
+ const html=h.r.element('[data-business-content="assinatura"]').innerHTML;assert.doesNotMatch(html,/Histórico institucional/);assert.match(html,/data-subscription-step="3"/);assert.equal(h.r.run('db.business.history.some(item=>item.id==="preservado")'),true);
 });
-test('Imagens: sete recortes locais têm texto alternativo e assinatura PNG válida',()=>{
+test('Imagens: recortes locais têm texto alternativo e assinatura PNG válida',()=>{
  const r=runtime();for(const media of Object.values(r.context.window.NOTARE_COMMUNITY_MEDIA)){const file=new URL('../'+media.src,import.meta.url);assert.ok(existsSync(file));const bytes=readFileSync(file);assert.equal(bytes.subarray(1,4).toString(),'PNG');assert.ok(bytes.length<200000);assert.ok(media.alt.length>20);}
 });
 
@@ -102,5 +101,5 @@ test('P05: concluir um formulário preserva o rascunho ainda não confirmado do 
  h.r.context.document.querySelector=selector=>selector==='.view.active [data-business-form="message"]'?message:original(selector);
  h.onRefresh(()=>{message.elements.body.value='';});
  h.handlers.submit({target:{closest:()=>completion},preventDefault(){}});
- assert.equal(message.elements.body.value,'Rascunho da família ainda não confirmado.');assert.equal(h.r.run('db.business.messages.length'),0);assert.equal(h.r.run('db.plans[0].status'),'done');
+ assert.equal(message.elements.body.value,'Rascunho da família ainda não confirmado.');assert.equal(h.r.run('db.business.messages.length'),4);assert.equal(h.r.run('db.plans[0].status'),'done');
 });

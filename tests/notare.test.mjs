@@ -179,7 +179,7 @@ test("a entrada destaca o painel e mantém a implantação como jornada opcional
   assert.match(html, /assets\/brand\/notare-logo\.svg/);
   assert.match(html, /assets\/brand\/notare-favicon\.svg/);
   assert.match(html, /As etapas são ilustrativas: não executam contratação, importação ou autenticação/);
-  assert.match(html, /nem geram contratos, pagamentos ou repasses/);
+  assert.doesNotMatch(html, /Dados de exemplo, armazenados neste navegador/);
   assert.match(html, /data-demo-text="Escola Horizonte Vivo"/);
   assert.match(html, /Importação concluída/);
   assert.match(source, /async function typeJourneyText/);
@@ -278,7 +278,7 @@ test("a entrada abre com a marca e a implantação usa avanço manual por padrã
   assert.match(html, /data-journey-mode="automatic"/);
   assert.match(html, /class="active" type="button" data-journey-mode="manual" aria-pressed="true"/);
   assert.match(html, /id="journey-next"/);
-  assert.match(source, /journeyWait\(2000, runId\)/);
+  assert.match(source, /journeyWait\(350, runId\)/);
   assert.match(source, /journeyWait\(5000, runId\)/);
   assert.match(source, /let journeyMode = "manual"/);
   assert.match(source, /function setJourneyMode/);
@@ -334,8 +334,8 @@ test("a sugestão de texto declara e implementa uma simulação local", () => {
   const html = read("index.html");
   const source = read("app.js");
 
-  assert.match(html, /Gerar sugestão/);
-  assert.match(html, /sem IA ou serviços externos/);
+  assert.match(html, /Usar sugestões automáticas/);
+  assert.doesNotMatch(read('business.js'), /\bfetch\s*\(/);
   assert.match(source, /const suggestions = \{/);
   assert.doesNotMatch(source, /\bfetch\s*\(/);
   assert.match(read("styles.css"), /\.ai-simulation-button \{[^}]*background: var\(--amber-soft\)/);
@@ -352,7 +352,7 @@ test("os textos pré-elaborados acompanham o tipo e permanecem editáveis", () =
   ["Ausência", "Contato", "Ocorrência", "Devolutiva"].forEach((kind) => assert.match(source, new RegExp(`"${kind}": \\[`)));
   assert.match(source, /input\[name="kind"\][^\n]*addEventListener\("change", \(event\) =>/);
   assert.match(source, /insertRecordText\(template\.text\(student\)/);
-  assert.match(source, /insertRecordText\(suggestions\[kind\]/);
+  assert.match(source, /insertRecordText\(recordSuggestionText\(\)/);
 });
 
 test("a área de cadastros consulta a base local sem oferecer gravação falsa", () => {
@@ -420,7 +420,7 @@ test("textos prontos não substituem uma descrição editada sem confirmação",
 
   assert.match(source, /function confirmRecordTextReplacement\(\)/);
   assert.match(source, /Substituir a descrição atual pelo novo texto/);
-  assert.equal((source.match(/if \(!confirmRecordTextReplacement\(\)\)/g) || []).length, 2);
+  assert.equal((source.match(/if \(!confirmRecordTextReplacement\(\)\)/g) || []).length, 1);
 });
 
 test("cadastros não renderiza conteúdo sem permissão", () => {

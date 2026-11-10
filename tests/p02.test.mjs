@@ -46,13 +46,13 @@ test('P02 A2: desfazer registro mantém original, autoria e anulação após rec
 });
 
 test('P02 A2: desfazer plano anula agenda e comunicado sem excluir conteúdo', () => {
-  const r=runtime(); const op=savePlan(r);
+  const r=runtime();const previous=JSON.stringify(r.run('window.NOTARE_BUSINESS.communicationStatus(db,"ana")')); const op=savePlan(r);
   r.context.window.undoOptions.undo(op);
   assert.equal(r.run('db.plans[0].status'),'cancelled');
   assert.equal(r.run('db.agenda[0].status'),'cancelled');
   assert.ok(r.run('db.business.messages[0].cancelledAt'));
   assert.match(r.run('db.business.messages[0].body'),/A escola organizou/);
-  assert.equal(r.run('window.NOTARE_BUSINESS.communicationStatus(db,"ana")'),null);
+  assert.equal(JSON.stringify(r.run('window.NOTARE_BUSINESS.communicationStatus(db,"ana")')),previous);
   assert.throws(()=>r.run('window.NOTARE_BUSINESS.completePlan(db,getProfile(),db.plans[0].id,"Conclusão que não deve ocorrer.")'),/não está disponível/);
   assert.throws(()=>r.run('window.NOTARE_BUSINESS.respondMessage(db,getProfile("familia-ana"),db.business.messages[0].id,"Resposta que não deve ocorrer.")'),/não disponível/);
   assert.equal(r.run('createdPlanForScope(db.plans, db.plans[0].id, ["ana"])'),null);
@@ -118,7 +118,7 @@ function notice() {
   return {ui,node,root,document,calls,advance:ms=>{now+=ms;tick();},fail:()=>{fail=true;}};
 }
 
-test('P02 A2: aviso expira em 60 segundos e não permite ação posterior', () => {
+test('P02 A2: aviso expira no prazo informado e não permite ação posterior', () => {
   const n=notice();n.ui.show('Registro salvo',{expiresAt:60000});
   n.advance(59999);assert.equal(n.root.hidden,false);
   n.advance(1);assert.equal(n.root.hidden,true);

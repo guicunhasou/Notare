@@ -223,7 +223,6 @@
       time.textContent = pauses.size ? 'Você ainda pode desfazer esta ação.' : `Desfazer disponível por mais ${Math.ceil(remaining / 1000)} segundos.`;
       if (!remaining) {
         clear();
-        notify('O prazo para desfazer terminou. A criação foi mantida.');
       }
     }
     function pause(reason, active) {
@@ -248,6 +247,7 @@
       operation = nextOperation;
       root.hidden = false;
       message.textContent = text;
+      if (!document.hidden) action.focus({preventScroll:true});
       if (document.hidden) pause('hidden', true);
       tick();
       timer = window.setInterval(tick, 250);
@@ -257,13 +257,21 @@
       if (!pauses.size && clock() >= operation.expiresAt) return tick();
       // Foco/hover suspendem o prazo, inclusive entre dois ticks.
       const effectiveOperation = { ...operation, expiresAt: operation.expiresAt + (pausedAt === null ? 0 : clock() - pausedAt) };
-      try {
-        undo(effectiveOperation);
+      const success = result => {
         clear();
-        notify('Criação desfeita. O conteúdo original permanece no histórico como anulado.');
-      } catch (error) { notify(error.message); }
+        notify(typeof result === 'string' ? result : 'Criação desfeita. O conteúdo original permanece no histórico como anulado.', {tone:'success'});
+      };
+      try {
+        const result=undo(effectiveOperation);
+        if (result && typeof result.then === 'function') {
+          action.disabled = true;
+          pause('saving', true);
+          result.then(success, error => notify(error.message,{tone:'error'}))
+            .finally(() => { action.disabled = false; pause('saving', false); });
+        } else success(result);
+      } catch (error) { notify(error.message,{tone:'error'}); }
     });
-    close.addEventListener('click', () => { clear(); document.querySelector('#main-content')?.focus({ preventScroll: true }); notify('Aviso fechado. A criação foi mantida.'); });
+    close.addEventListener('click', () => { clear(); document.querySelector('#main-content')?.focus({ preventScroll: true }); });
     root.addEventListener('pointerenter', () => pause('pointer', true));
     root.addEventListener('pointerleave', () => pause('pointer', false));
     root.addEventListener('focusin', () => pause('focus', true));
@@ -272,5 +280,29 @@
     return Object.freeze({ show, clear });
   }
 
-  window.NOTARE_UI = Object.freeze({ createModalDrawer, createNotificationCenter, createUndoNotice });
+  function createToastNotice({ root, duration = 5000, clock = () => Date.now() }) {
+    const message=root.querySelector('[data-toast-message]');
+    const close=root.querySelector('[data-toast-close]');
+    const pauses=new Set();let expiresAt=0,pausedAt=null,timer=null;
+    function clear() {window.clearInterval(timer);timer=null;root.hidden=true;pauses.clear();pausedAt=null;}
+    function tick() {if (!root.hidden && (pausedAt ?? clock()) >= expiresAt) clear();}
+    function pause(reason,active) {
+      if(root.hidden)return;
+      if(active){if(!pauses.size){if(clock()>=expiresAt)return tick();pausedAt=clock();}pauses.add(reason);}
+      else {pauses.delete(reason);if(!pauses.size&&pausedAt!==null){expiresAt+=clock()-pausedAt;pausedAt=null;}}
+      tick();
+    }
+    function show(text,{tone='info'}={}) {
+      clear();const treatment=({success:['Sucesso','#i-check'],warning:['Atenção','#i-occurrence'],error:['Não concluído','#i-occurrence'],info:['Informação','#i-bell']})[tone]||['Informação','#i-bell'];
+      root.querySelector('[data-toast-label]').textContent=treatment[0];root.querySelector('[data-toast-icon]').setAttribute('href',treatment[1]);
+      message.textContent=text;root.hidden=false;expiresAt=clock()+duration;if(document.hidden)pause('hidden',true);timer=window.setInterval(tick,100);
+    }
+    close.addEventListener('click',()=>{const focused=root.contains(document.activeElement);clear();if(focused)document.querySelector('#main-content')?.focus({preventScroll:true});});
+    root.addEventListener('pointerenter',()=>pause('pointer',true));root.addEventListener('pointerleave',()=>pause('pointer',false));
+    root.addEventListener('focusin',()=>pause('focus',true));root.addEventListener('focusout',event=>{if(!root.contains(event.relatedTarget))pause('focus',false);});
+    document.addEventListener('visibilitychange',()=>pause('hidden',document.hidden));
+    return Object.freeze({show,clear});
+  }
+
+  window.NOTARE_UI = Object.freeze({ createModalDrawer, createNotificationCenter, createUndoNotice, createToastNotice });
 })();
