@@ -1100,14 +1100,14 @@ main :is(a[href], .text-button[data-route], .text-button[data-student], .text-bu
 main :is(a[href], .text-button[data-route], .text-button[data-student], .text-button[data-agenda-student], .text-button[data-dashboard-action], .registration-student-link):focus-visible { outline: 3px solid var(--amber-accent); outline-offset: 3px; border-radius: .2rem; }
 .journey-footer { margin-top: clamp(3rem,6vw,5rem); }
 /* Cada parte conclui sua entrada antes da seguinte; os caminhos e movimentos são os existentes. */
-.journey-opening-logo .opening-blue { animation-duration: .55s; animation-delay: 0s; }
-.journey-opening-logo .opening-green { animation-duration: .55s; animation-delay: .6s; }
-.journey-opening-logo .opening-amber { animation-duration: .7s; animation-delay: 1.2s; }
-.journey-opening-logo .opening-lettering { animation-duration: .6s; animation-delay: 1.95s; }
-.entry-opening { animation-duration: .35s; animation-delay: 2.6s; }
-.entry-content h1 { animation-duration: .35s; animation-delay: 3s; }
-.entry-actions .button { animation-duration: .3s; animation-delay: 3.4s; }
-.entry-actions .button + .button { animation-delay: 3.75s; }
+.journey-opening-logo .opening-blue { animation-duration: .25s; animation-delay: 0s; }
+.journey-opening-logo .opening-green { animation-duration: .25s; animation-delay: .3s; }
+.journey-opening-logo .opening-amber { animation-duration: .4s; animation-delay: 0.7s; }
+.journey-opening-logo .opening-lettering { animation-duration: .5s; animation-delay: 1.2s; }
+.entry-opening { animation-duration: .15s; animation-delay: 1.4s; }
+.entry-content h1 { animation-duration: .15s; animation-delay: 1.6s; }
+.entry-actions .button { animation-duration: .1s; animation-delay: 1.8s; }
+.entry-actions .button + .button { animation-delay: 2s; }
 .notification-stack .toast-card { position: relative; inset: auto; display: grid; grid-template-columns: 1.8rem minmax(0,1fr) auto; align-items: start; gap: .7rem; width: 100%; max-width: none; border: 1px solid #c8dace; border-radius: .85rem; padding: .9rem; background: #eef7f1; color: #24463b; box-shadow: 0 6px 20px rgba(36,70,59,.09); }
 .toast-card > .notice-icon { grid-column: 1; grid-row: 1; display: grid; place-items: center; width: 1.8rem; height: 1.8rem; border-radius: 50%; background: #e1efe5; color: #315b48; }
 .toast-card .notice-icon svg { width: 1.05rem; height: 1.05rem; }

@@ -226,6 +226,12 @@ function personPhoto(person) {
     const media = window.NOTARE_COMMUNITY_MEDIA?.[person.id];
     return media?.src ? `<img class="avatar-photo ${person.scope.startsWith("partner:") ? "community-logo" : "community-photo"}" src="${escapeHtml(media.src)}" alt="${escapeHtml(media.alt)}" loading="lazy" />` : `<span class="ecosystem-avatar">${escapeHtml(person.initials)}</span>`;
   }
+    
+    
+    if (person.id === "ana") {
+      return `<img class="avatar-photo" src="assets/profiles/ana-souza-oficial.png" alt="" loading="lazy" />`;
+    }
+
   if (person.photoSheet && Number.isInteger(person.photoIndex)) {
     const column = person.photoIndex % 6;
     const row = Math.floor(person.photoIndex / 6);
