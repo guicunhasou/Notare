@@ -1011,9 +1011,9 @@ button, .button, .text-button, .back-button, .main-nav a { font-weight: 650; }
 .calendar-selection .text-button { justify-self: start; text-align: left; white-space: normal; }
 .student-context { border-left: 3px solid var(--primary); padding-left: .75rem; color: var(--ink) !important; font-weight: 600; line-height: 1.6; }
 .auto-suggestion-option { font-size: .75rem; font-weight: 500; margin: .2rem 0; }
-.notification-stack { position: fixed; z-index: 100; top: var(--notice-top,calc(5rem + env(safe-area-inset-top))); right: 1rem; display: grid; gap: .65rem; width: min(540px,calc(100% - 2rem)); max-height: calc(100dvh - 6rem); overflow-y: auto; pointer-events: none; }
+.notification-stack { position: static; display: grid; gap: .65rem; width: min(540px,calc(100% - 2rem)); margin: 0 1rem 0 auto; }
+.notification-stack:has(> :not([hidden])) { margin-top: 1rem; }
 .notification-stack .creation-notice, .notification-stack .toast { position: static; inset: auto; width: 100%; max-width: none; margin: 0; pointer-events: auto; }
-.journey-mode .notification-stack { top: .7rem; }
 .offer-review-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: .8rem; }
 .rejection-dialog { width: min(600px,calc(100vw - 2rem)); }
 .rejection-dialog::backdrop { background: rgba(15,40,52,.48); }
@@ -1028,7 +1028,7 @@ button, .button, .text-button, .back-button, .main-nav a { font-weight: 650; }
 .active-partner-list small { color: var(--muted); font-size: .67rem; }
 @media (max-width: 620px) {
   .journey-meta { align-items: flex-start; flex-direction: column; margin-top: 2rem; }
-  .notification-stack { top: var(--notice-top,calc(4.7rem + env(safe-area-inset-top))); right: .6rem; width: calc(100% - 1.2rem); }
+  .notification-stack { margin-right: .6rem; width: calc(100% - 1.2rem); }
   .active-partner-list { grid-template-columns: repeat(2,minmax(0,1fr)); gap: .6rem; }
   .active-partner-list li { padding: .55rem; }
   .active-partner-list .partner-logo { width: 100%; max-width: 7rem; height: 5rem; }

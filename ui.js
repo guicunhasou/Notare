@@ -49,7 +49,15 @@
       background.inert = false;
       trigger.setAttribute("aria-expanded", "false");
       // Nunca deixar o foco preso dentro de uma lateral agora invisível.
-      if (wasOpen && (restoreFocus || drawer.contains(document.activeElement))) trigger.focus();
+      if (wasOpen && (restoreFocus || drawer.contains(document.activeElement))) {
+        // No desktop o acionador móvel está oculto: manter um ponto visível no menu.
+        const visible = focusableElements();
+        const target = mobileQuery.matches ? trigger
+          : visible.find(element => element === document.activeElement)
+            || visible.find(element => element.getAttribute("aria-current") === "page")
+            || visible[0];
+        target?.focus();
+      }
       syncVisibility();
     }
 
@@ -265,6 +273,7 @@
       operation = nextOperation;
       root.hidden = false;
       message.textContent = text;
+      if (!document.hidden) root.scrollIntoView?.({ block: 'nearest', behavior: 'instant' });
       if (!document.hidden) action.focus({preventScroll:true});
       if (document.hidden) pause('hidden', true);
       tick();
@@ -313,7 +322,7 @@
     function show(text,{tone='info'}={}) {
       clear();const treatment=({success:['Sucesso','#i-check'],warning:['Atenção','#i-occurrence'],error:['Não concluído','#i-occurrence'],info:['Informação','#i-bell']})[tone]||['Informação','#i-bell'];
       root.querySelector('[data-toast-label]').textContent=treatment[0];root.querySelector('[data-toast-icon]').setAttribute('href',treatment[1]);
-      message.textContent=text;root.hidden=false;expiresAt=clock()+duration;if(document.hidden)pause('hidden',true);timer=window.setInterval(tick,100);
+      message.textContent=text;root.hidden=false;if(!document.hidden)root.scrollIntoView?.({block:'nearest',behavior:'instant'});expiresAt=clock()+duration;if(document.hidden)pause('hidden',true);timer=window.setInterval(tick,100);
     }
     close.addEventListener('click',()=>{const focused=root.contains(document.activeElement);clear();if(focused)document.querySelector('#main-content')?.focus({preventScroll:true});});
     root.addEventListener('pointerenter',()=>pause('pointer',true));root.addEventListener('pointerleave',()=>pause('pointer',false));

@@ -8,9 +8,13 @@ Registros, planos e comunicados ficam no localStorage deste navegador e nesta or
 
 A sugestão de registro usa regras e textos locais e requer revisão humana. A classificação de sinais escolares continua dependente de análise da equipe. Não deve determinar decisões sobre pessoas reais.
 
+Atualizado em 17/11/2026. A publicação pública existente não transforma este MVP em serviço escolar de produção. Consulte o [estado de publicação](preparacao-vercel.md) e os [escopos de preferências](preferencias.md).
+
 ## Desfazer criações
 
-Apenas a criação mais recente de registro ou plano oferece Desfazer, por 60 segundos de tempo ativo. O prazo pausa enquanto o aviso recebe foco, ponteiro ou a aba está em segundo plano. Fechar o aviso, recarregar, trocar de perfil ou salvar uma nova criação encerra a oportunidade anterior. Não existe exclusão irrestrita nem desfazer global.
+Apenas a criação mais recente de registro ou plano oferece Desfazer, por cinco segundos de tempo ativo (5.000 ms). O prazo pausa enquanto o aviso recebe foco, ponteiro ou a aba está em segundo plano. Fechar o aviso, recarregar, trocar de perfil ou salvar uma nova criação encerra a oportunidade anterior. Não existe exclusão irrestrita nem desfazer global.
+
+O prazo de 60 segundos pertence ao [registro histórico do Pacote 02](pacote-02-20261103.md). A implementação atual usa cinco segundos ativos; o foco inicial no botão Desfazer também pausa a contagem até que o foco saia do aviso.
 
 Desfazer registra anulação com data e autor, preserva o texto original e acrescenta uma ação ao histórico. Para planos, anula também a agenda vinculada e retira o comunicado vinculado ainda não lido. Conteúdo anulado permanece visível como histórico e deixa de contar como ação pendente.
 

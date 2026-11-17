@@ -391,13 +391,6 @@ function renderTemporalContext(now = new Date()) {
   renderMiniCalendar(now);
 }
 
-function positionNotifications() {
-  const header = document.querySelector('.topbar');
-  const height = appShell.classList.contains('journey-mode') ? 0 : header.getBoundingClientRect().height;
-  document.querySelector('.notification-stack').style.setProperty('--notice-top', `${Math.ceil(height + 12)}px`);
-}
-window.addEventListener('resize', positionNotifications);
-
 const DATA_CHANGED_MESSAGE = "Os dados mudaram em outra aba. Sua operação não foi salva. Recarregue a página após preservar seus rascunhos.";
 
 function saveDatabase() {
@@ -1310,7 +1303,6 @@ function showRoute(route, options = {}) {
     else link.removeAttribute("aria-current");
   });
   if (nextRoute === "familias" && typeof businessUI !== "undefined") businessUI.prepareSuggestions(state.currentStudent);
-  positionNotifications();
   const nextHash = routeHash(nextRoute);
   if (options.skipHistory && location.hash !== nextHash) {
     history.replaceState(navigationContext(), "", nextHash);
@@ -1596,7 +1588,6 @@ const creationNotice = window.NOTARE_UI.createUndoNotice({
 });
 
 function showToast(message, options = {}) {
-  positionNotifications();
   toastNotice.show(message,options);
 }
 
@@ -2116,7 +2107,7 @@ window.addEventListener("beforeunload", event => {
 const businessUI = window.NOTARE_BUSINESS_UI.create({
   database: () => db, actor: () => getProfile(), save: saveDatabase,
   transaction: fn => withDatabaseWrite(() => fn(db, getProfile())),
-  refresh: renderAll, navigate: showRoute, notify: showToast, escape: escapeHtml, studentIdentity: studentContextMarkup, selectedStudent: () => state.currentStudent, draftReady: form => businessFormBaselines.set(form,formSnapshot(form)), showUndo: (text,operation) => {positionNotifications();toastNotice.clear();creationNotice.show(text,operation);}
+  refresh: renderAll, navigate: showRoute, notify: showToast, escape: escapeHtml, studentIdentity: studentContextMarkup, selectedStudent: () => state.currentStudent, draftReady: form => businessFormBaselines.set(form,formSnapshot(form)), showUndo: (text,operation) => {toastNotice.clear();creationNotice.show(text,operation);}
 });
 document.querySelector("#manage-subscription").addEventListener("click", () => { closeInstitutionPlanDialog(); showRoute("assinatura"); });
 

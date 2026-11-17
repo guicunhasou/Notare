@@ -122,6 +122,12 @@
           <button class="icon-button" id="notification-banner-close" type="button" aria-label="Fechar aviso">×</button>
         </section>
 
+        <div class="notification-stack"><aside id="creation-notice" class="creation-notice toast-card" aria-label="Operação recente" hidden>
+          <span class="notice-icon" aria-hidden="true"><svg><use href="#i-check"></use></svg></span><div class="notice-body"><strong class="notice-label">Sucesso</strong><p data-undo-message role="status" aria-live="polite"></p><small data-undo-time id="undo-time" aria-live="off"></small></div>
+          <div class="notice-actions"><button class="button button-secondary" type="button" data-undo-action aria-describedby="undo-time">Desfazer</button><button class="icon-button" type="button" data-undo-close aria-label="Fechar aviso">×</button></div>
+        </aside>
+        <div id="toast" class="toast toast-card" hidden><span class="notice-icon" aria-hidden="true"><svg><use data-toast-icon href="#i-bell"></use></svg></span><div class="notice-body" role="status" aria-live="polite"><strong class="notice-label" data-toast-label>Informação</strong><p data-toast-message></p></div><div class="notice-actions"><button class="icon-button" type="button" data-toast-close aria-label="Fechar aviso">×</button></div></div></div>
+
         <main id="main-content" tabindex="-1">
           <section class="view" data-view="painel" aria-labelledby="painel-title">
             <div class="page-heading">
@@ -319,11 +325,6 @@
 
           <section class="view ecosystem-view" data-view="parcerias" aria-labelledby="parcerias-title"><div class="page-heading"><div><h1 id="parcerias-title" tabindex="-1">Revisar parcerias</h1><p>Avalie as ofertas antes de disponibilizá-las às famílias.</p></div></div><div data-business-content="parcerias"></div></section>
         </main>
-        <div class="notification-stack"><aside id="creation-notice" class="creation-notice toast-card" aria-label="Operação recente" hidden>
-          <span class="notice-icon" aria-hidden="true"><svg><use href="#i-check"></use></svg></span><div class="notice-body"><strong class="notice-label">Sucesso</strong><p data-undo-message role="status" aria-live="polite"></p><small data-undo-time id="undo-time" aria-live="off"></small></div>
-          <div class="notice-actions"><button class="button button-secondary" type="button" data-undo-action aria-describedby="undo-time">Desfazer</button><button class="icon-button" type="button" data-undo-close aria-label="Fechar aviso">×</button></div>
-        </aside>
-        <div id="toast" class="toast toast-card" hidden><span class="notice-icon" aria-hidden="true"><svg><use data-toast-icon href="#i-bell"></use></svg></span><div class="notice-body" role="status" aria-live="polite"><strong class="notice-label" data-toast-label>Informação</strong><p data-toast-message></p></div><div class="notice-actions"><button class="icon-button" type="button" data-toast-close aria-label="Fechar aviso">×</button></div></div></div>
       </div>
     </div>
 

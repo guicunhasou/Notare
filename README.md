@@ -19,7 +19,15 @@ A ampliação local de 24/10/2026 integra famílias, Clube de Benefícios, parce
 
 ---
 
-## Estado homologado — 10/11/2026
+## Estado atual local — 17/11/2026
+
+As Work 1.01 e 1.02 foram consolidadas na `main`, commit-base `4cbe7a3`. A Work 1.03 acrescenta refinamentos locais de imagem, avisos, foco e cabeçalhos: **310 testes automatizados**, incluindo os 300 anteriores, e build validado. As alterações da Work 1.03 permanecem sem commit e sem publicação para revisão.
+
+A demonstração pública existente está em [notare-startup.vercel.app](https://notare-startup.vercel.app/), com HTTP 200 confirmado em consulta somente de leitura em 17/11/2026. O commit desse deploy não foi identificado pelos metadados públicos consultados; não se presume que corresponda à `main` ou às alterações locais. O deploy automático por Git continua desativado na configuração versionada.
+
+Desfazer fica disponível por **cinco segundos ativos**, com pausa durante foco, ponteiro ou aba em segundo plano. Veja [limites atuais](docs/limites-do-ambiente-local.md), [preferências e seus escopos](docs/preferencias.md) e [configuração atual e histórico da publicação](docs/preparacao-vercel.md).
+
+## Registro histórico de homologação — 10/11/2026
 
 O MVP está **apto para entrega acadêmica nos cenários verificados**, com 270 testes automatizados aprovados na data real e A01–A06 homologados. As jornadas principais incluem contexto do estudante → registro → plano → conclusão e histórico; escola → comunicado → resposta familiar; aprovação de oferta → voucher → conversão ilustrativa; e adesão institucional demonstrativa.
 
@@ -200,7 +208,9 @@ Com o Node.js instalado, execute:
 npm run check
 ```
 
-O comando verifica a sintaxe dos arquivos JavaScript e executa 270 testes de dados, datas, permissões, acessibilidade estrutural, persistência e regras dos principais fluxos. Em 10/11/2026, os 270 testes passaram, sem falhas ou testes ignorados. A01–A06 estão homologados nos cenários verificados; essa cobertura não equivale a certificação universal de acessibilidade ou compatibilidade.
+O comando verifica a sintaxe dos arquivos JavaScript e executa 310 testes de dados, datas, permissões, acessibilidade estrutural, persistência, segurança de configuração e regras dos principais fluxos. A referência anterior de 300 testes corresponde às Work 1.01/1.02; os 270 testes de 10/11/2026 pertencem à homologação histórica. Essa cobertura não equivale a certificação universal de acessibilidade, compatibilidade ou segurança.
+
+Execute também `npm run build` para preparar o site estático em `dist/`. A validação de cabeçalhos no ambiente real da Vercel depende de um Preview ou deploy futuro autorizado.
 
 ---
 
@@ -210,7 +220,8 @@ O comando verifica a sintaxe dos arquivos JavaScript e executa 270 testes de dad
 - não há cobrança, assinatura eletrônica, compra, repasse ou processamento comercial; preços, vouchers e comissões são hipóteses demonstrativas;
 - nenhuma importação ou comunicação familiar é enviada para um serviço externo;
 - a sugestão de texto não utiliza inteligência artificial real;
-- os dados criados permanecem no `localStorage` do navegador;
+- os dados criados permanecem no `localStorage` da mesma origem, sem sincronização remota; bases incompatíveis ou inacessíveis bloqueiam gravações para preservar os dados existentes;
+- preferências do painel usam armazenamento por perfil quando disponível; o fallback em memória e os controles de sugestões têm os limites descritos na documentação de preferências;
 - a aplicação organiza sinais, mas não substitui a análise profissional.
 
 ---
@@ -238,6 +249,6 @@ Os limites de funcionamento, a transparência da interface e as regras de anula�
 
 ## Registro histórico do candidato — 05/11/2026
 
-Na etapa de 05/11, sete imagens fornecidas foram integradas e o Pacote 05 foi implementado. [Relatório e evidências daquela etapa](docs/missao-final-20261105.md). O estado homologado atual está descrito na seção de 10/11 acima.
+Na etapa de 05/11, sete imagens fornecidas foram integradas e o Pacote 05 foi implementado. [Relatório e evidências daquela etapa](docs/missao-final-20261105.md). Este é um registro daquela etapa; o estado atual está na seção de 17/11 acima.
 
 Para preparar exclusivamente os arquivos do site, execute `npm run build`. A saída `dist/` exclui documentação e testes. A publicação na Vercel não foi executada; consulte a [preparação para publicação futura](docs/preparacao-vercel.md). Deploy automático por Git está desativado.
