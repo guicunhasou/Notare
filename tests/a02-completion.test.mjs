@@ -22,7 +22,7 @@ test('A02: reproduz 31 e atualiza ações, casos com retorno e painel ao conclui
 });
 
 test('A02: concluir plano ativo reduz abertos e preserva agenda, devolutiva e históricos', () => {
-  const r=runtime(), before=current(r);
+  const r=runtime({now:'2026-11-10T12:00:00-03:00'}), before=current(r);
   r.run(`db.agenda.push({id:'agenda-a02',studentId:'luana',sourcePlanId:'plan-007',status:'active'});db.plans.find(p=>p.id==='plan-007').status='active';db.plans.find(p=>p.id==='plan-007').date='2099-12-31'`);
   assert.equal(r.run(`visiblePlans().filter(p=>planEffectiveStatus(p,new Date())==='active').length`),2);
   complete(r);

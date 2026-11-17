@@ -1,6 +1,32 @@
 const STORAGE_KEY = "notare-database-v7";
 const PROFILE_KEY = "notare-profile-v4";
 const SIDEBAR_KEY = "notare-sidebar-collapsed";
+// Preferências não são a base de dados: podem funcionar apenas durante a sessão.
+// Uma falha de leitura da base nunca autoriza recriá-la ou sobrescrevê-la.
+const sessionPreferences = new Map();
+let preferenceStorageBlocked = false;
+let preferenceWarningLogged = false;
+function readPreference(key) {
+  if (sessionPreferences.has(key)) return sessionPreferences.get(key);
+  try { return localStorage.getItem(key); }
+  catch (error) {
+    preferenceStorageBlocked = true;
+    if (!preferenceWarningLogged) { console.warn("Preferências locais indisponíveis; usando memória da sessão.", error); preferenceWarningLogged = true; }
+    return null;
+  }
+}
+function writePreference(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    sessionPreferences.delete(key);
+    return true;
+  } catch (error) {
+    preferenceStorageBlocked = true;
+    sessionPreferences.set(key, value);
+    if (!preferenceWarningLogged) { console.warn("Preferências locais indisponíveis; usando memória da sessão.", error); preferenceWarningLogged = true; }
+    return false;
+  }
+}
 const {
   addBusinessDays,
   addDays,
@@ -41,6 +67,7 @@ function reconcileRecordTimes(database, seed) {
 }
 
 let persistedSnapshot; // Texto exato lido nesta aba; não é uma versão recalculada.
+let databaseLoadIssue = null;
 let databaseLockHeld = false;
 let databaseWritePending = false;
 
@@ -70,10 +97,18 @@ function loadDatabase({ persistMigration = true } = {}) {
       persistedSnapshot = snapshot;
       return database;
     }
-    persistedSnapshot = raw;
+    if (raw !== null) {
+      // Não tratar base inválida/mais nova/mais antiga como uma instalação vazia.
+      persistedSnapshot = undefined;
+      databaseLoadIssue = "Há uma base local de versão desconhecida ou incompatível. Seus dados foram mantidos; gravações e restauração estão bloqueadas. Abra o Notare na versão compatível antes de tentar migrar ou apagar dados.";
+      return cloneSeed();
+    }
+    persistedSnapshot = null; // Somente armazenamento realmente vazio pode iniciar uma base.
+    databaseLoadIssue = null;
   } catch (error) {
     persistedSnapshot = undefined; // Impede uma gravação após falha de leitura.
-    console.warn("A base local não pôde ser carregada; usando a base inicial.", error);
+    databaseLoadIssue = "Não foi possível ler a base local. A demonstração está disponível, mas gravações e restauração estão bloqueadas para preservar dados existentes.";
+    console.warn("A base local não pôde ser carregada; nenhuma gravação será permitida.", error);
   }
   return cloneSeed();
 }
@@ -81,7 +116,7 @@ function loadDatabase({ persistMigration = true } = {}) {
 let db = loadDatabase();
 
 const state = {
-  profileId: localStorage.getItem(PROFILE_KEY) || "direcao",
+  profileId: readPreference(PROFILE_KEY) || "direcao",
   currentStudent: "ana",
   currentRoute: "entrada",
   previousRoute: "entrada",
@@ -114,7 +149,7 @@ const DASHBOARD_PANELS = ['priority', 'followup', 'actions', 'attendance'];
 const DASHBOARD_KEY = 'notare-dashboard-v3:';
 function readDashboardPreferences(profileId) {
   try {
-    const preferences = JSON.parse(localStorage.getItem(DASHBOARD_KEY + profileId) || '{}');
+    const preferences = JSON.parse(readPreference(DASHBOARD_KEY + profileId) || '{}');
     return Object.fromEntries(DASHBOARD_PANELS.map(key => [key, preferences?.[key] === true]));
   } catch { return {}; }
 }
@@ -126,8 +161,9 @@ function ensureDashboardPreferences() {
   state.calendarWeekOffset = 0;
 }
 function saveDashboardPreferences() {
-  try { localStorage.setItem(DASHBOARD_KEY + state.profileId, JSON.stringify(state.dashboardExpansion)); }
-  catch { showToast('Sua escolha será mantida nesta sessão. Não foi possível salvar a preferência neste navegador.'); }
+  if (!writePreference(DASHBOARD_KEY + state.profileId, JSON.stringify(state.dashboardExpansion))) {
+    showToast('Sua escolha será mantida nesta sessão. Não foi possível salvar a preferência neste navegador.');
+  }
 }
 function applyDashboardPanels() {
   DASHBOARD_PANELS.forEach(key => {
@@ -369,7 +405,7 @@ function saveDatabase() {
   if (typeof navigator !== "undefined" && !databaseLockHeld) {
     throw new Error("Gravação bloqueada: não foi possível obter o bloqueio de segurança.");
   }
-  if (persistedSnapshot === undefined) throw new Error("A leitura da base falhou. Gravação bloqueada para preservar os dados existentes.");
+  if (persistedSnapshot === undefined) throw new Error(databaseLoadIssue || "A leitura da base falhou. Gravação bloqueada para preservar os dados existentes.");
   if (localStorage.getItem(STORAGE_KEY) !== persistedSnapshot) throw new Error(DATA_CHANGED_MESSAGE);
   const next = JSON.stringify(db);
   localStorage.setItem(STORAGE_KEY, next);
@@ -380,9 +416,8 @@ function withDatabaseWrite(mutate) {
   const execute = () => {
     const before = JSON.stringify(db);
     try {
-      if (persistedSnapshot === undefined || localStorage.getItem(STORAGE_KEY) !== persistedSnapshot) {
-        throw new Error(DATA_CHANGED_MESSAGE);
-      }
+      if (persistedSnapshot === undefined) throw new Error(databaseLoadIssue || "Leitura da base indisponível; gravação bloqueada.");
+      if (localStorage.getItem(STORAGE_KEY) !== persistedSnapshot) throw new Error(DATA_CHANGED_MESSAGE);
       const result = mutate();
       saveDatabase();
       return result;
@@ -1130,10 +1165,11 @@ const businessFormBaselines = new WeakMap();
 function captureBusinessFormBaselines() {
   document.querySelectorAll("[data-business-form]").forEach(form => businessFormBaselines.set(form, formSnapshot(form)));
 }
-function hasUnsavedBusinessForm() {
-  return [...document.querySelectorAll(".view.active [data-business-form], dialog[open] [data-business-form]")].some(form =>
+function unsavedBusinessForms() {
+  return [...document.querySelectorAll(".view.active [data-business-form], dialog[open] [data-business-form]")].filter(form =>
     businessFormBaselines.has(form) && formSnapshot(form) !== businessFormBaselines.get(form));
 }
+function hasUnsavedBusinessForm() { return unsavedBusinessForms().length > 0; }
 function navigationContext() {
   return Object.fromEntries([ ["route", state.currentRoute], ...navigationKeys.map(key => [key, state[key]]) ]);
 }
@@ -1150,16 +1186,23 @@ function hasUnsavedForm() {
   return form && formBaselines.has(form.id) && formSnapshot(form) !== formBaselines.get(form.id);
 }
 function confirmFormExit() {
-  if (!hasUnsavedForm()) {
+  const businessForms = unsavedBusinessForms();
+  if (!hasUnsavedForm() && !businessForms.length) {
     const form = activeForm();
     if (form) formBaselines.delete(form.id);
     return true;
   }
   if (!window.confirm("Sair sem salvar? As alterações deste formulário serão descartadas.")) return false;
   const form = activeForm();
-  form.reset();
-  formBaselines.delete(form.id);
-  state.recordKind = "Ausência";
+  if (form) {
+    form.reset();
+    formBaselines.delete(form.id);
+    state.recordKind = "Ausência";
+  }
+  for (const businessForm of businessForms) {
+    businessForm.reset();
+    businessFormBaselines.set(businessForm, formSnapshot(businessForm));
+  }
 
   showToast("Operação cancelada. Nenhuma alteração foi salva.");
   return true;
@@ -1571,7 +1614,7 @@ function applySidebarState(collapsed) {
 
 function toggleSidebar() {
   const collapsed = !appShell.classList.contains("sidebar-collapsed");
-  localStorage.setItem(SIDEBAR_KEY, String(collapsed));
+  writePreference(SIDEBAR_KEY, String(collapsed));
   applySidebarState(collapsed);
 }
 
@@ -1624,7 +1667,7 @@ function switchProfile(profileId, { announce = true } = {}) {
   state.classFilter = classNames[0] || "6º A";
   state.recordClass = classNames[0] || getStudent().className;
   state.recordFilter = "todos";
-  localStorage.setItem(PROFILE_KEY, profileId);
+  writePreference(PROFILE_KEY, profileId);
   document.querySelector("#student-search").value = "";
   document.querySelectorAll("[data-filter]").forEach((item) => {
     const active = item.dataset.filter === "todos";
@@ -2043,7 +2086,7 @@ document.querySelector("#reset-demo").addEventListener("click", () => {
     resetProfileNotifications();
     state.profileId = "direcao";
     state.currentStudent = "ana";
-    localStorage.setItem(PROFILE_KEY, state.profileId);
+    writePreference(PROFILE_KEY, state.profileId);
     renderAll();
     closeProfileDialog();
     showRoute("painel");
@@ -2079,10 +2122,17 @@ document.querySelector("#manage-subscription").addEventListener("click", () => {
 
 if (!allProfiles().some((profile) => profile.id === state.profileId)) state.profileId = "direcao";
 renderAll();
-applySidebarState(localStorage.getItem(SIDEBAR_KEY) === "true");
+applySidebarState(readPreference(SIDEBAR_KEY) === "true");
 const initialRoute = location.hash.slice(1) || "entrada";
 const initialContext = history.state?.route === initialRoute.split("?")[0] ? history.state : null;
 showRoute(initialRoute, { skipHistory: true, context: initialContext });
 history.replaceState(navigationContext(), "", routeHash());
 notificationCenter.render();
+if (databaseLoadIssue) {
+  const storageAlert = document.querySelector('#storage-alert');
+  storageAlert.textContent = databaseLoadIssue;
+  storageAlert.hidden = false;
+} else if (preferenceStorageBlocked) {
+  showToast('Preferências temporárias: este navegador não permite salvá-las. A base de dados continua protegida.', { tone: 'warning' });
+}
 window.setInterval(renderTemporalContext, 60000);

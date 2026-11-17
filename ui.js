@@ -9,6 +9,18 @@
   ].join(",");
 
   function createModalDrawer({ drawer, scrim, trigger, closeButton, background }) {
+    const mobileQuery = window.matchMedia("(max-width: 820px)");
+    function syncVisibility() {
+      // Transform tira o menu da tela, mas sozinho não o retira do teclado.
+      const hiddenOnMobile = mobileQuery.matches && !drawer.classList.contains("open");
+      drawer.inert = hiddenOnMobile;
+      if (hiddenOnMobile) drawer.setAttribute("aria-hidden", "true");
+      else drawer.removeAttribute("aria-hidden");
+    }
+    function syncViewport() {
+      if (!mobileQuery.matches && drawer.classList.contains("open")) close({ restoreFocus: true });
+      syncVisibility();
+    }
     function focusableElements() {
       return [...drawer.querySelectorAll(FOCUSABLE_SELECTOR)].filter((element) => (
         !element.hidden
@@ -21,6 +33,7 @@
       drawer.classList.add("open");
       drawer.setAttribute("role", "dialog");
       drawer.setAttribute("aria-modal", "true");
+      syncVisibility();
       scrim.hidden = false;
       background.inert = true;
       trigger.setAttribute("aria-expanded", "true");
@@ -35,7 +48,9 @@
       scrim.hidden = true;
       background.inert = false;
       trigger.setAttribute("aria-expanded", "false");
-      if (restoreFocus && wasOpen) trigger.focus();
+      // Nunca deixar o foco preso dentro de uma lateral agora invisível.
+      if (wasOpen && (restoreFocus || drawer.contains(document.activeElement))) trigger.focus();
+      syncVisibility();
     }
 
     function trapFocus(event) {
@@ -66,6 +81,9 @@
       return false;
     }
 
+    syncVisibility();
+    mobileQuery.addEventListener?.("change", syncViewport);
+    window.addEventListener?.("resize", syncViewport);
     return Object.freeze({ close, open, trapFocus });
   }
 

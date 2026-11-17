@@ -1200,3 +1200,17 @@ main :is(a[href], .text-button[data-route], .text-button[data-student], .text-bu
 [data-view="cadastros"] .registration-tabs button:not(.active),
 [data-view="cadastros"] .registration-query-field,
 #registration-class-field { color: #5b6b6e; }
+
+/* Work 1.02: contraste localizado nos contextos auditados. */
+:root { --muted-readable: #536568; }
+.journey-header p,
+.journey-copy > p,
+.journey-autoplay,
+.journey-meta strong,
+.agenda-copy span,
+#plan-student-caption small,
+.choice-cards label small,
+.journey-limits { color: var(--muted-readable); }
+
+/* Estado excepcional de base incompatível/ilegível: aviso persistente, não descartável. */
+.storage-alert { margin: .75rem clamp(1rem, 3vw, 2rem) 0; padding: .85rem 1rem; border: 1px solid #b97f37; border-radius: 10px; background: #fff4dc; color: #61430f; font-size: .8rem; line-height: 1.6; }

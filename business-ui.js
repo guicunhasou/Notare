@@ -124,6 +124,7 @@
       }
       document.querySelector('#complete-plan-content').innerHTML=permission('plans:create')?completionForm(db,a):'';
       updateWizard();
+      updateFamilyContext();
       const sub = db.business.subscription;
       document.querySelector('.institution-plan-status strong').textContent = B.PLANS[sub.plan].name;
       document.querySelector('.institution-plan-status small').textContent = `${db.school.name} · ${sub.segment}`;
@@ -131,21 +132,47 @@
     let mutationPending = false;
     function mutate(fn, message, onSuccess = () => {}, submittedForm = null, undoable = false) {
       if (mutationPending) {notify('Aguarde a conclusão da gravação anterior.',{tone:'warning'});return false;}
-      // Os dois formulários da tela Famílias e retornos podem ter rascunhos simultâneos.
-      const drafts = [...document.querySelectorAll('.view.active [data-business-form]'), ...document.querySelectorAll('#complete-plan-dialog[open] [data-business-form]')]
-        .filter(form => form !== submittedForm && ['message','complete-plan'].includes(form.dataset.businessForm))
-        .map(form => ({type:form.dataset.businessForm, fields:[...form.querySelectorAll('select,textarea')].map(field=>({name:field.name,value:field.value}))}));
+      const profileId = actor().id;
+      const forms = () => [...document.querySelectorAll('.view.active [data-business-form]'), ...document.querySelectorAll('#complete-plan-dialog[open] [data-business-form]')];
+      // Cada resposta pertence ao seu comunicado; preservar uma não pode preencher outra.
+      const captureDrafts = () => forms()
+        .filter(form => form !== submittedForm && ['message','complete-plan','reply'].includes(form.dataset.businessForm))
+        .map(form => {
+          const status = form.querySelector('[data-suggestion-status]');
+          return {type:form.dataset.businessForm, id:form.dataset.id || '',
+            fields:[...form.querySelectorAll('select,textarea')].map(field=>({name:field.name,value:field.value})),
+            automaticText:automaticTexts.get(form), status:status ? {hidden:status.hidden,text:status.textContent} : null};
+        });
+      const messageStudent = submittedForm?.dataset.businessForm === 'message' ? submittedForm.elements.student.value : null;
       const databaseBefore = database();
       const before = transaction ? null : JSON.stringify(databaseBefore);
       const done = operation => {
         mutationPending = false;
+        const drafts = actor().id === profileId ? captureDrafts() : [];
         onSuccess(); refresh();
-        for (const draft of drafts) {
-          const form = document.querySelector(`.view.active [data-business-form="${draft.type}"]`);
-          if (form) for (const field of draft.fields) {
-            const target = form.elements[field.name];
-            if (target && (target.tagName !== 'SELECT' || [...target.options].some(option=>option.value===field.value))) target.value=field.value;
+        if (actor().id === profileId) {
+          const currentForms = forms();
+          for (const draft of drafts) {
+            const form = currentForms.find(form => form.dataset.businessForm === draft.type && (form.dataset.id || '') === draft.id);
+            if (!form) continue;
+            for (const field of draft.fields) {
+              const target = form.elements[field.name];
+              if (target && (target.tagName !== 'SELECT' || [...target.options].some(option=>option.value===field.value))) target.value=field.value;
+            }
+            if (draft.automaticText !== undefined) {
+              automaticTexts.set(form,draft.automaticText);
+              if (form.querySelector('textarea').value === draft.automaticText) draftReady(form);
+            }
+            const status = form.querySelector('[data-suggestion-status]');
+            if (status && draft.status) {status.hidden=draft.status.hidden;status.textContent=draft.status.text;}
           }
+          const select = document.querySelector('[data-business-form="message"] select[name="student"]');
+          if (messageStudent && select && [...select.options].some(option=>option.value===messageStudent)) {
+            select.value=messageStudent;
+            const form = currentForms.find(form=>form.dataset.businessForm==='message');
+            if (form) draftReady(form); // Seleção preservada após envio não é um rascunho pendente.
+          }
+          updateFamilyContext();
         }
         if(undoable)showUndo(message,operation);else notify(message,{tone:'success'});
         return true;

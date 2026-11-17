@@ -2,7 +2,12 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 // Executa os controladores reais com um DOM mínimo e armazenamento isolado.
 // A navegação visual e o teclado também são verificados no navegador real.
-export function runtime({ sharedStorage, locks, browser = Boolean(locks) } = {}) {
+export function runtime({ sharedStorage, locks, browser = Boolean(locks), now, storageBlocked = false } = {}) {
+  // Relógio opcional do cenário; não muda o comportamento padrão dos demais testes.
+  const FixedDate = now === undefined ? null : class extends Date {
+    constructor(...args) { super(...(args.length ? args : [now])); }
+    static now() { return new Date(now).getTime(); }
+  };
   const elements = new Map();
   function element(selector) {
     if (elements.has(selector)) return elements.get(selector);
@@ -32,9 +37,9 @@ export function runtime({ sharedStorage, locks, browser = Boolean(locks) } = {})
     [Symbol.iterator]() { return this.entries[Symbol.iterator](); }
   }
   const noOp = () => {};
-  const context = vm.createContext({ ...(browser ? { navigator: { locks } } : {}), document, console, URLSearchParams, FormData, location: {search:'',hash:'#painel'}, localStorage: {
-    getItem: key => storage.get(key) ?? null,
-    setItem: (key, value) => { if (failStorage) throw new Error('Armazenamento indisponível'); storage.set(key, value); }
+  const context = vm.createContext({ ...(FixedDate ? { Date: FixedDate } : {}), ...(browser ? { navigator: { locks } } : {}), document, console, URLSearchParams, FormData, location: {search:'',hash:'#painel'}, localStorage: {
+    getItem: key => { if (storageBlocked) throw new Error('SecurityError: armazenamento bloqueado'); return storage.get(key) ?? null; },
+    setItem: (key, value) => { if (storageBlocked) throw new Error('SecurityError: armazenamento bloqueado'); if (failStorage) throw new Error('Armazenamento indisponível'); storage.set(key, value); }
   }, history: { replaceState:noOp, pushState:noOp }, window: {
     matchMedia: () => ({matches:false}), confirm: () => true,
     addEventListener:noOp, setTimeout: () => 1, clearTimeout:noOp, scrollTo:noOp, requestAnimationFrame:noOp,
