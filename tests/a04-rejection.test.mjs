@@ -18,7 +18,7 @@ function harness() {
   const option=r.element('#reject-auto-suggestion');option.checked=true;
   r.context.document.addEventListener=(type,fn)=>{events[type]=fn;};
   r.run(readFileSync(new URL('../business-ui.js',import.meta.url),'utf8'));
-  r.context.window.NOTARE_BUSINESS_UI.create({database:()=>r.run('db'),actor:()=>r.run('getProfile()'),save:()=>r.run('saveDatabase()'),refresh:()=>{},navigate:()=>{},notify:()=>{},escape:r.context.window.NOTARE_CORE.escapeHtml});
+  r.context.window.NOTARE_BUSINESS_UI.create({database:()=>r.run('db'),actor:()=>r.run('getProfile()'),suggestionEnabled:kind=>r.run('suggestionEnabled')(kind),saveSuggestionPreference:(kind, enabled)=>r.run('saveSuggestionPreference')(kind, enabled),save:()=>r.run('saveDatabase()'),refresh:()=>{},navigate:()=>{},notify:()=>{},escape:r.context.window.NOTARE_CORE.escapeHtml});
   const invoker={dataset:{business:'open-rejection',id:'oferta-criatividade'},isConnected:true,focus(){active=this;}};
   const open=()=>events.click({target:{closest:selector=>selector==='[data-business]'?invoker:null}});
   const toggle=checked=>{option.checked=checked;active=option;option.listeners.change({currentTarget:option});};
@@ -58,6 +58,6 @@ test('A04: cancelar e reabrir reinicia somente o novo rascunho; Escape devolve f
 });
 
 test('A04: opção desativada abre campo vazio sem seleção programática adicional',()=>{
-  const h=harness();h.option.checked=false;h.open();
+  const h=harness();h.r.run('saveSuggestionPreference("rejection", false)');h.open();
   assert.equal(h.field.value,'');assert.equal(h.field.scrollTop,0);assert.equal(h.selections(),0);assert.equal(h.active(),h.field);
 });

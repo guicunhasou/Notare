@@ -1,5 +1,5 @@
 (() => {
-  function create({ database, actor, save, transaction, refresh, navigate, notify, escape, studentIdentity = student => `<strong>${escape(student.name)}</strong><small>${escape(student.className)}</small>`, selectedStudent = () => null, draftReady = () => {}, showUndo = () => {} }) {
+  function create({ database, actor, save, transaction, refresh, navigate, notify, escape, studentIdentity = student => `<strong>${escape(student.name)}</strong><small>${escape(student.className)}</small>`, selectedStudent = () => null, draftReady = () => {}, showUndo = () => {}, suggestionEnabled = () => true, saveSuggestionPreference = () => {} }) {
     const B = window.NOTARE_BUSINESS;
     const e = escape;
     const money = value => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value / 100);
@@ -20,10 +20,9 @@
     const permission = name => actor().permissions.includes(name);
     let subscriptionDraft = null;
     const automaticTexts = new WeakMap();
-    const automaticPreferences = {body:true,conclusion:true};
     let rejectionInvoker = null, rejectionOffer = null, lastMutationError = '';
     const rejectionDialog = document.querySelector('#reject-offer-dialog');
-    const suggestionField = (name, label, id, enabled) => `<div class="suggestion-field"><span class="field-heading"><label for="${id}">${label}</label><label class="ai-simulation-button suggestion-switch"><input type="checkbox" data-auto-suggestion="${name}" ${automaticPreferences[name] ? 'checked' : ''} ${enabled ? '' : 'disabled'}><svg aria-hidden="true"><use href="#i-sparkles"></use></svg><span>Usar sugestões automáticas</span></label></span><textarea id="${id}" name="${name}" required minlength="${name === 'body' ? 5 : 10}" maxlength="600" rows="4"></textarea><p class="form-text-status" data-suggestion-status role="status" hidden></p></div>`;
+    const suggestionField = (name, label, id, enabled) => `<div class="suggestion-field"><span class="field-heading"><label for="${id}">${label}</label><label class="ai-simulation-button suggestion-switch"><input type="checkbox" data-auto-suggestion="${name}" ${suggestionEnabled(name) ? 'checked' : ''} ${enabled ? '' : 'disabled'}><svg aria-hidden="true"><use href="#i-sparkles"></use></svg><span>Usar sugestões automáticas</span></label></span><textarea id="${id}" name="${name}" required minlength="${name === 'body' ? 5 : 10}" maxlength="600" rows="4"></textarea><p class="form-text-status" data-suggestion-status role="status" hidden></p></div>`;
 
     const communityIdentity = a => {
       const media = window.NOTARE_COMMUNITY_MEDIA?.[a.id];
@@ -218,7 +217,11 @@
         if (studentId && (!field.value.trim() || field.value === automaticTexts.get(form))) {
           const select = form.elements.student || form.elements.plan;
           const option = [...select.options].find(option => form.elements.student ? option.value === studentId : database().plans.some(plan=>plan.id===option.value && plan.studentId===studentId));
-          if (option && option.value !== select.value) {field.value='';automaticTexts.delete(form);select.value=option.value;}
+          if (option && option.value !== select.value) {
+            clearAutomaticText(form, field);
+            select.value = option.value;
+            draftReady(form);
+          }
         }
         fillAutomaticSuggestion(form);
       }
@@ -249,10 +252,25 @@
       const field=document.querySelector('#reject-offer-reason');
       if(document.querySelector('#reject-auto-suggestion').checked===false||field.value.trim()||!rejectionOffer)return;
       field.value=B.rejectionSuggestion(database(),actor(),rejectionOffer);
+      automaticTexts.set(document.querySelector('#reject-offer-form'), field.value);
       field.setSelectionRange(0,0);
       field.scrollTop=0;
     }
-    document.querySelector('#reject-auto-suggestion').addEventListener('change',event=>{if(!event.currentTarget.checked){document.querySelector('#reject-offer-reason').value='';return;}fillRejectionSuggestion();});
+    function clearAutomaticText(form, field) {
+      const wasAutomatic = field.value === automaticTexts.get(form);
+      if (wasAutomatic) field.value = '';
+      automaticTexts.delete(form);
+      return wasAutomatic;
+    }
+    function bindReasonPreference(kind, optionId, formId, fieldId, fill) {
+      document.querySelector(optionId).addEventListener('change', event => {
+        const enabled = event.currentTarget.checked;
+        saveSuggestionPreference(kind, enabled);
+        if (enabled) fill();
+        else clearAutomaticText(document.querySelector(formId), document.querySelector(fieldId));
+      });
+    }
+    bindReasonPreference('rejection', '#reject-auto-suggestion', '#reject-offer-form', '#reject-offer-reason', fillRejectionSuggestion);
     function closeRejection({restoreFocus=true} = {}) {
       if (typeof rejectionDialog.close === 'function' && rejectionDialog.open) rejectionDialog.close();
       else {rejectionDialog.removeAttribute('open');rejectionDialog.open=false;}
@@ -268,6 +286,8 @@
       form.elements.reason.value='';
       document.querySelector('#reject-offer-context').textContent=offer.title;
       document.querySelector('#reject-offer-error').hidden=true;
+      automaticTexts.delete(form);
+      document.querySelector('#reject-auto-suggestion').checked = suggestionEnabled('rejection');
       fillRejectionSuggestion();
       if (typeof rejectionDialog.showModal === 'function') rejectionDialog.showModal();
       else {rejectionDialog.setAttribute('open','');rejectionDialog.open=true;}
@@ -281,17 +301,21 @@
       const field=document.querySelector('#end-partner-reason');
       if(document.querySelector('#end-auto-suggestion').checked===false||field.value.trim()||!endingPartner)return;
       field.value=B.endingSuggestion(database(),actor(),endingPartner);
+      automaticTexts.set(document.querySelector('#end-partner-form'), field.value);
     }
-    document.querySelector('#end-auto-suggestion').addEventListener('change',event=>{
-      if(!event.currentTarget.checked){document.querySelector('#end-partner-reason').value='';return;}
-      fillEndingSuggestion();
-    });
+    bindReasonPreference('ending', '#end-auto-suggestion', '#end-partner-form', '#end-partner-reason', fillEndingSuggestion);
     function closeEnding({restoreFocus=true}={}) {if(endingDialog.open)endingDialog.close();endingPartner=null;if(restoreFocus&&endingInvoker?.isConnected)endingInvoker.focus();}
     function openEnding(id,invoker) {
       if(!permission('partners:review'))return notify('Encerramento reservado à direção.',{tone:'warning'});
       const partner=database().business.partners.find(p=>p.id===id&&p.status!=='ended');if(!partner)return notify('Esta parceria não está mais ativa.',{tone:'warning'});
       endingPartner=id;endingInvoker=invoker;const form=document.querySelector('#end-partner-form');form.dataset.id=id;form.elements.reason.value='';
-      document.querySelector('#end-partner-context').textContent=partner.name;document.querySelector('#end-partner-error').hidden=true;fillEndingSuggestion();endingDialog.showModal();form.elements.reason.focus();
+      document.querySelector('#end-partner-context').textContent=partner.name;
+      document.querySelector('#end-partner-error').hidden=true;
+      automaticTexts.delete(form);
+      document.querySelector('#end-auto-suggestion').checked = suggestionEnabled('ending');
+      fillEndingSuggestion();
+      endingDialog.showModal();
+      form.elements.reason.focus();
     }
     // Mantém Tab dentro dos modais também nos navegadores que passam o foco à barra de endereço.
     for(const dialog of [completionDialog,rejectionDialog,endingDialog])dialog.addEventListener('keydown',event=>{
@@ -303,19 +327,27 @@
     });
     endingDialog.addEventListener('cancel',event=>{event.preventDefault();closeEnding();});
     document.querySelector('#end-partner-close').addEventListener('click',()=>closeEnding());document.querySelector('#end-partner-cancel').addEventListener('click',()=>closeEnding());
+    document.addEventListener('input', event => {
+      if (event.target.matches('textarea')) automaticTexts.delete(event.target.closest('[data-business-form]'));
+    });
     document.addEventListener('change', event => {
       if (event.target.closest('#subscription-wizard')) updateWizard();
       const form = event.target.closest('[data-business-form]');
       if (!form || !['message','complete-plan'].includes(form.dataset.businessForm)) return;
       const field=form.querySelector('textarea');
       if (event.target.matches?.('[data-auto-suggestion]')) {
-        automaticPreferences[event.target.dataset.autoSuggestion]=event.target.checked;
+        saveSuggestionPreference(event.target.dataset.autoSuggestion, event.target.checked);
         if (event.target.checked) fillAutomaticSuggestion(form);
-        else {field.value='';automaticTexts.delete(form);const status=form.querySelector('[data-suggestion-status]');status.hidden=true;status.textContent='';}
+        else if (clearAutomaticText(form, field)) {
+          const status = form.querySelector('[data-suggestion-status]');
+          status.hidden = true;
+          status.textContent = '';
+          draftReady(form);
+        }
         return;
       }
       if (event.target.tagName === 'SELECT') {
-        if (automaticPreferences[form.dataset.businessForm==='message'?'body':'conclusion'] && field.value === automaticTexts.get(form)) {field.value='';automaticTexts.delete(form);}
+        if (form.querySelector('[data-auto-suggestion]').checked) clearAutomaticText(form, field);
         const status = form.querySelector('[data-suggestion-status]'); status.hidden = false;
         status.hidden=!field.value.trim();status.textContent=field.value.trim()?'Contexto alterado. Confira se o texto corresponde ao estudante selecionado.':'';
         fillAutomaticSuggestion(form);updateFamilyContext();

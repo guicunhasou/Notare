@@ -1,20 +1,21 @@
-# Notare — escopo atual das preferências
+# Notare — preferências por perfil demonstrativo
 
-Conferência de 17/11/2026 — F11, somente documentação. A Work 1.03 não modifica persistência, valores padrão ou escopo de nenhuma preferência.
+A Work 1.05 implementa F11. Cada perfil demonstrativo tem cinco escolhas independentes de sugestões automáticas no navegador.
 
-| Controle | Onde é mantido | Troca de perfil | Recarregar |
-| --- | --- | --- | --- |
-| Expansão dos detalhes do painel | `notare-dashboard-v3:<profileId>` no localStorage da mesma origem | Cada perfil recupera sua própria escolha | Recupera a escolha salva; sem armazenamento, vale apenas o fallback em memória da sessão |
-| Sugestões de comunicado e de Resultado e continuidade | Objeto `automaticPreferences` em memória, com escolhas distintas para `body` e `conclusion` | Compartilhadas entre perfis na mesma página/sessão | Reiniciam habilitadas; não há chave por perfil |
-| Sugestões de Novo registro | Estado da checkbox `#record-auto-suggestion` no formulário | Não há preferência salva por perfil; a troca de perfil reseta o formulário ao padrão habilitado | Reinicia no padrão do HTML; salvar um registro também reseta o formulário |
-| Sugestões de recusa e encerramento de parceria | Checkboxes nos respectivos diálogos | Sem chave de armazenamento por perfil | Reiniciam no padrão do HTML |
+| Controle | Identificador | Padrão sem preferência válida |
+| --- | --- | --- |
+| Comunicado à família | `body` | Ligado |
+| Resultado e continuidade | `conclusion` | Ligado |
+| Novo registro | `record` | Ligado |
+| Recusa de oferta | `rejection` | Ligado |
+| Encerramento de parceria | `ending` | Ligado |
 
-As preferências do painel representam expansão de quatro seções (`priority`, `followup`, `actions`, `attendance`). Não incluem filtros, data selecionada do calendário ou a escolha de sugestões. O perfil demonstrativo selecionado e a lateral também têm suas próprias chaves, independentes do painel.
+Cada escolha usa a chave `notare-suggestion-v1:<profileId>:<controle>` no `localStorage` da mesma origem. Os valores salvos são `true` e `false`. Valores ausentes ou inválidos usam o padrão ligado. Ao alternar o perfil ou recarregar, os controles recuperam as escolhas do perfil ativo quando o armazenamento está acessível.
 
-O fallback de preferências em memória não grava uma base escolar inacessível nem sincroniza escolhas entre abas ou dispositivos. Ao recarregar a página, esse fallback é perdido. Armazenamento incompatível ou bloqueado continua impedindo gravações destrutivas da base.
+No caso de falha ao salvar, a escolha funciona em memória para aquele perfil e controle até o fim da sessão da página. Ao recarregar, vale a última escolha que conseguiu ser gravada ou o padrão. As escolhas não se sincronizam entre origens ou dispositivos.
 
-Sugestões usam regras e textos locais. O usuário deve revisar o texto. Textos editados manualmente permanecem sob as proteções existentes de rascunho e confirmação de navegação; a presença de uma sugestão não representa autosave remoto ou comunicação externa.
+Ligar preenche um campo vazio quando existe sugestão para o contexto atual. Desligar remove apenas a sugestão automática que permanece intacta. Se o usuário digitou ou editou o texto, o controle preserva o conteúdo. As sugestões continuam usando regras locais e exigem revisão humana e confirmação pelo fluxo existente.
 
-**Decisão de produto pendente:** tornar as escolhas de sugestões individuais e persistentes por perfil. Isso exige aprovação própria e não foi implementado nesta rodada. A diferença atual é um contrato documentado, não uma promessa de preferência pessoal persistente.
+A preferência armazena apenas o estado do controle. Os rascunhos, a base escolar e o histórico seguem os fluxos existentes. As permissões de cada perfil continuam determinando quais formulários ele pode usar.
 
-Fontes: `app.js` (`readDashboardPreferences`, `ensureDashboardPreferences`, `switchProfile`, formulário de registro) e `business-ui.js` (`automaticPreferences` e controles dos diálogos).
+A expansão dos quatro indicadores do painel mantém sua própria chave `notare-dashboard-v3:<profileId>`. O perfil ativo e o estado da lateral também têm chaves independentes.

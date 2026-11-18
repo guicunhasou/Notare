@@ -221,7 +221,7 @@ Execute também `npm run build` para preparar o site estático em `dist/`. A val
 - nenhuma importação ou comunicação familiar é enviada para um serviço externo;
 - a sugestão de texto não utiliza inteligência artificial real;
 - os dados criados permanecem no `localStorage` da mesma origem, sem sincronização remota; bases incompatíveis ou inacessíveis bloqueiam gravações para preservar os dados existentes;
-- preferências do painel usam armazenamento por perfil quando disponível; o fallback em memória e os controles de sugestões têm os limites descritos na documentação de preferências;
+- preferências do painel e dos cinco controles de sugestões são guardadas por perfil demonstrativo, com fallback em memória quando o armazenamento está indisponível.
 - a aplicação organiza sinais, mas não substitui a análise profissional.
 
 ---

@@ -27,6 +27,21 @@ function writePreference(key, value) {
     return false;
   }
 }
+const SUGGESTION_KEY = "notare-suggestion-v1:";
+function suggestionEnabled(kind) {
+  return readPreference(`${SUGGESTION_KEY}${state.profileId}:${kind}`) !== "false";
+}
+
+function saveSuggestionPreference(kind, enabled) {
+  writePreference(`${SUGGESTION_KEY}${state.profileId}:${kind}`, String(enabled));
+}
+
+function syncRecordSuggestionPreference() {
+  const option = document.querySelector("#record-auto-suggestion");
+  const enabled = suggestionEnabled("record");
+  option.defaultChecked = option.checked = enabled;
+}
+
 const {
   addBusinessDays,
   addDays,
@@ -1121,6 +1136,7 @@ function renderPlanSuccess() {
 }
 
 function renderAll() {
+  syncRecordSuggestionPreference();
   renderSchool();
   renderProfileIdentity();
   renderOwnerOptions();
@@ -1280,7 +1296,11 @@ function showRoute(route, options = {}) {
   if (["busca-ativa", "estudantes"].includes(nextRoute)) renderStudents();
   if (nextRoute === "registros") renderRecords();
   if (["novo-registro", "plano"].includes(nextRoute)) {
-    if (nextRoute === "novo-registro") {renderRecordTemplates(); autoFillRecordSuggestion();}
+    if (nextRoute === "novo-registro") {
+      syncRecordSuggestionPreference();
+      renderRecordTemplates();
+      autoFillRecordSuggestion();
+    }
     const form = activeForm();
     if (!formBaselines.has(form.id)) formBaselines.set(form.id, formSnapshot(form));
 
@@ -1675,6 +1695,12 @@ function switchProfile(profileId, { announce = true } = {}) {
   if (!scoped.some((student) => student.id === state.currentStudent)) state.currentStudent = scoped[0]?.id || db.students[0].id;
   renderAll();
   if (routePermissions[state.currentRoute] && !hasPermission(routePermissions[state.currentRoute])) showRoute(defaultRoute());
+  else if (state.currentRoute === "familias") businessUI.prepareSuggestions(state.currentStudent);
+  else if (state.currentRoute === "novo-registro") {
+    autoFillRecordSuggestion();
+    const form = activeForm();
+    formBaselines.set(form.id, formSnapshot(form));
+  }
   closeProfileDialog();
   startProfileNotifications();
   if (announce) showToast(`Perfil alterado para ${getProfile().role}.`);
@@ -1912,9 +1938,24 @@ function autoFillRecordSuggestion() {
   if (document.querySelector('#record-auto-suggestion').checked === false || field.value.trim()) return;
   insertRecordText(recordSuggestionText(), {focus:false,automatic:true});
 }
+document.querySelector('#record-description').addEventListener('input', () => {
+  state.recordAutoText = null;
+  state.recordAutoContext = null;
+});
 document.querySelector('#record-auto-suggestion').addEventListener('change', event => {
-  if(!event.currentTarget.checked){document.querySelector('#record-description').value='';state.recordAutoText=null;state.recordAutoContext=null;return;}
-  autoFillRecordSuggestion();
+  const form = document.querySelector('#record-form');
+  const field = document.querySelector('#record-description');
+  const wasClean = formBaselines.has(form.id) && formSnapshot(form) === formBaselines.get(form.id);
+  const enabled = event.currentTarget.checked;
+  saveSuggestionPreference('record', enabled);
+  event.currentTarget.defaultChecked = enabled;
+  if (enabled) autoFillRecordSuggestion();
+  else {
+    if (field.value === state.recordAutoText) field.value = '';
+    state.recordAutoText = null;
+    state.recordAutoContext = null;
+  }
+  if (wasClean) formBaselines.set(form.id, formSnapshot(form));
 });
 
 
@@ -2106,6 +2147,7 @@ window.addEventListener("beforeunload", event => {
 
 const businessUI = window.NOTARE_BUSINESS_UI.create({
   database: () => db, actor: () => getProfile(), save: saveDatabase,
+  suggestionEnabled, saveSuggestionPreference,
   transaction: fn => withDatabaseWrite(() => fn(db, getProfile())),
   refresh: renderAll, navigate: showRoute, notify: showToast, escape: escapeHtml, studentIdentity: studentContextMarkup, selectedStudent: () => state.currentStudent, draftReady: form => businessFormBaselines.set(form,formSnapshot(form)), showUndo: (text,operation) => {toastNotice.clear();creationNotice.show(text,operation);}
 });
